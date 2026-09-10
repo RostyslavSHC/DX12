@@ -45,8 +45,7 @@ void WindowController::RegClass(HINSTANCE _hInstance) // Register our window set
 
 
 
-void WindowController::GetPrimaryMonitorResolution()
-// Find the size of the main monitor
+void WindowController::GetPrimaryMonitorResolution() // Find the size of the main monitor
 {
     M_ASSERT(SetProcessDpiAwareness(PROCESS_SYSTEM_DPI_AWARE) == S_OK,
         "Failed to set process DPI awareness.");// Make window sizing work properly with Windows scaling
@@ -99,14 +98,15 @@ void WindowController::Initialize(HINSTANCE _hInstance, int _showWnd, WindowMode
         m_windowPosX = 0; // Start at far left
         m_windowPosY = 0; // Start at top
         break;
-
     case WindowMode::FULLSCREEN_EXCLUSIVE: // Real fullscreen mode
         M_ASSERT(false, "Fullscreen exclusive mode is not implemented yet."); // Force an error because we haven't made this yet
         break;
     }
+	// Create the window with the requested settings
     m_hwnd = CreateWindowEx(WS_EX_APPWINDOW, m_wClassName, m_wTitle, style, m_windowPosX, m_windowPosY,
         m_windowWidth, m_windowHeight, nullptr, nullptr, _hInstance, nullptr);
-    M_ASSERT(m_hwnd != nullptr, "Failed to create window."); // Make sure creation worked
+
+    M_ASSERT(m_hwnd != nullptr, "Failed to create window."); // Make sure creation worked or stop if it didn't
     ShowWindow(m_hwnd, _showWnd); // Make the window visible
     M_ASSERT(UpdateWindow(m_hwnd), "Failed to update window."); // Draw/update it, or show error if it fails
 }

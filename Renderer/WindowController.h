@@ -21,7 +21,8 @@ enum class WindowMode
 
 
 
-
+// Singleton<WindowController> helps make sure there is a single shared instance that every part of the game can access
+// So instead of accidentally creating: WindowController window1; and WindowController window2; you use the same one everywhere, something like: WindowController::Instance()
 class WindowController : public Singleton<WindowController> // Create WindowController and make it a Singleton
 {
 public:
