@@ -26,10 +26,6 @@ int WINAPI main(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, i
         "RTV Heap: Number of descriptors = " << heapDesc.NumDescriptors;
 
 
-
-
-
-
 // Main message loop
     MSG msg = {}; // Make an empty variable that will hold Windows messages/events
 
@@ -41,6 +37,8 @@ int WINAPI main(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, i
             DispatchMessage(&msg); // Send the event to WndProc to handle it
         }
     }
+
+    r->Destroy();
 }
 
 

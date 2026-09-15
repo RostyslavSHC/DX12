@@ -16,6 +16,8 @@ public:
 
     // Methods
     void ConfigurePipeline(bool _userWarpDevice, HWND _hwnd, int _wWidth, int _wHeight); // Configure the pipeline
+    void Render();
+    void Destroy();
 
 private:
     // Methods
@@ -28,6 +30,8 @@ private:
 	void CreateRenderTargetView(); // Create the render target view
     void CreateCommands(); // Create the command list
     void CreateFence(); // Create the fence
+    void PopulateCommandList();
+    void WaitForPreviousFrame();
 
     // Members
     static const UINT m_frameCount =2; // The number of frames in the swap chain
@@ -44,4 +48,5 @@ private:
     UINT m_rtvDescriptorSize;
     UINT64 m_fenceValue;
     HANDLE m_fenceEvent;
+    bool m_initialized;
 };

@@ -1,4 +1,5 @@
 #include "WindowController.h" // Load the WindowController header file so we can implement the functions declared in it
+#include "Renderer.h"
 
 
 WindowController::WindowController() // Constructor: runs when WindowController is first created
@@ -119,14 +120,18 @@ LRESULT CALLBACK WndProc(HWND _hWnd, UINT _message, WPARAM _wParam, LPARAM _lPar
     {
     case WM_DESTROY: // Window was closed/destroyed
         PostQuitMessage(0); // Tell the program to quit
-        return 0; // Event handled
+        break;
     case WM_KEYUP: // A keyboard key was released
         if (_wParam == VK_ESCAPE) // Was it the Escape key?
         {
             PostQuitMessage(0); // Quit the program
-            return 0; // Event handled
         }
+        else processed = false;
         break;
+    case WM_PAINT: // The window needs to be redrawn
+        Renderer::GetInstance().Render();
+        break;
+
     default: // Some event we didn't handle
         processed = false; // Tell ourselves Windows should handle it
         break;
@@ -135,6 +140,8 @@ LRESULT CALLBACK WndProc(HWND _hWnd, UINT _message, WPARAM _wParam, LPARAM _lPar
     {
         return DefWindowProc(_hWnd, _message, _wParam, _lParam); // Let Windows handle it normally
     }
+
+    return 0;
 
 }
 

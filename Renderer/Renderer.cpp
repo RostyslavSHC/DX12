@@ -22,6 +22,7 @@ Renderer::Renderer()
     m_fenceValue = 0;
     m_frameIndex = 0;
     m_rtvDescriptorSize = 0;
+    m_initialized = false;
 
 }
 
@@ -44,6 +45,7 @@ void Renderer::ConfigurePipeline(bool _userWarpDevice, HWND _hwnd, int _wWidth, 
 
     // Do not support fullscreen transitions yet
     m_factory->MakeWindowAssociation(_hwnd, DXGI_MWA_NO_ALT_ENTER);
+    m_initialized = true;
 }
 
 // Enable the debug layer
@@ -212,3 +214,66 @@ void Renderer::CreateFence()
     M_ASSERT(m_fenceEvent != nullptr, "Failed to create fence event."); // If it fails, show error
 }
 
+
+// Render
+void Renderer::Render()
+{
+    if (!m_initialized) return; // If the renderer isn't initialized, don't render
+
+    PopulateCommandList(); // Populate the command list
+    ID3D12CommandList* ppCommandLists[] = { m_commandList.Get() };
+    m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+    M_ASSERT(SUCCEEDED(m_swapChain->Present(1, 0)), "Failed to present swapchain.");
+
+    WaitForPreviousFrame();
+}
+
+// Destroy
+void Renderer::Destroy()
+{
+    // Ensure that the GPU is no longer referencing resources that are about to be cleaned up by the destructor
+    WaitForPreviousFrame();
+    CloseHandle(m_fenceEvent);
+}
+
+
+// Populate the command list
+void Renderer::PopulateCommandList()
+{
+    // Reset only after fence allows
+    M_ASSERT(SUCCEEDED(m_commandAllocator->Reset()), "Failed to reset command allocator.");
+    M_ASSERT(SUCCEEDED(m_commandList->Reset(m_commandAllocator.Get(), nullptr)), "Failed to reset command list.");
+
+    auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_frameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET); // Transition the back buffer to a render target
+    m_commandList->ResourceBarrier(1, &barrier);
+
+    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), m_frameIndex, m_rtvDescriptorSize); // Get the start of the RTV descriptor heap
+    m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
+    const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f }; // SET THE COLOR OF BACKGROUND -------------------------------------
+    m_commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+
+    barrier = CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_frameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT); // Transition the back buffer to a present
+    m_commandList->ResourceBarrier(1, &barrier);
+
+    M_ASSERT(SUCCEEDED(m_commandList->Close()), "Failed to close command list."); // Close the command list
+}
+
+
+
+// Wait for the previous frame
+void Renderer::WaitForPreviousFrame()
+{
+    // WAITING FOR THE FRAME TO COMPLETE BEFORE CONTINUING IS NOT BEST PRACTICE
+    // Signal and increment the fence value
+    const UINT64 fence = m_fenceValue;
+    M_ASSERT(SUCCEEDED(m_commandQueue->Signal(m_fence.Get(), fence)), "Failed to signal fence.");
+    m_fenceValue++;
+
+    if (m_fence->GetCompletedValue() < fence) // If the fence hasn't been met, wait until it is met
+    {
+        M_ASSERT(SUCCEEDED(m_fence->SetEventOnCompletion(fence, m_fenceEvent)), "Failed to set fence complete."); // Set an event on the fence to signal when it's met
+        WaitForSingleObject(m_fenceEvent, INFINITE);
+    }
+
+    m_frameIndex = m_swapChain->GetCurrentBackBufferIndex(); // Advance the frame index
+}
