@@ -3,6 +3,6 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="U:/OneDrive - Sheridan College/Semester 5/PROG31068 - Computer Graphics and Animation/DX12/Renderer/Renderer.vcxproj" Id="9b76cca9-b6e9-4eba-b983-fb3361c74880" />
-  <Project Path="U:/OneDrive - Sheridan College/Semester 5/PROG31068 - Computer Graphics and Animation/DX12/ToolsGUI/ToolsGUI.vcxproj" Id="c433e236-a2a6-d8ff-31c7-49c4d3be659c" />
+  <Project Path="Renderer/Renderer.vcxproj" Id="9b76cca9-b6e9-4eba-b983-fb3361c74880" />
+  <Project Path="ToolsGUI/ToolsGUI.vcxproj" />
 </Solution>
