@@ -12,17 +12,32 @@ int WINAPI main(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, i
     wc->Create(hInstance, nShowCmd, WindowMode::WINDOWED); // Create our app in normal windowed mode
 
     Renderer* r = &Renderer::GetInstance(); // Get the one shared Renderer and save its address in r
-    r->ConfigurePipeline(false); // Call the function that configures the pipeline
-    const char *byte_addr = reinterpret_cast<const char*>(r->GetDevice().Get()); // Get the address of the device
-    std::cout << static_cast<const void*>(byte_addr); // Print the address of the device
+    r->ConfigurePipeline(false, wc->GetHWND(), wc->GetWindowWidth(), wc->GetWindowHeight()); // Call the renderer to configure the pipeline
+
+
+    // SOme temporary debug output
+    DXGI_SWAP_CHAIN_DESC scDesc;
+    r->GetSwapChain().Get()->GetDesc(&scDesc);
+
+    D3D12_DESCRIPTOR_HEAP_DESC heapDesc = r->GetRTVHeap().Get()->GetDesc(); // Make an empty descriptor heap description
+    std::cout << "Window Controller: Window = " << wc->GetHWND() << "\n" <<
+        "Swapchain: Buffer count = " << to_string(scDesc.BufferCount) <<
+        "; Window = " << scDesc.OutputWindow << "\n" <<
+        "RTV Heap: Number of descriptors = " << heapDesc.NumDescriptors;
+
+
+
 
 // Main message loop
     MSG msg = {}; // Make an empty variable that will hold Windows messages/events
 
-    while (GetMessage(&msg, nullptr, 0, 0)) // Keep getting events until the program is told to quit
+    while (msg.message != WM_QUIT) // Keep getting events until the program is told to quit
     {
-        TranslateMessage(&msg); // Convert keyboard input into easier-to-use messages
-        DispatchMessage(&msg); // Send the event to WndProc to handle it
+        if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) // Is there a message waiting?
+        {
+            TranslateMessage(&msg); // Convert keyboard input into easier-to-use messages
+            DispatchMessage(&msg); // Send the event to WndProc to handle it
+        }
     }
 }
 

@@ -26,8 +26,17 @@ enum class WindowMode
 class WindowController : public Singleton<WindowController> // Create WindowController and make it a Singleton
 {
 public:
+    // Constructor/Destructor
     WindowController(); // Constructor, runs when controller is created
     virtual ~WindowController() {} // Destructor, runs when controller is destroyed
+
+    // Accessors
+    HWND GetHWND() { return m_hwnd; } // Get the window handle
+    int GetWindowWidth() const { return m_windowWidth; } // Get the window width
+	int GetWindowHeight() const { return m_windowHeight; } // Get the window height
+
+
+    // Methods
     void Create(HINSTANCE _hInstance, int _showWnd, WindowMode _mode); // Main function that creates the window
 
 private:

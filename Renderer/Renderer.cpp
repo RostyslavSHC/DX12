@@ -6,6 +6,23 @@ Renderer::Renderer()
     // Set default values so there are no garbage values
     m_factory = nullptr;
     m_device = nullptr;
+    m_commandQueue = nullptr;
+    m_swapChain = nullptr;
+    m_rtvHeap = nullptr;
+
+    for (int count = 0; count < m_frameCount; count++)
+    {
+        m_renderTargets[count] = nullptr;
+    }
+
+    m_commandAllocator = nullptr;
+    m_commandList = nullptr;
+    m_fence = nullptr;
+    m_fenceEvent = nullptr;
+    m_fenceValue = 0;
+    m_frameIndex = 0;
+    m_rtvDescriptorSize = 0;
+
 }
 
 // Destructor
@@ -14,11 +31,19 @@ Renderer::~Renderer()
 }
 
 // Configure the pipeline. Pipeline is a series of stages that are executed in order
-void Renderer::ConfigurePipeline(bool _userWarpDevice)
+void Renderer::ConfigurePipeline(bool _userWarpDevice, HWND _hwnd, int _wWidth, int _hHeight)
 {
     UINT dxgiFactoryFlags = EnableDebugLayer(); // Enable the debug layer
     M_ASSERT(SUCCEEDED(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&m_factory))), "Create DXGI factory failed"); // If it fails, show error and stop
     CreateDevice(_userWarpDevice); // Create the device
+    CreateCommandQueue(); // Create the command queue
+    CreateSwapChain(_hwnd, _wWidth, _hHeight); // Create the swap chain
+    CreateRenderTargetView(); // Create the render target view
+    CreateCommands(); // Create the commands
+    CreateFence(); // Create the fence
+
+    // Do not support fullscreen transitions yet
+    m_factory->MakeWindowAssociation(_hwnd, DXGI_MWA_NO_ALT_ENTER);
 }
 
 // Enable the debug layer
@@ -100,3 +125,90 @@ void Renderer::GetHardwareAdapter(_In_ IDXGIFactory1* _factory, _Outptr_result_m
 
     *_adapter = adapter.Detach(); // Return the adapter (if it exists)
 }
+
+
+
+
+
+
+// Create the command queue
+void Renderer::CreateCommandQueue()
+{
+    // Describe and create the command queue.
+    D3D12_COMMAND_QUEUE_DESC queueDesc = {}; // Describe the command queue
+    queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+    queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+
+    M_ASSERT(SUCCEEDED(m_device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&m_commandQueue))), "Failed to created command queue"); // If it fails, show error
+}
+
+// Create the swap chain
+void Renderer::CreateSwapChain(HWND _hwnd, int _wiidth, int _wHeight)
+{
+    // Describe and create the swap chain
+    DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {}; // Describe the swap chain
+    swapChainDesc.BufferCount = m_frameCount;
+    swapChainDesc.Width = _wiidth;
+    swapChainDesc.Height = _wHeight;
+    swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // Use 32-bit color
+    swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT; // The back buffer will be used as a render target
+    swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD; // The back buffer will be discarded
+    swapChainDesc.SampleDesc.Count = 1;
+
+    ComPtr<IDXGISwapChain1> swapChain;
+    M_ASSERT(SUCCEEDED(m_factory->CreateSwapChainForHwnd(m_commandQueue.Get(), _hwnd, &swapChainDesc, nullptr, nullptr, &swapChain)), "Failed to create swap chain");
+    M_ASSERT(SUCCEEDED(swapChain.As(&m_swapChain)), "Casting swapchain failed");
+    m_frameIndex = m_swapChain->GetCurrentBackBufferIndex(); // Get the current back buffer index
+}
+
+
+
+
+
+// Create the render target view
+void Renderer::CreateRenderTargetView()
+{
+    // Describe and create a render target view (RTV) descriptor heap
+    D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {}; // Describe the RTV descriptor heap
+    rtvHeapDesc.NumDescriptors = m_frameCount;
+    rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+    rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+    M_ASSERT(SUCCEEDED(m_device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_rtvHeap))), "Failed to create descriptor heap"); // If it fails, show error
+    m_rtvDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV); // Get the size of the RTV descriptor
+
+    // Create a RTV for each frame
+    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart()); // Get the start of the RTV descriptor heap
+    // Create a RTV for each back buffer
+    for (UINT n = 0; n < m_frameCount; n++)
+    {
+        M_ASSERT(SUCCEEDED(m_swapChain->GetBuffer(n, IID_PPV_ARGS(&m_renderTargets[n]))), "Swapchain get back buffer failed."); // Get the back buffer
+        m_device->CreateRenderTargetView(m_renderTargets[n].Get(), nullptr, rtvHandle); // Create the RTV for the back buffer and add it to the RTV descriptor heap
+        rtvHandle.Offset(1, m_rtvDescriptorSize); // Move to the next descriptor
+    }
+}
+
+// Create the command list
+void Renderer::CreateCommands()
+{
+    M_ASSERT(SUCCEEDED(m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_commandAllocator))), "Failed to create command allocator.");
+
+    M_ASSERT(SUCCEEDED(m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(), nullptr, IID_PPV_ARGS(&m_commandList))), "Failed to create command list.");
+
+    // Command lists are created in the recording state, but there is nothing
+    // to record yet. The main loop expects it to be closed, so close it now
+    M_ASSERT(SUCCEEDED(m_commandList->Close()), "Failed to close command list.");
+}
+
+
+
+// Create the fence
+void Renderer::CreateFence()
+{
+    M_ASSERT(SUCCEEDED(m_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence))), "Failed to create fence."); // Create the fence and make sure it works
+    m_fenceValue = 1; // The fence starts at 1
+
+    // Create an event handle to use for frame synchronization
+    m_fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr); // Create the event
+    M_ASSERT(m_fenceEvent != nullptr, "Failed to create fence event."); // If it fails, show error
+}
+
