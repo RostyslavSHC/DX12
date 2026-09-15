@@ -13,6 +13,7 @@ public:
     ComPtr<ID3D12Device> GetDevice() { return m_device; } // Return the D3D12 device
     ComPtr<IDXGISwapChain3>& GetSwapChain() { return m_swapChain; }
     ComPtr<ID3D12DescriptorHeap>& GetRTVHeap() { return m_rtvHeap; }
+    float* GetBGColor() { return m_bgColor; }
 
     // Methods
     void ConfigurePipeline(bool _userWarpDevice, HWND _hwnd, int _wWidth, int _wHeight); // Configure the pipeline
@@ -49,4 +50,6 @@ private:
     UINT64 m_fenceValue;
     HANDLE m_fenceEvent;
     bool m_initialized;
+
+    float m_bgColor[4];
 };

@@ -23,6 +23,7 @@ Renderer::Renderer()
     m_frameIndex = 0;
     m_rtvDescriptorSize = 0;
     m_initialized = false;
+    memset(m_bgColor, 0, sizeof(float) * 4);
 
 }
 
@@ -246,12 +247,19 @@ void Renderer::PopulateCommandList()
     M_ASSERT(SUCCEEDED(m_commandList->Reset(m_commandAllocator.Get(), nullptr)), "Failed to reset command list.");
 
     auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_frameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET); // Transition the back buffer to a render target
+    
     m_commandList->ResourceBarrier(1, &barrier);
 
     CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), m_frameIndex, m_rtvDescriptorSize); // Get the start of the RTV descriptor heap
     m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
-    const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f }; // SET THE COLOR OF BACKGROUND -------------------------------------
-    m_commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+    m_commandList->ClearRenderTargetView(rtvHandle, m_bgColor, 0, nullptr);
+
+
+    // const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f }; // SET THE COLOR OF BACKGROUND -------------------------------------
+    // m_commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+
+
+
 
     barrier = CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_frameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT); // Transition the back buffer to a present
     m_commandList->ResourceBarrier(1, &barrier);
