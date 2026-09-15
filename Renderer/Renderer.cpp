@@ -29,6 +29,7 @@ Renderer::Renderer()
 // Destructor
 Renderer::~Renderer()
 {
+    Destroy();
 }
 
 // Configure the pipeline. Pipeline is a series of stages that are executed in order

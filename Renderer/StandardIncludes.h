@@ -1,22 +1,27 @@
 #pragma once // Only include this header file once
 
 #define WIN32_LEAN_AND_MEAN // Load a smaller/basic version of Windows.h
-#define NOMINMAX            // Stops Windows from creating its own min/max macros
+#define NOMINMAX // Stops Windows from creating its own min/max macros
 
-#include <Windows.h>   // Gives us Windows functions like GetLastError()
-#include <algorithm>   // Gives us useful C++ algorithms like sort(), min(), max(), etc
-#include <wrl.h>       // Gives us the Windows Runtime Library
-
-
-// DirectX12
-#include <d3d12.h>     // Direct3D 12
-#include <dxgi1_6.h>   // DirectX Graphics Infrastructure 1.6
-
-#include "Singleton.h" // Includes our Singleton class
-#include "include/d3dx12/d3dx12.h" // Direct3D 12 helper library
+#include <Windows.h> // Gives us Windows functions like GetLastError()
+#include <algorithm> // Gives us useful C++ algorithms like sort(), min(), max(), etc
+#include <wrl.h> // Gives us the Windows Runtime Library
+#include <iostream> // Gives us std::cout
 
 using Microsoft::WRL::ComPtr; // ComPtr is a smart pointer for COM objects
 using namespace std; // So we don't have to use std::
+
+
+
+// DirectX12
+#include <d3d12.h> // Direct3D 12
+#include <dxgi1_6.h> // DirectX Graphics Infrastructure 1.6
+
+#include "Singleton.h" // Includes our Singleton class
+#include "include/d3dx12/d3dx12.h" // Direct3D 12 helper library
+#include "WindowController.h"
+#include "Renderer.h"
+
 
 
 
