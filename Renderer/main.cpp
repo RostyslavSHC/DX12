@@ -28,6 +28,8 @@ int WINAPI main(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, i
 
 
 
+
+
 // Main message loop
     MSG msg = {}; // Make an empty variable that will hold Windows messages/events
 
