@@ -10,6 +10,7 @@
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam); // Function that receives Windows events like close, keyboard, etc
 
 
+
 enum class WindowMode
     // List of possible window modes
 {

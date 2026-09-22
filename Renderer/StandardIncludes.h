@@ -16,11 +16,16 @@ using namespace std; // So we don't have to use std::
 // DirectX12
 #include <d3d12.h> // Direct3D 12
 #include <dxgi1_6.h> // DirectX Graphics Infrastructure 1.6
+#include <d3dcompiler.h>
+#include <DirectXMath.h>
 
 #include "Singleton.h" // Includes our Singleton class
 #include "include/d3dx12/d3dx12.h" // Direct3D 12 helper library
 #include "WindowController.h"
+#include "IRenderable.h"
 #include "Renderer.h"
+#include "Shader.h"
+#include "Mesh.h"
 
 
 

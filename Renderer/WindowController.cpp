@@ -113,35 +113,39 @@ void WindowController::Initialize(HINSTANCE _hInstance, int _showWnd, WindowMode
 }
 
 
-LRESULT CALLBACK WndProc(HWND _hWnd, UINT _message, WPARAM _wParam, LPARAM _lParam) // Function that handles Windows events
+
+
+
+
+
+LRESULT CALLBACK WndProc(HWND _hWnd, UINT _message, WPARAM _wParam, LPARAM _lParam)
 {
-    bool processed = true; // Assume we're handling the event ourselves
-    switch (_message) // Check what happened
+    bool processed = true;
+
+    switch (_message)
     {
-    case WM_DESTROY: // Window was closed/destroyed
-        PostQuitMessage(0); // Tell the program to quit
-        break;
-    case WM_KEYUP: // A keyboard key was released
-        if (_wParam == VK_ESCAPE) // Was it the Escape key?
-        {
-            PostQuitMessage(0); // Quit the program
-        }
-        else processed = false;
-        break;
-    case WM_PAINT: // The window needs to be redrawn
-        Renderer::GetInstance().Render();
+    case WM_DESTROY:
+        PostQuitMessage(0);
         break;
 
-    default: // Some event we didn't handle
-        processed = false; // Tell ourselves Windows should handle it
+    case WM_KEYUP:
+        if (_wParam == VK_ESCAPE)
+        {
+            PostQuitMessage(0);
+        }
+        else
+            processed = false;
+        break;
+
+    default:
+        processed = false;
         break;
     }
-    if (!processed)// If we didn't handle the event
+
+    if (!processed)
     {
-        return DefWindowProc(_hWnd, _message, _wParam, _lParam); // Let Windows handle it normally
+        return DefWindowProc(_hWnd, _message, _wParam, _lParam);
     }
 
     return 0;
-
 }
-

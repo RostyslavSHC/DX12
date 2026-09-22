@@ -24,7 +24,8 @@ Renderer::Renderer()
     m_rtvDescriptorSize = 0;
     m_initialized = false;
     memset(m_bgColor, 0, sizeof(float) * 4);
-
+    m_viewport = {};
+    m_scissorRect = {};
 }
 
 // Destructor
@@ -44,11 +45,24 @@ void Renderer::ConfigurePipeline(bool _userWarpDevice, HWND _hwnd, int _wWidth, 
     CreateRenderTargetView(); // Create the render target view
     CreateCommands(); // Create the commands
     CreateFence(); // Create the fence
+    CreateViewport(_wWidth, _hHeight);
 
     // Do not support fullscreen transitions yet
     m_factory->MakeWindowAssociation(_hwnd, DXGI_MWA_NO_ALT_ENTER);
     m_initialized = true;
 }
+
+
+
+void Renderer::CreateViewport(int _width, int _wHeight)
+{
+    m_viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, static_cast<float>(_width), static_cast<float>(_wHeight));
+    m_scissorRect = CD3DX12_RECT(0, 0, static_cast<LONG>(_width), static_cast<LONG>(_wHeight));
+}
+
+
+
+
 
 // Enable the debug layer
 UINT Renderer::EnableDebugLayer()
@@ -218,11 +232,11 @@ void Renderer::CreateFence()
 
 
 // Render
-void Renderer::Render()
+void Renderer::Render(IRenderable* _renderable)
 {
     if (!m_initialized) return; // If the renderer isn't initialized, don't render
 
-    PopulateCommandList(); // Populate the command list
+    PopulateCommandList(_renderable); // Populate the command list
     ID3D12CommandList* ppCommandLists[] = { m_commandList.Get() };
     m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
     M_ASSERT(SUCCEEDED(m_swapChain->Present(1, 0)), "Failed to present swapchain.");
@@ -240,11 +254,11 @@ void Renderer::Destroy()
 
 
 // Populate the command list
-void Renderer::PopulateCommandList()
+void Renderer::PopulateCommandList(IRenderable* _renderable)
 {
     // Reset only after fence allows
     M_ASSERT(SUCCEEDED(m_commandAllocator->Reset()), "Failed to reset command allocator.");
-    M_ASSERT(SUCCEEDED(m_commandList->Reset(m_commandAllocator.Get(), nullptr)), "Failed to reset command list.");
+    M_ASSERT(SUCCEEDED(m_commandList->Reset(m_commandAllocator.Get(), _renderable->GetShader()->GetPipelineState().Get())), "Failed to reset command list.");
 
     auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_frameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET); // Transition the back buffer to a render target
     
@@ -252,7 +266,12 @@ void Renderer::PopulateCommandList()
 
     CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), m_frameIndex, m_rtvDescriptorSize); // Get the start of the RTV descriptor heap
     m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
+    m_commandList->RSSetViewports(1, &m_viewport); // Set the viewport
+	m_commandList->RSSetScissorRects(1, &m_scissorRect); // Set the scissor rect
+
+    _renderable->GetShader()->SetPipelineState(m_commandList.Get()); // Set the pipeline state
     m_commandList->ClearRenderTargetView(rtvHandle, m_bgColor, 0, nullptr);
+    _renderable->Render(m_commandList.Get());
 
 
     // const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f }; // SET THE COLOR OF BACKGROUND -------------------------------------

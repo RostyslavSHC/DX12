@@ -17,7 +17,7 @@ public:
 
     // Methods
     void ConfigurePipeline(bool _userWarpDevice, HWND _hwnd, int _wWidth, int _wHeight); // Configure the pipeline
-    void Render();
+    void Render(IRenderable *_renderable);
     void Destroy();
 
 private:
@@ -32,6 +32,8 @@ private:
     void CreateCommands(); // Create the command list
     void CreateFence(); // Create the fence
     void PopulateCommandList();
+    void CreateViewport(int _wWidth, int _wHeight);
+    void PopulateCommandList(IRenderable *_renderable);
     void WaitForPreviousFrame();
 
     // Members
@@ -45,6 +47,8 @@ private:
     ComPtr<ID3D12CommandAllocator> m_commandAllocator;
     ComPtr<ID3D12GraphicsCommandList> m_commandList;
     ComPtr<ID3D12Fence> m_fence;
+    CD3DX12_VIEWPORT m_viewport;
+    CD3DX12_RECT m_scissorRect;
     UINT m_frameIndex;
     UINT m_rtvDescriptorSize;
     UINT64 m_fenceValue;

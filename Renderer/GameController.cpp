@@ -23,22 +23,29 @@ void GameController::Initialize(HINSTANCE _hInstance, int _nShowCmd)
 
 void GameController::Run()
 {
-    m_toolsC->ShowForm();
+	m_toolsC->ShowForm();
 
-    //Main message loop
-    MSG msg = {};
-    while (msg.message != WM_QUIT)
-    {
-        if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
+	Shader shader = Shader();
+	shader.Initialize(L"shaders.hlsl", m_renderer->GetDevice().Get());
+	Mesh mesh = Mesh();
+	mesh.Initialize(m_renderer->GetDevice().Get(), &shader);
 
+	//Main message loop
+	MSG msg = {};
+	while (msg.message != WM_QUIT)
+	{
+		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+		else
+		{
+			m_renderer->GetBGColor()[0] = (float)m_toolsC->GetRedData();
+			m_renderer->GetBGColor()[1] = (float)m_toolsC->GetGreenData();
+			m_renderer->GetBGColor()[2] = (float)m_toolsC->GetBlueData();
 
-        m_renderer->GetBGColor()[0] = (float)m_toolsC->GetRedData();
-		m_renderer->GetBGColor()[1] = (float)m_toolsC->GetGreenData();
-		m_renderer->GetBGColor()[2] = (float)m_toolsC->GetBlueData();
-
-    }
+			m_renderer->Render(&mesh);
+		}
+	}
 }
