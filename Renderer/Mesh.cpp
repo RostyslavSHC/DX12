@@ -24,9 +24,13 @@ void Mesh::CreateVertexBuffer(ID3D12Device* _device)
 {
 	Vertex triangleVertices[] =
 	{
-		{ { 0.0f, 0.25f, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } },
-		{ { 0.25f, -0.25f, 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
-		{ { -0.25f, -0.25f, 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } }
+		{ { -0.5f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } },
+		{ { -0.25f, 0.25f, 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
+		{ { -0.25f, -0.25f, 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } },
+
+		{ { 0.5f, 0.0f, 0.0f }, { 1.0f, 1.0f, 0.0f, 1.0f } },
+		{ { 0.0f, 0.5f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f } },
+		{ { 0.5f, 0.75f, 0.0f }, { 1.0f, 0.0f, 1.0f, 1.0f } },
 	};
 
 	auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
@@ -55,7 +59,7 @@ void Mesh::CreateVertexBuffer(ID3D12Device* _device)
 
 void Mesh::Render(ID3D12GraphicsCommandList* _commandList)
 {
-	_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
 	_commandList->IASetVertexBuffers(0, 1, &m_vertexBufferView);
-	_commandList->DrawInstanced(3, 1, 0, 0);
+	_commandList->DrawInstanced(6, 1, 0, 0);
 }
