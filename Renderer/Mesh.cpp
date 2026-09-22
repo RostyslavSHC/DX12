@@ -59,7 +59,7 @@ void Mesh::CreateVertexBuffer(ID3D12Device* _device)
 
 void Mesh::Render(ID3D12GraphicsCommandList* _commandList)
 {
-	_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINESTRIP);
+	_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 	_commandList->IASetVertexBuffers(0, 1, &m_vertexBufferView);
 	_commandList->DrawInstanced(6, 1, 0, 0);
 }
