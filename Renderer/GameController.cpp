@@ -18,7 +18,7 @@ void GameController::Initialize(HINSTANCE _hInstance, int _nShowCmd)
     m_windowC->Create(_hInstance, _nShowCmd, WindowMode::WINDOWED);
     m_renderer = &Renderer::GetInstance();
     m_renderer->ConfigurePipeline(false, m_windowC->GetHWND(), m_windowC->GetWindowWidth(), m_windowC->GetWindowHeight());
-	m_camera = new Camera(m_windowC->GetWindowWidth(), m_windowC->GetWindowHeight()); // Create the camera
+	m_camera = new Camera(m_windowC->GetWindowWidth(), m_windowC->GetWindowHeight(), 1); // Create the camera
     m_toolsC = &ToolsController::GetInstance();
     m_toolsC->LoadToolsLibrary();
 }
