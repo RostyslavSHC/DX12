@@ -15,7 +15,6 @@ WindowController::WindowController() // Constructor: runs when WindowController 
     m_windowHeight = 0; // Window height starts at 0
     m_monitorWidth = 0; // Monitor width not known yet
     m_monitorHeight = 0; // Monitor height not known yet
-    memset(m_keyStates, 0, 256);
 }
 
 
@@ -121,30 +120,26 @@ void WindowController::Initialize(HINSTANCE _hInstance, int _showWnd, WindowMode
 
 LRESULT CALLBACK WndProc(HWND _hWnd, UINT _message, WPARAM _wParam, LPARAM _lParam)
 {
-    WindowController* wc = &WindowController::GetInstance(); // Get the window controller
     bool processed = true;
 
     switch (_message)
     {
-        case WM_DESTROY:
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        break;
+
+    case WM_KEYUP:
+        if (_wParam == VK_ESCAPE)
+        {
             PostQuitMessage(0);
-            break;
-
-        case WM_KEYUP:
-            if (_wParam == VK_ESCAPE)
-            {
-                PostQuitMessage(0);
-            }
-            wc->GetKeyStates()[_wParam] = false;
-		    break;
-
-        case WM_KEYDOWN:
-            wc->GetKeyStates()[_wParam] = true;
-		    break;
-
-        default:
+        }
+        else
             processed = false;
-            break;
+        break;
+
+    default:
+        processed = false;
+        break;
     }
 
     if (!processed)
