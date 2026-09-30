@@ -1,4 +1,5 @@
 #include "GameController.h"
+#include "Unit.h"
 
 GameController::GameController()
 {
@@ -29,25 +30,46 @@ void GameController::Run()
 
 	Shader shader = Shader();
 	shader.Initialize(L"shaders.hlsl", m_renderer->GetDevice().Get());
-	Mesh mesh = Mesh();
-	mesh.Initialize(m_renderer->GetDevice().Get(), &shader);
+
+	Unit unit = Unit();
+	unit.Initialize(m_renderer->GetDevice().Get(), &shader);
 
 	//Main message loop
 	MSG msg = {};
-	while (msg.message != WM_QUIT)
+	bool running = true;
+	while (running)
 	{
-		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
+			if (msg.message == WM_QUIT) running = false;
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
-		else
-		{
-			m_renderer->GetBGColor()[0] = (float)m_toolsC->GetRedData();
-			m_renderer->GetBGColor()[1] = (float)m_toolsC->GetGreenData();
-			m_renderer->GetBGColor()[2] = (float)m_toolsC->GetBlueData();
 
-			m_renderer->Render(&mesh, m_camera->GetViewProjection());
-		}
+		if (!running) break;
+
+		m_renderer->GetBGColor()[0] = (float)m_toolsC->GetRedData();
+		m_renderer->GetBGColor()[1] = (float)m_toolsC->GetGreenData();
+		m_renderer->GetBGColor()[2] = (float)m_toolsC->GetBlueData();
+
+		auto pos = unit.GetPosition();
+		auto rot = unit.GetRotation();
+		auto scl = unit.GetScale();
+
+		if (m_windowC->GetKeyStates()[VK_RIGHT]) pos.x += 0.01f;
+		if (m_windowC->GetKeyStates()[VK_LEFT]) pos.x -= 0.01f;
+		if (m_windowC->GetKeyStates()[VK_UP]) pos.y += 0.01f;
+		if (m_windowC->GetKeyStates()[VK_DOWN]) pos.y -= 0.01f;
+
+		if (m_windowC->GetKeyStates()['Q']) rot.y += 0.1f;
+		if (m_windowC->GetKeyStates()['E']) rot.y -= 0.1f;
+		if (m_windowC->GetKeyStates()['A']) scl.x -= 0.1f;
+		if (m_windowC->GetKeyStates()['S']) scl.x += 0.1f;
+
+		unit.SetPosition(XMFLOAT3(pos.x, pos.y, pos.z));
+		unit.SetRotation(XMFLOAT3(rot.x, rot.y, rot.z));
+		unit.SetScale(XMFLOAT3(scl.x, scl.y, scl.z));
+
+		m_renderer->Render(&unit, m_camera->GetViewProjection());
 	}
 }

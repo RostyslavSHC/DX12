@@ -35,6 +35,7 @@ public:
     HWND GetHWND() { return m_hwnd; } // Get the window handle
     int GetWindowWidth() const { return m_windowWidth; } // Get the window width
 	int GetWindowHeight() const { return m_windowHeight; } // Get the window height
+    bool* GetKeyStates() { return m_keyStates; } // Get the keyboard state
 
 
     // Methods
@@ -60,4 +61,5 @@ private:
     int m_windowHeight; // Window height
     int m_monitorWidth; // Monitor width
     int m_monitorHeight; // Monitor height
+    bool m_keyStates[256]; // Keyboard state
 };
