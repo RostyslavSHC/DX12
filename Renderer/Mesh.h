@@ -11,7 +11,7 @@ public:
 
 	// Methods
 	void Initialize(ID3D12Device* _device, Shader* _shader);
-	virtual void Render(ID3D12GraphicsCommandList* _commandList);
+	virtual void Render(ID3D12GraphicsCommandList* _commandList, XMMATRIX _viewProj);
 
 private:
 	// Methods

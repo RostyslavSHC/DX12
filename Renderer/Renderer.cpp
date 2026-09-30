@@ -232,11 +232,11 @@ void Renderer::CreateFence()
 
 
 // Render
-void Renderer::Render(IRenderable* _renderable)
+void Renderer::Render(IRenderable* _renderable, XMMATRIX _viewProj)
 {
     if (!m_initialized) return; // If the renderer isn't initialized, don't render
 
-    PopulateCommandList(_renderable); // Populate the command list
+    PopulateCommandList(_renderable, _viewProj); // Populate the command list
     ID3D12CommandList* ppCommandLists[] = { m_commandList.Get() };
     m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
     M_ASSERT(SUCCEEDED(m_swapChain->Present(1, 0)), "Failed to present swapchain.");
@@ -254,7 +254,7 @@ void Renderer::Destroy()
 
 
 // Populate the command list
-void Renderer::PopulateCommandList(IRenderable* _renderable)
+void Renderer::PopulateCommandList(IRenderable* _renderable, XMMATRIX _viewProj)
 {
     // Reset only after fence allows
     M_ASSERT(SUCCEEDED(m_commandAllocator->Reset()), "Failed to reset command allocator.");
@@ -269,9 +269,9 @@ void Renderer::PopulateCommandList(IRenderable* _renderable)
     m_commandList->RSSetViewports(1, &m_viewport); // Set the viewport
 	m_commandList->RSSetScissorRects(1, &m_scissorRect); // Set the scissor rect
 
-    _renderable->GetShader()->SetPipelineState(m_commandList.Get()); // Set the pipeline state
+    _renderable->GetShader()->SetPipelineState(m_commandList.Get(), m_frameIndex); // Set the pipeline state
     m_commandList->ClearRenderTargetView(rtvHandle, m_bgColor, 0, nullptr);
-    _renderable->Render(m_commandList.Get());
+    _renderable->Render(m_commandList.Get(), _viewProj);
 
 
     // const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f }; // SET THE COLOR OF BACKGROUND -------------------------------------

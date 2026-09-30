@@ -17,5 +17,6 @@ public:
 private:
     WindowController* m_windowC;
     Renderer* m_renderer;
+    Camera* m_camera;
     ToolsController* m_toolsC;
 };

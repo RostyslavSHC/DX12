@@ -10,6 +10,8 @@ public:
     virtual ~Renderer();
 
     // Accessors
+    static const UINT GetFrameCount() { return m_frameCount; } // Get the frame count
+    UINT GetFrameIndex() const { return m_frameIndex; } // Get the frame index
     ComPtr<ID3D12Device> GetDevice() { return m_device; } // Return the D3D12 device
     ComPtr<IDXGISwapChain3>& GetSwapChain() { return m_swapChain; }
     ComPtr<ID3D12DescriptorHeap>& GetRTVHeap() { return m_rtvHeap; }
@@ -17,7 +19,7 @@ public:
 
     // Methods
     void ConfigurePipeline(bool _userWarpDevice, HWND _hwnd, int _wWidth, int _wHeight); // Configure the pipeline
-    void Render(IRenderable *_renderable);
+    void Render(IRenderable *_renderable, XMMATRIX _viewProj);
     void Destroy();
 
 private:
@@ -33,7 +35,7 @@ private:
     void CreateFence(); // Create the fence
     void PopulateCommandList();
     void CreateViewport(int _wWidth, int _wHeight);
-    void PopulateCommandList(IRenderable *_renderable);
+    void PopulateCommandList(IRenderable *_renderable, XMMATRIX _viewProj);
     void WaitForPreviousFrame();
 
     // Members

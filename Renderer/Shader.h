@@ -9,6 +9,11 @@ struct Vertex
 	XMFLOAT4 color;
 };
 
+struct alignas(256) ConstantBuffer
+{
+	XMFLOAT4X4 WVP;
+};
+
 class Shader
 {
 public:
@@ -19,19 +24,26 @@ public:
 	// Accessors
 	ComPtr<ID3D12RootSignature>& GetRootSignature() { return m_rootSignature; }
 	ComPtr<ID3D12PipelineState>& GetPipelineState() { return m_pipelineState; }
+	ConstantBuffer* GetConstantData() const { return m_constantData; }
 
 	// Methods
 	void Initialize(LPCWSTR _shaderFile, ID3D12Device* _device);
-	void SetPipelineState(ID3D12GraphicsCommandList* _commandList);
+	void SetPipelineState(ID3D12GraphicsCommandList* _commandList, UINT _frameIndex);
 
 private:
 	// Methods
 	void CompileShaders(LPCWSTR _shaderFile);
+	void CreateRootSignature(ID3D12Device* _device);
 	void CreatePipelineState(ID3D12Device* _device);
+	void CreateConstantBuffer(ID3D12Device* _device);
 
 	// Members
 	ComPtr<ID3D12RootSignature> m_rootSignature;
 	ComPtr<ID3D12PipelineState> m_pipelineState;
 	ComPtr<ID3DBlob> m_vertexShader;
 	ComPtr<ID3DBlob> m_pixelShader;
+	ComPtr<ID3D12DescriptorHeap> m_cbvHeap;
+	ComPtr<ID3D12Resource> m_constantBuffer;
+	ConstantBuffer* m_constantData;
+
 };

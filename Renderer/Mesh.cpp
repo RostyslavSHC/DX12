@@ -118,8 +118,11 @@ void Mesh::CreateIndexBuffer(ID3D12Device* _device)
 
 
 
-void Mesh::Render(ID3D12GraphicsCommandList* _commandList)
+void Mesh::Render(ID3D12GraphicsCommandList* _commandList, XMMATRIX _viewProj)
 {
+	ConstantBuffer* cbData = &GetShader()->GetConstantData()[Renderer::GetInstance().GetFrameIndex()];
+	XMStoreFloat4x4(&cbData->WVP, XMMatrixTranspose(_viewProj));
+
 	_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	_commandList->IASetVertexBuffers(0, 1, &m_vertexBufferView);
 	_commandList->IASetIndexBuffer(&m_indexBufferView);
