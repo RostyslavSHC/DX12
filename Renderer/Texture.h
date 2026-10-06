@@ -2,27 +2,27 @@
 
 #include "StandardIncludes.h"
 
+class DDSLoad;
+
 class Texture
 {
 public:
 	// Constructors/Destructors
 	Texture();
-	virtual ~Texture() {}
+	virtual ~Texture();
 
 	// Methods
-	void Initialize(ID3D12DescriptorHeap* _descrHeap);
+	void Initialize(wstring _filename, ID3D12DescriptorHeap* _descrHeap);
 	void SetPipelineState(ID3D12DescriptorHeap* _descrHeap);
 
 private:
 	// Methods
+	void LoadTextureFromFile(wstring _filename);
 	void CreateTexture();
 	void CreateShaderResourceView(ID3D12DescriptorHeap* _descrHeap);
 	void UploadTexture();
-	std::vector<UINT8> GenerateTextureData();
 
 	// Members
+	DDSLoad* m_ddsLoader;
 	ComPtr<ID3D12Resource> m_texture;
-	UINT m_width;
-	UINT m_height;
-	UINT m_pixelSize;
 };

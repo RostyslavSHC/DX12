@@ -8,7 +8,8 @@
 #include <wrl.h> // Gives us the Windows Runtime Library
 #include <iostream> // Gives us std::cout
 
-using Microsoft::WRL::ComPtr; // ComPtr is a smart pointer for COM objects
+//using Microsoft::WRL::ComPtr; // ComPtr is a smart pointer for COM objects
+using namespace Microsoft::WRL;
 using namespace std; // So we don't have to use std::
 
 

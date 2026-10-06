@@ -37,5 +37,5 @@ PSInput VSMain(VSInput _input)
 // PSMain - Pixel shader
 float4 PSMain(PSInput input) : SV_TARGET
 {
-    return g_texture.Sample(g_sampler, input.uv) * input.color;
+    return g_texture.Sample(g_sampler, input.uv);
 }

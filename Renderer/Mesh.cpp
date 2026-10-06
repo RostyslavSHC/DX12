@@ -26,7 +26,7 @@ void Mesh::Initialize(Shader* _shader)
 	CreateVertexBuffer();
 	CreateIndexBuffer();
 	Texture* t = new Texture();
-	t->Initialize(_shader->GetDescrHeap().Get());
+	t->Initialize(L"..\\Assets\\Textures\\Wood.dds", _shader->GetDescrHeap().Get());
 	SetTexture(t);
 }
 
@@ -35,9 +35,10 @@ void Mesh::CreateVertexBuffer()
 	Vertex triangleVertices[] =
 	{
 		/* POSITION */				/* COLOR */						/* TEXCOORDS */
-		{ { 0.0f,   0.25f, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f }, { 0.5f, 0.0f } },
+		{ {-0.25f,  0.25f, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } },
 		{ { 0.25f, -0.25f, 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f }, { 1.0f, 1.0f } },
-		{ {-0.25f, -0.25f, 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f }, { 0.0f, 1.0f } }
+		{ {-0.25f, -0.25f, 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f }, { 0.0f, 1.0f } },
+		{ { 0.25f,  0.25f, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f } }
 	};
 
 	auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
@@ -65,7 +66,7 @@ void Mesh::CreateVertexBuffer()
 void Mesh::CreateIndexBuffer()
 {
 	unsigned short iList[] = {
-		0,1,2
+		0,1,2,0,3,1
 	};
 
 	m_indexBufferSize = sizeof(iList);
@@ -109,5 +110,5 @@ void Mesh::Render(XMMATRIX _viewProj)
 	c->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	c->IASetVertexBuffers(0, 1, &m_vertexBufferView);
 	c->IASetIndexBuffer(&m_indexBufferView);
-	c->DrawIndexedInstanced(3, 1, 0, 0, 0);
+	c->DrawIndexedInstanced(m_indexBufferSize / sizeof(unsigned short), 1, 0, 0, 0);
 }
