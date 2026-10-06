@@ -31,6 +31,7 @@ public:
 	// Methods
 	void Initialize(LPCWSTR _shaderFile);
 	void SetPipelineState();
+	unsigned int NextSRVIndex();
 
 private:
 	// Methods
@@ -47,4 +48,5 @@ private:
 	ComPtr<ID3D12DescriptorHeap> m_descrHeap;
 	ComPtr<ID3D12Resource> m_constantBuffer;
 	ConstantBuffer* m_constantData;
+	unsigned int m_srvIndex;
 };

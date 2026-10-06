@@ -9,6 +9,13 @@ Shader::Shader()
 	m_pixelShader = nullptr;
 	m_constantBuffer = nullptr;
 	m_constantData = nullptr;
+	m_srvIndex = 0;
+}
+
+unsigned int Shader::NextSRVIndex()
+{
+	m_srvIndex++;
+	return m_srvIndex;
 }
 
 void Shader::Initialize(LPCWSTR _shaderFile)
@@ -40,9 +47,9 @@ void Shader::CreateRootSignature()
 	ComPtr<ID3DBlob> error;
 	CD3DX12_ROOT_PARAMETER rootParameters[2] = { {}, {} };
 	CD3DX12_DESCRIPTOR_RANGE srvRange = {};
-	srvRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0); // one SRV starting at register t0
+	srvRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 2, 0); // two SRVs, t0 and t1
 	rootParameters[0].InitAsConstantBufferView(0); // b0
-	rootParameters[1].InitAsDescriptorTable(1, &srvRange, D3D12_SHADER_VISIBILITY_PIXEL); // t0
+	rootParameters[1].InitAsDescriptorTable(1, &srvRange, D3D12_SHADER_VISIBILITY_PIXEL); // t0 t1
 
 	D3D12_STATIC_SAMPLER_DESC sampler = {};
 	sampler.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
@@ -105,7 +112,7 @@ void Shader::CreateConstantBuffer()
 		"Failed to commit constant buffer resource.");
 
 	D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
-	heapDesc.NumDescriptors = 2; // cbv, srv
+	heapDesc.NumDescriptors = 3; // cbv, srv0, srv1
 	heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	auto res = device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&m_descrHeap));
@@ -132,4 +139,9 @@ void Shader::SetPipelineState()
 	const UINT64 cbvElementSize = (sizeof(ConstantBuffer) + 255) & ~255;
 	c->SetGraphicsRootConstantBufferView(0, m_constantBuffer->GetGPUVirtualAddress() +
 		r->GetFrameIndex() * cbvElementSize);
+
+	// Set SRV table
+	UINT descriptorSize = r->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	CD3DX12_GPU_DESCRIPTOR_HANDLE srvHandle(m_descrHeap->GetGPUDescriptorHandleForHeapStart(), 1, descriptorSize);
+	r->GetCommands()->GetCommandList()->SetGraphicsRootDescriptorTable(1, srvHandle);
 }

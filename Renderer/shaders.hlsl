@@ -18,8 +18,9 @@ struct VSInput
     float2 uv : TEXCOORD0;
 };
 
-// Texture and sampler
-Texture2D g_texture : register(t0);
+// Textures and sampler
+Texture2D g_texture0 : register(t0);
+Texture2D g_texture1 : register(t1);
 SamplerState g_sampler : register(s0);
 
 // VSMain - Input to the vertex shader from the vertex buffer
@@ -37,5 +38,7 @@ PSInput VSMain(VSInput _input)
 // PSMain - Pixel shader
 float4 PSMain(PSInput input) : SV_TARGET
 {
-    return g_texture.Sample(g_sampler, input.uv) * input.color;
+    float4 col0 = g_texture0.Sample(g_sampler, input.uv);
+    float4 col1 = g_texture1.Sample(g_sampler, input.uv);
+    return lerp(col0, col1, 0.3);
 }

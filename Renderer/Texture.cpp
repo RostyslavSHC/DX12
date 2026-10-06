@@ -17,11 +17,11 @@ Texture::~Texture()
 	}
 }
 
-void Texture::Initialize(wstring _filename, ID3D12DescriptorHeap* _descrHeap)
+void Texture::Initialize(wstring _filename, Shader* _shader)
 {
 	LoadTextureFromFile(_filename);
 	CreateTexture();
-	CreateShaderResourceView(_descrHeap);
+	CreateShaderResourceView(_shader);
 	UploadTexture();
 }
 
@@ -51,12 +51,12 @@ void Texture::CreateTexture()
 		"Failed to create committed texture resource.");
 }
 
-void Texture::CreateShaderResourceView(ID3D12DescriptorHeap* _descrHeap)
+void Texture::CreateShaderResourceView(Shader* _shader)
 {
 	auto r = &Renderer::GetInstance();
 	auto device = r->GetDevice().Get();
 	UINT descriptorSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle(_descrHeap->GetCPUDescriptorHandleForHeapStart(), 1, descriptorSize);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle(_shader->GetDescrHeap()->GetCPUDescriptorHandleForHeapStart(), _shader->NextSRVIndex(), descriptorSize);
 
 	// Describe and create a SRV for the texture.
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
@@ -94,13 +94,4 @@ void Texture::UploadTexture()
 	c->Close();
 	c->Execute();
 	r->WaitForPreviousFrame();
-}
-
-void Texture::SetPipelineState(ID3D12DescriptorHeap* _descrHeap)
-{
-	// Set SRV table (root parameter 1) - points to SRV in heap index 1
-	auto r = &Renderer::GetInstance();
-	UINT descriptorSize = r->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	CD3DX12_GPU_DESCRIPTOR_HANDLE srvHandle(_descrHeap->GetGPUDescriptorHandleForHeapStart(), 1, descriptorSize);
-	r->GetCommands()->GetCommandList()->SetGraphicsRootDescriptorTable(1, srvHandle);
 }

@@ -12,11 +12,18 @@ Mesh::Mesh()
 
 Mesh::~Mesh()
 {
-	Texture* t = GetTexture();
+	Texture* t = GetTexture0();
 	if (t != nullptr)
 	{
 		delete t;
-		SetTexture(nullptr);
+		SetTexture0(nullptr);
+	}
+
+	t = GetTexture1();
+	if (t != nullptr)
+	{
+		delete t;
+		SetTexture1(nullptr);
 	}
 }
 
@@ -25,9 +32,14 @@ void Mesh::Initialize(Shader* _shader)
 	SetShader(_shader);
 	CreateVertexBuffer();
 	CreateIndexBuffer();
-	Texture* t = new Texture();
-	t->Initialize(L"..\\Assets\\Textures\\Wood.dds", _shader->GetDescrHeap().Get());
-	SetTexture(t);
+
+	Texture* t0 = new Texture();
+	t0->Initialize(L"..\\Assets\\Textures\\Wood.dds", _shader);
+	SetTexture0(t0);
+
+	Texture* t1 = new Texture();
+	t1->Initialize(L"..\\Assets\\Textures\\Emoji.dds", _shader);
+	SetTexture1(t1);
 }
 
 void Mesh::CreateVertexBuffer()
@@ -44,16 +56,25 @@ void Mesh::CreateVertexBuffer()
 	auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	auto resourceDescr = CD3DX12_RESOURCE_DESC::Buffer(sizeof(triangleVertices));
 	auto device = Renderer::GetInstance().GetDevice().Get();
-	M_ASSERT(SUCCEEDED(device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE, &resourceDescr,
-		D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
+
+	M_ASSERT(SUCCEEDED(device->CreateCommittedResource(
+		&heapProperties,
+		D3D12_HEAP_FLAG_NONE,
+		&resourceDescr,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
 		IID_PPV_ARGS(&m_vertexBuffer))),
 		"Failed to create commit resource.");
 
 	// Copy the triangle data to the vertex buffer.
 	UINT8* pVertexDataBegin;
 	CD3DX12_RANGE readRange(0, 0);		// We do not intend to read from this resource on the CPU.
-	M_ASSERT(SUCCEEDED(m_vertexBuffer->Map(0, &readRange, reinterpret_cast<void**>(&pVertexDataBegin))),
+	M_ASSERT(SUCCEEDED(m_vertexBuffer->Map(
+		0,
+		&readRange,
+		reinterpret_cast<void**>(&pVertexDataBegin))),
 		"Failed to map vertex buffer");
+
 	memcpy(pVertexDataBegin, triangleVertices, sizeof(triangleVertices));
 	m_vertexBuffer->Unmap(0, nullptr);
 
@@ -81,11 +102,15 @@ void Mesh::CreateIndexBuffer()
 		&rDesc,
 		D3D12_RESOURCE_STATE_GENERIC_READ, // Start in a state the GPU can read from
 		nullptr,
-		IID_PPV_ARGS(&m_indexBuffer))), "Failed to create index buffer commit resource");
+		IID_PPV_ARGS(&m_indexBuffer))),
+		"Failed to create index buffer commit resource");
 
 	UINT8* pIndexDataBegin;
 	CD3DX12_RANGE readRange(0, 0); // No intention to allow CPU read rights, so read range is (0, 0).
-	M_ASSERT(SUCCEEDED(m_indexBuffer->Map(0, &readRange, reinterpret_cast<void**>(&pIndexDataBegin))),
+	M_ASSERT(SUCCEEDED(m_indexBuffer->Map(
+		0,
+		&readRange,
+		reinterpret_cast<void**>(&pIndexDataBegin))),
 		"Failed to map index buffer upload heap");
 
 	memcpy(pIndexDataBegin, iList, m_indexBufferSize);
@@ -99,7 +124,6 @@ void Mesh::CreateIndexBuffer()
 void Mesh::Render(XMMATRIX _viewProj)
 {
 	GetShader()->SetPipelineState();
-	GetTexture()->SetPipelineState(GetShader()->GetDescrHeap().Get());
 
 	auto r = &Renderer::GetInstance();
 	auto c = r->GetCommands()->GetCommandList().Get();

@@ -12,14 +12,13 @@ public:
 	virtual ~Texture();
 
 	// Methods
-	void Initialize(wstring _filename, ID3D12DescriptorHeap* _descrHeap);
-	void SetPipelineState(ID3D12DescriptorHeap* _descrHeap);
+	void Initialize(wstring _filename, Shader* _shader);
 
 private:
 	// Methods
 	void LoadTextureFromFile(wstring _filename);
 	void CreateTexture();
-	void CreateShaderResourceView(ID3D12DescriptorHeap* _descrHeap);
+	void CreateShaderResourceView(Shader* _shader);
 	void UploadTexture();
 
 	// Members
