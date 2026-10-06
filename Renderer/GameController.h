@@ -1,7 +1,9 @@
 #pragma once
 
 #include "StandardIncludes.h"
-#include "ToolsController.h"
+
+class Renderer;
+class ToolsController;
 
 class GameController : public Singleton<GameController>
 {

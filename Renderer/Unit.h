@@ -20,7 +20,7 @@ public:
 	void SetScale(XMFLOAT3 _scale) { m_scale = _scale; }
 
 	// Methods
-	void Render(ID3D12GraphicsCommandList* _commandList, XMMATRIX _viewProj) override;
+	void Render(XMMATRIX _viewProj) override;
 
 private:
 	XMFLOAT3 m_position;

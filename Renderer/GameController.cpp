@@ -1,4 +1,6 @@
 #include "GameController.h"
+#include "Renderer.h"
+#include "ToolsController.h"
 #include "Unit.h"
 
 GameController::GameController()
@@ -29,10 +31,9 @@ void GameController::Run()
 	m_toolsC->ShowForm();
 
 	Shader shader = Shader();
-	shader.Initialize(L"shaders.hlsl", m_renderer->GetDevice().Get());
-
+	shader.Initialize(L"shaders.hlsl");
 	Unit unit = Unit();
-	unit.Initialize(m_renderer->GetDevice().Get(), &shader);
+	unit.Initialize(&shader);
 
 	//Main message loop
 	MSG msg = {};

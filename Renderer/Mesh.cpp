@@ -1,4 +1,5 @@
 #include "Mesh.h"
+#include "Renderer.h"
 
 Mesh::Mesh()
 {
@@ -9,38 +10,40 @@ Mesh::Mesh()
 	m_indexBufferView = {};
 }
 
-void Mesh::Initialize(ID3D12Device* _device, Shader* _shader)
+Mesh::~Mesh()
 {
-	SetShader(_shader);
-	CreateVertexBuffer(_device);
-	CreateIndexBuffer(_device);
+	Texture* t = GetTexture();
+	if (t != nullptr)
+	{
+		delete t;
+		SetTexture(nullptr);
+	}
 }
 
+void Mesh::Initialize(Shader* _shader)
+{
+	SetShader(_shader);
+	CreateVertexBuffer();
+	CreateIndexBuffer();
+	Texture* t = new Texture();
+	t->Initialize(_shader->GetDescrHeap().Get());
+	SetTexture(t);
+}
 
-
-
-
-
-
-
-
-void Mesh::CreateVertexBuffer(ID3D12Device* _device)
+void Mesh::CreateVertexBuffer()
 {
 	Vertex triangleVertices[] =
 	{
-		/* Position */					/* RGBA Color */
-		{{ 0.00f,  0.00f, 0.00f}, {1.0f,   0.0f,   0.0f,   1.0f}}, // Red
-		{{-0.50f,  0.00f, 0.00f}, {0.0f,   1.0f,   0.0f,   1.0f}}, // Green
-		{{-0.25f,  0.50f, 0.00f}, {0.0f,   0.0f,   1.0f,   1.0f}}, // Blue
-		{{ 0.25f,  0.50f, 0.00f}, {1.0f,   1.0f,   1.0f,   1.0f}}, // White
-		{{ 0.50f,  0.00f, 0.00f}, {1.0f,   1.0f,   0.0f,   1.0f}}, // Yellow
-		{{ 0.25f, -0.50f, 0.00f}, {0.294f, 0.0f,   0.51f,  1.0f}}, // Indigo
-		{{-0.25f, -0.50f, 0.00f}, {0.502f, 0.0f,   0.502f, 1.0f}}  // Purple
+		/* POSITION */				/* TEXCOORDS */
+		{{ 0.0f,   0.25f, 0.0f }, { 0.5f, 0.0f }},
+		{{ 0.25f, -0.25f, 0.0f }, { 1.0f, 1.0f }},
+		{{-0.25f, -0.25f, 0.0f }, { 0.0f, 1.0f }}
 	};
 
 	auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	auto resourceDescr = CD3DX12_RESOURCE_DESC::Buffer(sizeof(triangleVertices));
-	M_ASSERT(SUCCEEDED(_device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE, &resourceDescr,
+	auto device = Renderer::GetInstance().GetDevice().Get();
+	M_ASSERT(SUCCEEDED(device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE, &resourceDescr,
 		D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
 		IID_PPV_ARGS(&m_vertexBuffer))),
 		"Failed to create commit resource.");
@@ -59,21 +62,19 @@ void Mesh::CreateVertexBuffer(ID3D12Device* _device)
 	m_vertexBufferView.SizeInBytes = sizeof(triangleVertices);
 }
 
-
-
-
-void Mesh::CreateIndexBuffer(ID3D12Device* _device)
+void Mesh::CreateIndexBuffer()
 {
 	unsigned short iList[] = {
-		0,1,2, 0,2,3, 0,3,4, 0,4,5, 0,5,6, 0,6,1
+		0,1,2
 	};
 
 	m_indexBufferSize = sizeof(iList);
 
 	auto hProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	auto rDesc = CD3DX12_RESOURCE_DESC::Buffer(m_indexBufferSize);
+	auto device = Renderer::GetInstance().GetDevice().Get();
 
-	M_ASSERT(SUCCEEDED(_device->CreateCommittedResource(
+	M_ASSERT(SUCCEEDED(device->CreateCommittedResource(
 		&hProp, // Use upload heap
 		D3D12_HEAP_FLAG_NONE,
 		&rDesc,
@@ -83,7 +84,8 @@ void Mesh::CreateIndexBuffer(ID3D12Device* _device)
 
 	UINT8* pIndexDataBegin;
 	CD3DX12_RANGE readRange(0, 0); // No intention to allow CPU read rights, so read range is (0, 0).
-	M_ASSERT(SUCCEEDED(m_indexBuffer->Map(0, &readRange, reinterpret_cast<void**>(&pIndexDataBegin))), "Failed to map index buffer upload heap");
+	M_ASSERT(SUCCEEDED(m_indexBuffer->Map(0, &readRange, reinterpret_cast<void**>(&pIndexDataBegin))),
+		"Failed to map index buffer upload heap");
 
 	memcpy(pIndexDataBegin, iList, m_indexBufferSize);
 	m_indexBuffer->Unmap(0, nullptr);
@@ -93,39 +95,19 @@ void Mesh::CreateIndexBuffer(ID3D12Device* _device)
 	m_indexBufferView.Format = DXGI_FORMAT_R16_UINT;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void Mesh::Render(ID3D12GraphicsCommandList* _commandList, XMMATRIX _viewProj)
+void Mesh::Render(XMMATRIX _viewProj)
 {
-	ConstantBuffer* cbData = &GetShader()->GetConstantData()[Renderer::GetInstance().GetFrameIndex()];
+	GetShader()->SetPipelineState();
+	GetTexture()->SetPipelineState(GetShader()->GetDescrHeap().Get());
+
+	auto r = &Renderer::GetInstance();
+	auto c = r->GetCommands()->GetCommandList().Get();
+
+	ConstantBuffer* cbData = &GetShader()->GetConstantData()[r->GetFrameIndex()];
 	XMStoreFloat4x4(&cbData->WVP, XMMatrixTranspose(_viewProj));
 
-	_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	_commandList->IASetVertexBuffers(0, 1, &m_vertexBufferView);
-	_commandList->IASetIndexBuffer(&m_indexBufferView);
-	//_commandList->DrawInstanced(9, 1, 0, 0);
-	_commandList->DrawIndexedInstanced(m_indexBufferSize, 1, 0, 0, 0);
+	c->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	c->IASetVertexBuffers(0, 1, &m_vertexBufferView);
+	c->IASetIndexBuffer(&m_indexBufferView);
+	c->DrawIndexedInstanced(3, 1, 0, 0, 0);
 }

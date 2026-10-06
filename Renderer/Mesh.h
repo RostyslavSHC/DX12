@@ -2,21 +2,23 @@
 
 #include "StandardIncludes.h"
 
+class Texture;
+
 class Mesh : public IRenderable
 {
 public:
 	// Constructors/Destructors
 	Mesh();
-	virtual ~Mesh() {}
+	virtual ~Mesh();
 
 	// Methods
-	void Initialize(ID3D12Device* _device, Shader* _shader);
-	virtual void Render(ID3D12GraphicsCommandList* _commandList, XMMATRIX _viewProj);
+	void Initialize(Shader* _shader);
+	virtual void Render(XMMATRIX _viewProj);
 
 private:
 	// Methods
-	void CreateVertexBuffer(ID3D12Device* _device);
-	void CreateIndexBuffer(ID3D12Device* _device);
+	void CreateVertexBuffer();
+	void CreateIndexBuffer();
 
 	// Members
 	ComPtr<ID3D12Resource> m_vertexBuffer;
