@@ -34,10 +34,10 @@ void Mesh::CreateVertexBuffer()
 {
 	Vertex triangleVertices[] =
 	{
-		/* POSITION */				/* TEXCOORDS */
-		{{ 0.0f,   0.25f, 0.0f }, { 0.5f, 0.0f }},
-		{{ 0.25f, -0.25f, 0.0f }, { 1.0f, 1.0f }},
-		{{-0.25f, -0.25f, 0.0f }, { 0.0f, 1.0f }}
+		/* POSITION */				/* COLOR */						/* TEXCOORDS */
+		{ { 0.0f,   0.25f, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f }, { 0.5f, 0.0f } },
+		{ { 0.25f, -0.25f, 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f }, { 1.0f, 1.0f } },
+		{ {-0.25f, -0.25f, 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f }, { 0.0f, 1.0f } }
 	};
 
 	auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
