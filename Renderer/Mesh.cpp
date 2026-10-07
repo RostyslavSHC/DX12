@@ -44,14 +44,39 @@ void Mesh::Initialize(Shader* _shader)
 
 void Mesh::CreateVertexBuffer()
 {
+	//Vertex triangleVertices[] =
+	//{
+	//	/* POSITION */				/* COLOR */						/* TEXCOORDS */
+	//	{ {-0.25f,  0.25f, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } },
+	//	{ { 0.25f, -0.25f, 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f }, { 1.0f, 1.0f } },
+	//	{ {-0.25f, -0.25f, 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f }, { 0.0f, 1.0f } },
+	//	{ { 0.25f,  0.25f, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f } }
+	//};
+
 	Vertex triangleVertices[] =
 	{
 		/* POSITION */				/* COLOR */						/* TEXCOORDS */
-		{ {-0.25f,  0.25f, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } },
-		{ { 0.25f, -0.25f, 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f }, { 1.0f, 1.0f } },
-		{ {-0.25f, -0.25f, 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f }, { 0.0f, 1.0f } },
-		{ { 0.25f,  0.25f, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f } }
+
+		// Center
+		{ { 0.0f,   0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f }, { 0.5f, 0.5f } },
+
+		// Outside points
+		{ {-0.05f,  0.1f, 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f }, { 0.25f, 0.0f } }, // Top left
+		{ { 0.05f,  0.1f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, { 0.75f, 0.0f } }, // Top right
+		{ { 0.1f,   0.0f, 0.0f }, { 1.0f, 1.0f, 0.0f, 1.0f }, { 1.0f,  0.5f } }, // Right
+		{ { 0.05f, -0.1f, 0.0f }, { 0.3f, 0.0f, 0.5f, 1.0f }, { 0.75f, 1.0f } }, // Bottom right
+		{ {-0.05f, -0.1f, 0.0f }, { 0.5f, 0.0f, 0.5f, 1.0f }, { 0.25f, 1.0f } }, // Bottom left
+		{ {-0.1f,   0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f }, { 0.0f,  0.5f } }  // Left
 	};
+
+	/*
+	  This gives roughlt something like this, based on what the video shows:
+	           BLUE      WHITE
+
+		GREEN		 RED	      YELLOW
+
+	           PURPLE   DARKPURPLE
+	*/	
 
 	auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	auto resourceDescr = CD3DX12_RESOURCE_DESC::Buffer(sizeof(triangleVertices));
@@ -86,8 +111,18 @@ void Mesh::CreateVertexBuffer()
 
 void Mesh::CreateIndexBuffer()
 {
+	//unsigned short iList[] = {
+	//	0,1,2,0,3,1
+	//};
+
+	// Code before worked with only 2 triangles, now it works with 6 triangles (for our hexagon)
 	unsigned short iList[] = {
-		0,1,2,0,3,1
+		0, 1, 2,
+		0, 2, 3,
+		0, 3, 4,
+		0, 4, 5,
+		0, 5, 6,
+		0, 6, 1
 	};
 
 	m_indexBufferSize = sizeof(iList);

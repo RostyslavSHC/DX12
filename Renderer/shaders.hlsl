@@ -1,7 +1,13 @@
+// Data sent from C++ to shader. Now I get the matrix and YUV settings from C++
 cbuffer SceneData : register(b0)
 {
     float4x4 WVP;
-}
+
+    float yValue;
+    float uValue;
+    float vValue;
+    float invertColors;
+};
 
 // PSInput - Input to the pixel shader
 struct PSInput
@@ -38,7 +44,29 @@ PSInput VSMain(VSInput _input)
 // PSMain - Pixel shader
 float4 PSMain(PSInput input) : SV_TARGET
 {
-    float4 col0 = g_texture0.Sample(g_sampler, input.uv);
-    float4 col1 = g_texture1.Sample(g_sampler, input.uv);
-    return lerp(col0, col1, 0.3) * input.color;
+    // Get the RGB color
+    float3 rgb = input.color.rgb;
+
+    // Convert RGB to YUV
+    float y = 0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b;
+    float u = -0.14713 * rgb.r - 0.28886 * rgb.g + 0.436 * rgb.b;
+    float v = 0.615 * rgb.r - 0.51499 * rgb.g - 0.10001 * rgb.b;
+
+    // Apply the YUV values from the ToolsForm
+    y *= yValue;
+    u *= uValue;
+    v *= vValue;
+
+    // Convert YUV back to RGB
+    rgb.r = y + 1.13983 * v;
+    rgb.g = y - 0.39465 * u - 0.58060 * v;
+    rgb.b = y + 2.03211 * u;
+
+    // Invert the colors
+    if (invertColors == 1.0f)
+    {
+        rgb = 1.0f - rgb;
+    }
+
+    return float4(rgb, input.color.a);
 }

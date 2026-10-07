@@ -12,23 +12,34 @@ void __stdcall ShowToolsForm()
     form->Show();
 }
 
+// Get Y trackbar value
 extern "C" __declspec(dllexport)
-bool __stdcall GetToolsRedData()
+int __stdcall GetToolsYData()
 {
     ToolsForm^ form = (ToolsForm^)Application::OpenForms[0];
-    return form->checkBoxRed->Checked;
+    return form->trackBarY->Value;
 }
 
+// Get U trackbar value
 extern "C" __declspec(dllexport)
-bool __stdcall GetToolsGreenData()
+int __stdcall GetToolsUData()
 {
     ToolsForm^ form = (ToolsForm^)Application::OpenForms[0];
-    return form->checkBoxGreen->Checked;
+    return form->trackBarU->Value;
 }
 
+// Get V trackbar value
 extern "C" __declspec(dllexport)
-bool __stdcall GetToolsBlueData()
+int __stdcall GetToolsVData()
 {
     ToolsForm^ form = (ToolsForm^)Application::OpenForms[0];
-    return form->checkBoxBlue->Checked;
+    return form->trackBarV->Value;
+}
+
+// Get if Invert is checked
+extern "C" __declspec(dllexport)
+bool __stdcall GetToolsInvertData()
+{
+    ToolsForm^ form = (ToolsForm^)Application::OpenForms[0];
+    return form->checkBoxInvert->Checked;
 }

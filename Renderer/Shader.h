@@ -10,9 +10,15 @@ struct Vertex
 	XMFLOAT2 texcoords;
 };
 
+// Extended constant buffer so it also contains the y, u, v, invertColors values
 struct alignas(256) ConstantBuffer
 {
 	XMFLOAT4X4 WVP;
+
+	float yValue;
+	float uValue;
+	float vValue;
+	float invertColors; // Bool is 1 byte, but HLSL constant buffer requires 4 bytes. It creates missmatching so easier to use float which is 4 bytes
 };
 
 class Shader

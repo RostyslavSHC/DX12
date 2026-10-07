@@ -49,9 +49,22 @@ void GameController::Run()
 
 		if (!running) break;
 
-		m_renderer->GetBGColor()[0] = (float)m_toolsC->GetRedData();
-		m_renderer->GetBGColor()[1] = (float)m_toolsC->GetGreenData();
-		m_renderer->GetBGColor()[2] = (float)m_toolsC->GetBlueData();
+
+
+
+		ConstantBuffer* cbData = &shader.GetConstantData()[m_renderer->GetFrameIndex()]; // Get the current constant buffer data
+
+		// Get the YUV values from the ToolsForm. I use 100.0f to normalize the values because the form returns values between 0 and 200, while shader needs 1.0. So 100% becomes 1.0f
+		cbData->yValue = m_toolsC->GetYData() / 100.0f;
+		cbData->uValue = m_toolsC->GetUData() / 100.0f;
+		cbData->vValue = m_toolsC->GetVData() / 100.0f;
+
+		// Get if Invert Colors is checked
+		cbData->invertColors = m_toolsC->GetInvertData() ? 1.0f : 0.0f;
+
+
+
+
 
 		auto pos = unit.GetPosition();
 		auto rot = unit.GetRotation();
