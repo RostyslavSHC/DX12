@@ -9,9 +9,10 @@ ShaderPhong::ShaderPhong()
 
 void ShaderPhong::CreatePipelineState()
 {
-    VTX_PosNormTex vtx = VTX_PosNormTex();
-    SetInputElementDescs(vtx.InputElementDescs);
-    SetInputElemDescSize(_countof(vtx.InputElementDescs));
+    VTX_PosNormTex* vtx = new VTX_PosNormTex();
+    SetVertexType(vtx);
+    SetInputElementDescs(vtx->InputElementDescs);
+    SetInputElemDescSize(_countof(vtx->InputElementDescs));
     SetConstantBufferSize(sizeof(CB_Phong));
     Shader::CreatePipelineState();
 }
@@ -27,10 +28,9 @@ void ShaderPhong::SetPipelineState()
 
     auto r = &Renderer::GetInstance();
     auto c = r->GetCommands()->GetCommandList().Get();
-    uint8_t* base = reinterpret_cast<uint8_t*>(GetConstantData());
-    CB_Phong* cbData = reinterpret_cast<CB_Phong*>(base + r->GetFrameIndex() * GetConstantBufferSize());
+    CB_Phong* cbData = reinterpret_cast<CB_Phong*>(&GetConstantData()[r->GetFrameIndex()]);
     XMStoreFloat4(&cbData->DiffuseColor, FXMVECTOR{ 1.0f, 1.0f, 1.0f, 1.0f });
     XMStoreFloat4(&cbData->AmbientLight, FXMVECTOR{ 0.2f, 0.2f, 0.2f, 1.0f });
-    XMStoreFloat3(&cbData->LightDirection, FXMVECTOR{ 1.0f, -0.5f, 1.0f });
-    XMStoreFloat4(&cbData->LightColor, FXMVECTOR{ 0.5f, 0.0f, 0.5f, 1.0f });
+    XMStoreFloat3(&cbData->LightPosition, FXMVECTOR{ 0.5f, 1.0f, -2.0f, 0.0f });
+    XMStoreFloat4(&cbData->LightColor, FXMVECTOR{ 1.0f, 1.0f, 1.0f, 1.0f });
 }

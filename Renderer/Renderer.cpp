@@ -233,13 +233,25 @@ void Renderer::CreateFence()
 }
 
 // Render
-void Renderer::Render(IRenderable* _renderable, XMMATRIX _viewProj)
+void Renderer::Render(vector<IRenderable*>& _renderables, XMMATRIX _viewProj)
 {
-    if (!m_initialized) return; // If the renderer isn't initialized, don't render
+    if (!m_initialized) return;
 
-    PopulateCommandList(_renderable, _viewProj); // Populate the command list
+    m_commands->Reset();
+    m_commands->AddBarrier(m_renderTargets[m_frameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), m_frameIndex, m_rtvDescriptorSize);
+    auto c = m_commands->GetCommandList().Get();
+    c->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
+    c->RSSetViewports(1, &m_viewport);
+    c->RSSetScissorRects(1, &m_scissorRect);
+    c->ClearRenderTargetView(rtvHandle, m_bgColor, 0, nullptr);
+    for (auto& renderable : _renderables)
+    {
+        renderable->Render(_viewProj);
+    }
+    m_commands->AddBarrier(m_renderTargets[m_frameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+    m_commands->Close();
     m_commands->Execute();
-
     M_ASSERT(SUCCEEDED(m_swapChain->Present(1, 0)), "Failed to present swapchain.");
 
     WaitForPreviousFrame();
@@ -254,6 +266,7 @@ void Renderer::Destroy()
     delete m_commands;
 }
 
+/*
 // Populate the command list
 void Renderer::PopulateCommandList(IRenderable* _renderable, XMMATRIX _viewProj)
 {
@@ -283,6 +296,7 @@ void Renderer::PopulateCommandList(IRenderable* _renderable, XMMATRIX _viewProj)
     m_commands->AddBarrier(m_renderTargets[m_frameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
     m_commands->Close();
 }
+*/
 
 // Wait for the previous frame
 void Renderer::WaitForPreviousFrame()

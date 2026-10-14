@@ -130,7 +130,7 @@ void Shader::CreateConstantBuffer(UINT64 _bufferSize)
 	cbvDesc.SizeInBytes = static_cast<UINT>(constantBufferSize);
 	device->CreateConstantBufferView(&cbvDesc, m_descrHeap->GetCPUDescriptorHandleForHeapStart());
 
-	CD3DX12_RANGE readRange(0, 0);		// We do not intend to read from this resource on the CPU.
+	CD3DX12_RANGE readRange(0, 0); // We do not intend to read from this resource on the CPU.
 	M_ASSERT(SUCCEEDED(m_constantBuffer->Map(0, &readRange, reinterpret_cast<void**>(&m_constantData))),
 		"Failed to map constant buffer.");
 }
@@ -139,13 +139,13 @@ void Shader::SetPipelineState()
 {
 	auto r = &Renderer::GetInstance();
 	auto c = r->GetCommands()->GetCommandList().Get();
+	c->SetPipelineState(m_pipelineState.Get());
 	c->SetGraphicsRootSignature(m_rootSignature.Get());
 	ID3D12DescriptorHeap* heaps[] = { m_descrHeap.Get() };
 	c->SetDescriptorHeaps(_countof(heaps), heaps);
 
 	const UINT64 cbvElementSize = (sizeof(ConstantBuffer) + 255) & ~255;
-	c->SetGraphicsRootConstantBufferView(0, m_constantBuffer->GetGPUVirtualAddress() +
-		r->GetFrameIndex() * cbvElementSize);
+	c->SetGraphicsRootConstantBufferView(0, m_constantBuffer->GetGPUVirtualAddress() + r->GetFrameIndex() * cbvElementSize);
 
 	// Set SRV table
 	UINT descriptorSize = r->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);

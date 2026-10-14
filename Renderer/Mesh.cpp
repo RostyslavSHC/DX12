@@ -12,7 +12,6 @@ Mesh::Mesh()
 	m_indexBufferView = {};
 }
 
-
 Mesh::~Mesh()
 {
 	Texture* t = GetTexDiffuse();
@@ -43,79 +42,136 @@ void Mesh::Initialize(Shader* _shader)
 	SetTexture1(t1);
 }
 
-
 void Mesh::CreateVertexBuffer()
 {
-	vector<float> triangleVertices =
+	VTX_Base* vtxb = GetShader()->GetVertexType();
+	UINT vertexBufferSize = 0;
+	UINT vertexBufferStride = 0;
+	vector<float> meshData = {};
+
+	switch (vtxb->GetVertexType())
 	{
-		// -> Copy vertex information here
-		/*POSITION* / /*NORMAL*/ /* TEXCOORDS */
-		-0.5f, -0.5f, -0.5f, 0, 0, -1, 0, 1, // Front Face
-		-0.5f, 0.5f, -0.5f, 0, 0, -1, 0, 0,
-		0.5f, 0.5f, -0.5f, 0, 0, -1, 1, 0,
-		-0.5f, -0.5f, -0.5f, 0, 0, -1, 0, 1,
-		0.5f, 0.5f, -0.5f, 0, 0, -1, 1, 0,
-		0.5f, -0.5f, -0.5f, 0, 0, -1, 1, 1,
+	case EN_VT_POSNRMTEX:
+		meshData =
+		{
+			/* POSITION */        /*NORMAL*/ /* TEXCOORDS */
+			-0.5f, -0.5f, -0.5f, 0, 0, -1, 0, 1, // Front Face
+			-0.5f,  0.5f, -0.5f, 0, 0, -1, 0, 0,
+			 0.5f,  0.5f, -0.5f, 0, 0, -1, 1, 0,
+			-0.5f, -0.5f, -0.5f, 0, 0, -1, 0, 1,
+			 0.5f,  0.5f, -0.5f, 0, 0, -1, 1, 0,
+			 0.5f, -0.5f, -0.5f, 0, 0, -1, 1, 1,
 
-		-0.5f, -0.5f, 0.5f, 0, 0, 1, 1, 1, // Back Face
-		0.5f, -0.5f, 0.5f, 0, 0, 1, 0, 1,
-		0.5f, 0.5f, 0.5f, 0, 0, 1, 0, 0,
-		-0.5f, -0.5f, 0.5f, 0, 0, 1, 1, 1,
-		0.5f, 0.5f, 0.5f, 0, 0, 1, 0, 0,
-		-0.5f, 0.5f, 0.5f, 0, 0, 1, 1, 0,
+			-0.5f, -0.5f,  0.5f, 0, 0, 1, 1, 1, // Back Face
+			 0.5f, -0.5f,  0.5f, 0, 0, 1, 0, 1,
+			 0.5f,  0.5f,  0.5f, 0, 0, 1, 0, 0,
+			-0.5f, -0.5f,  0.5f, 0, 0, 1, 1, 1,
+			 0.5f,  0.5f,  0.5f, 0, 0, 1, 0, 0,
+			-0.5f,  0.5f,  0.5f, 0, 0, 1, 1, 0,
 
-		-0.5f, 0.5f, -0.5f, 0, 1, 0, 0, 1, // Top Face
-		-0.5f, 0.5f, 0.5f, 0, 1, 0, 0, 0,
-		0.5f, 0.5f, 0.5f, 0, 1, 0, 1, 0,
-		-0.5f, 0.5f, -0.5f, 0, 1, 0, 0, 1,
-		0.5f, 0.5f, 0.5f, 0, 1, 0, 1, 0,
-		0.5f, 0.5f, -0.5f, 0, 1, 0, 1, 1,
+			-0.5f, 0.5f, -0.5f, 0, 1, 0, 0, 1, // Top Face
+			-0.5f, 0.5f,  0.5f, 0, 1, 0, 0, 0,
+			 0.5f, 0.5f,  0.5f, 0, 1, 0, 1, 0,
+			-0.5f, 0.5f, -0.5f, 0, 1, 0, 0, 1,
+			 0.5f, 0.5f,  0.5f, 0, 1, 0, 1, 0,
+			 0.5f, 0.5f, -0.5f, 0, 1, 0, 1, 1,
 
-		-0.5f, -0.5f, -0.5f, 0, -1, 0, 1, 1, // Bottom Face
-		0.5f, -0.5f, -0.5f, 0, -1, 0, 0, 1,
-		0.5f, -0.5f, 0.5f, 0, -1, 0, 0, 0,
-		-0.5f, -0.5f, -0.5f, 0, -1, 0, 1, 1,
-		0.5f, -0.5f, 0.5f, 0, -1, 0, 0, 0,
-		-0.5f, -0.5f, 0.5f, 0, -1, 0, 1, 0,
+			-0.5f, -0.5f, -0.5f, 0, -1, 0, 1, 1, // Bottom Face
+			 0.5f, -0.5f, -0.5f, 0, -1, 0, 0, 1,
+			 0.5f, -0.5f,  0.5f, 0, -1, 0, 0, 0,
+			-0.5f, -0.5f, -0.5f, 0, -1, 0, 1, 1,
+			 0.5f, -0.5f,  0.5f, 0, -1, 0, 0, 0,
+			-0.5f, -0.5f,  0.5f, 0, -1, 0, 1, 0,
 
-		0.5f, -0.5f, -0.5f, 1, 0, 0, 0, 1, // Right Face
-		0.5f, 0.5f, -0.5f, 1, 0, 0, 0, 0,
-		0.5f, 0.5f, 0.5f, 1, 0, 0, 1, 0,
-		0.5f, -0.5f, -0.5f, 1, 0, 0, 0, 1,
-		0.5f, 0.5f, 0.5f, 1, 0, 0, 1, 0,
-		0.5f, -0.5f, 0.5f, 1, 0, 0, 1, 1,
+			 0.5f, -0.5f, -0.5f, 1, 0, 0, 0, 1, // Right Face
+			 0.5f,  0.5f, -0.5f, 1, 0, 0, 0, 0,
+			 0.5f,  0.5f,  0.5f, 1, 0, 0, 1, 0,
+			 0.5f, -0.5f, -0.5f, 1, 0, 0, 0, 1,
+			 0.5f,  0.5f,  0.5f, 1, 0, 0, 1, 0,
+			 0.5f, -0.5f,  0.5f, 1, 0, 0, 1, 1,
 
-		-0.5f, -0.5f, -0.5f, -1, 0, 0, 1, 1, // Left Face
-		-0.5f, -0.5f, 0.5f, -1, 0, 0, 0, 1,
-		-0.5f, 0.5f, 0.5f, -1, 0, 0, 0, 0,
-		-0.5f, -0.5f, -0.5f, -1, 0, 0, 1, 1,
-		-0.5f, 0.5f, 0.5f, -1, 0, 0, 0, 0,
-		-0.5f, 0.5f, -0.5f, -1, 0, 0, 1,
-	};
+			-0.5f, -0.5f, -0.5f, -1, 0, 0, 1, 1, // Left Face
+			-0.5f, -0.5f,  0.5f, -1, 0, 0, 0, 1,
+			-0.5f,  0.5f,  0.5f, -1, 0, 0, 0, 0,
+			-0.5f, -0.5f, -0.5f, -1, 0, 0, 1, 1,
+			-0.5f,  0.5f,  0.5f, -1, 0, 0, 0, 0,
+			-0.5f,  0.5f, -0.5f, -1, 0, 0, 1, 0
+		};
+		vertexBufferStride = 8 * sizeof(float);
+		break;
 
-	UINT vertexBufferSize = triangleVertices.size() * sizeof(float);
+	case EN_VT_POS:
+		meshData =
+		{
+			// POSITION
+			-0.5f, -0.5f, -0.5f, // Front Face
+			-0.5f,  0.5f, -0.5f,
+			 0.5f,  0.5f, -0.5f,
+			-0.5f, -0.5f, -0.5f,
+			 0.5f,  0.5f, -0.5f,
+			 0.5f, -0.5f, -0.5f,
+
+			-0.5f, -0.5f,  0.5f, // Back Face
+			 0.5f, -0.5f,  0.5f,
+			 0.5f,  0.5f,  0.5f,
+			-0.5f, -0.5f,  0.5f,
+			 0.5f,  0.5f,  0.5f,
+			-0.5f,  0.5f,  0.5f,
+
+			-0.5f, 0.5f, -0.5f, // Top Face
+			-0.5f, 0.5f,  0.5f,
+			 0.5f, 0.5f,  0.5f,
+			-0.5f, 0.5f, -0.5f,
+			 0.5f, 0.5f,  0.5f,
+			 0.5f, 0.5f, -0.5f,
+
+			-0.5f, -0.5f, -0.5f, // Bottom Face
+			 0.5f, -0.5f, -0.5f,
+			 0.5f, -0.5f,  0.5f,
+			-0.5f, -0.5f, -0.5f,
+			 0.5f, -0.5f,  0.5f,
+			-0.5f, -0.5f,  0.5f,
+
+			 0.5f, -0.5f, -0.5f, // Right Face
+			 0.5f,  0.5f, -0.5f,
+			 0.5f,  0.5f,  0.5f,
+			 0.5f, -0.5f, -0.5f,
+			 0.5f,  0.5f,  0.5f,
+			 0.5f, -0.5f,  0.5f,
+
+			-0.5f, -0.5f, -0.5f, // Left Face
+			-0.5f, -0.5f,  0.5f,
+			-0.5f,  0.5f,  0.5f,
+			-0.5f, -0.5f, -0.5f,
+			-0.5f,  0.5f,  0.5f,
+			-0.5f,  0.5f, -0.5f
+		};
+		vertexBufferStride = 3 * sizeof(float);
+		break;
+	}
+
+	vertexBufferSize = (UINT)meshData.size() * sizeof(float);
 	auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	auto resourceDescr = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize);
 	auto device = Renderer::GetInstance().GetDevice().Get();
 	M_ASSERT(SUCCEEDED(device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE, &resourceDescr,
-		D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
-		IID_PPV_ARGS(&m_vertexBuffer))),
-		"Failed to create commit resource.");
+														D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
+														IID_PPV_ARGS(&m_vertexBuffer))),
+														"Failed to create commit resource.");
 
 	// Copy the triangle data to the vertex buffer.
 	UINT8* pVertexDataBegin;
 	CD3DX12_RANGE readRange(0, 0);        // We do not intend to read from this resource on the CPU.
 	M_ASSERT(SUCCEEDED(m_vertexBuffer->Map(0, &readRange, reinterpret_cast<void**>(&pVertexDataBegin))),
 		"Failed to map vertex buffer");
-	memcpy(pVertexDataBegin, triangleVertices.data(), vertexBufferSize);
+	memcpy(pVertexDataBegin, meshData.data(), vertexBufferSize);
 	m_vertexBuffer->Unmap(0, nullptr);
 
 	// Initialize the vertex buffer view.
 	m_vertexBufferView.BufferLocation = m_vertexBuffer->GetGPUVirtualAddress();
-	m_vertexBufferView.StrideInBytes = 8 * sizeof(float);
+	m_vertexBufferView.StrideInBytes = vertexBufferStride;
 	m_vertexBufferView.SizeInBytes = vertexBufferSize;
 }
-
 
 void Mesh::CreateIndexBuffer()
 {

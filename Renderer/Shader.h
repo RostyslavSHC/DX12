@@ -24,6 +24,8 @@ public:
 	struct alignas(256) ConstantBuffer
 	{
 		XMFLOAT4X4 WVP;
+		XMFLOAT4X4 World;
+		XMFLOAT4X4 InvWorld;
 	};
 
 	// Accessors
@@ -36,6 +38,8 @@ public:
 	void SetShaderFile(LPCWSTR _shaderFile) { m_shaderFile = _shaderFile; }
 	void SetConstantBufferSize(UINT64 _size) { m_constantBufferSize = _size; }
 	UINT64 GetConstantBufferSize() const { return m_constantBufferSize; }
+	void SetVertexType(VTX_Base* _vertexType) { m_vertexType = _vertexType; }
+	VTX_Base* GetVertexType() { return m_vertexType; }
 
 	// Methods
 	void Initialize();
@@ -66,4 +70,5 @@ private:
 	D3D12_INPUT_ELEMENT_DESC* m_inputElementDescs;
 	unsigned int m_inputElemDescSize;
 	LPCWSTR m_shaderFile;
+	VTX_Base* m_vertexType;
 };

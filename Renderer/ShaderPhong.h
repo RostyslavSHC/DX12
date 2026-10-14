@@ -13,7 +13,7 @@ public:
     {
         XMFLOAT4 DiffuseColor;
         XMFLOAT4 AmbientLight;
-        XMFLOAT3 LightDirection;
+        XMFLOAT3 LightPosition;
         float pad0; // Padding to align to 16 bytes
         XMFLOAT4 LightColor;
     };

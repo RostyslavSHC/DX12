@@ -3,6 +3,7 @@
 #include "ToolsController.h"
 #include "Unit.h"
 #include "ShaderPhong.h"
+#include "ShaderColor.h"
 
 GameController::GameController()
 {
@@ -31,10 +32,27 @@ void GameController::Run()
 {
 	m_toolsC->ShowForm();
 
-	ShaderPhong shader = ShaderPhong();
-	shader.Initialize();
+
+	vector<IRenderable*> units;
+	ShaderColor shaderColor = ShaderColor();
+	shaderColor.Initialize();
+	Unit light = Unit();
+	light.Initialize(&shaderColor);
+	light.SetPosition(XMFLOAT3(0.5f, 1.0f, -2.0f));
+	light.SetScale(XMFLOAT3(0.1f, 0.1f, 0.1f));
+	units.push_back(&light);
+
+	ShaderPhong shaderPhong = ShaderPhong();
+	shaderPhong.Initialize();
 	Unit unit = Unit();
-	unit.Initialize(&shader);
+	unit.Initialize(&shaderPhong);
+	units.push_back(&unit);
+
+
+	//ShaderPhong shader = ShaderPhong();
+	//shader.Initialize();
+	//Unit unit = Unit();
+	//unit.Initialize(&shader);
 
 	//Main message loop
 	MSG msg = {};
@@ -72,6 +90,6 @@ void GameController::Run()
 		unit.SetRotation(XMFLOAT3(rot.x, rot.y, rot.z));
 		unit.SetScale(XMFLOAT3(scl.x, scl.y, scl.z));
 
-		m_renderer->Render(&unit, m_camera->GetViewProjection());
+		m_renderer->Render(units, m_camera->GetViewProjection());
 	}
 }

@@ -20,7 +20,7 @@ public:
 
     // Methods
     void ConfigurePipeline(bool _userWarpDevice, HWND _hwnd, int _wWidth, int _wHeight); // Configure the pipeline
-    void Render(IRenderable* _renderable, XMMATRIX _viewProj);
+    void Render(vector<IRenderable*>& _renderables, XMMATRIX _viewProj);
     void Destroy();
     void WaitForPreviousFrame();
 
@@ -34,7 +34,7 @@ private:
     void CreateRenderTargetView(); // Create the render target view
     void CreateFence(); // Create the fence
     void CreateViewport(int _width, int _wHeight);
-    void PopulateCommandList(IRenderable* _renderable, XMMATRIX _viewProj);
+    // void PopulateCommandList(IRenderable* _renderable, XMMATRIX _viewProj);
 
     // Members
     static const UINT m_frameCount = 2; // The number of frames in the swap chain

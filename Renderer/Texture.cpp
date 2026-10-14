@@ -1,6 +1,7 @@
 #include "Texture.h"
 #include "Renderer.h"
 #include "DDSLoad.h"
+#include "Shader.h"
 
 Texture::Texture()
 {

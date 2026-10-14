@@ -31,7 +31,7 @@ using namespace DirectX;
 #include "CommandController.h"
 #include "Texture.h"
 //#include "Renderer.h"
-#include "Shader.h"
+//#include "Shader.h"
 #include "Mesh.h"
 
 
