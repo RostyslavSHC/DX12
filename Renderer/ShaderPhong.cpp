@@ -38,3 +38,4 @@ void ShaderPhong::SetPipelineState()
     XMStoreFloat4(&cbData->SpecularColor, FXMVECTOR{ 1.0f, 0.0f, 0.0f, 0.0f });
     XMStoreFloat4(&cbData->CameraPosition, FXMVECTOR{ 0.0f, 1.0f, -3.0f });
 }
+
