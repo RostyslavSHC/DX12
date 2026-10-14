@@ -161,7 +161,7 @@ void Mesh::Render(XMMATRIX _viewProj)
 	auto r = &Renderer::GetInstance();
 	auto c = r->GetCommands()->GetCommandList().Get();
 
-	ConstantBuffer* cbData = &GetShader()->GetConstantData()[r->GetFrameIndex()];
+	Shader::ConstantBuffer* cbData = &GetShader()->GetConstantData()[r->GetFrameIndex()];
 	XMStoreFloat4x4(&cbData->WVP, XMMatrixTranspose(_viewProj));
 
 	c->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

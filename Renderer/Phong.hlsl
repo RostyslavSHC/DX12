@@ -2,6 +2,7 @@
 cbuffer SceneData : register(b0)
 {
     float4x4 WVP;
+    float4 DiffuseColor;
 };
 
 struct PSInput
@@ -34,5 +35,5 @@ PSInput VSMain(VSInput _input)
 
 float4 PSMain(PSInput input) : SV_TARGET
 {
-    return g_diffuse.Sample(g_sampler, input.uv);
+    return g_diffuse.Sample(g_sampler, input.uv) * DiffuseColor;
 }

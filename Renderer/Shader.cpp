@@ -9,10 +9,12 @@ Shader::Shader()
 	m_pixelShader = nullptr;
 	m_constantBuffer = nullptr;
 	m_constantData = nullptr;
+	m_constantBufferSize = 0;
 	m_srvIndex = 0;
 	m_shaderFile = nullptr;
 	m_inputElemDescSize = 0;
 	m_inputElementDescs = nullptr;
+
 }
 
 unsigned int Shader::NextSRVIndex()
@@ -26,7 +28,7 @@ void Shader::Initialize()
 	CompileShaders();
 	CreateRootSignature();
 	CreatePipelineState();
-	CreateConstantBuffer();
+	CreateConstantBuffer(sizeof(ConstantBuffer));
 }
 
 void Shader::CompileShaders()
@@ -101,13 +103,13 @@ void Shader::CreatePipelineState()
 	M_ASSERT(SUCCEEDED(res), "Failed to create graphics pipeline state");
 }
 
-void Shader::CreateConstantBuffer()
+void Shader::CreateConstantBuffer(UINT64 _bufferSize)
 {
 	auto r = &Renderer::GetInstance();
 	auto device = r->GetDevice().Get();
 
 	// Create the constant buffer.
-	const UINT64 cbvElementSize = (sizeof(ConstantBuffer) + 255) & ~255;
+	const UINT64 cbvElementSize = (_bufferSize + 255) & ~255;
 	const UINT64 constantBufferSize = cbvElementSize * r->GetFrameCount();
 	const CD3DX12_HEAP_PROPERTIES constantBufferHeapProps(D3D12_HEAP_TYPE_UPLOAD);
 	const CD3DX12_RESOURCE_DESC constantBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(constantBufferSize);
@@ -125,7 +127,7 @@ void Shader::CreateConstantBuffer()
 	// Describe and create a constant buffer view.
 	D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
 	cbvDesc.BufferLocation = m_constantBuffer->GetGPUVirtualAddress();
-	cbvDesc.SizeInBytes = static_cast<UINT>(cbvElementSize);
+	cbvDesc.SizeInBytes = static_cast<UINT>(constantBufferSize);
 	device->CreateConstantBufferView(&cbvDesc, m_descrHeap->GetCPUDescriptorHandleForHeapStart());
 
 	CD3DX12_RANGE readRange(0, 0);		// We do not intend to read from this resource on the CPU.

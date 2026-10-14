@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include "Shader.h"
@@ -9,6 +8,16 @@ public:
     // Constructors/Destructors
     ShaderPhong();
 
+    // Constant Buffer
+    struct CB_Phong : ConstantBuffer
+    {
+        XMFLOAT4 DiffuseColor;
+    };
+
+    // Methods
+    virtual void SetPipelineState() override;
+
 protected:
-    void CreatePipelineState() override;
+    virtual void CreatePipelineState() override;
+    virtual void CreateConstantBuffer(UINT64 _bufferSize) override;
 };

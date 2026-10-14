@@ -12,10 +12,6 @@ struct Vertex
 	XMFLOAT2 texcoords;
 };
 
-struct alignas(256) ConstantBuffer
-{
-	XMFLOAT4X4 WVP;
-};
 
 class Shader
 {
@@ -23,6 +19,12 @@ public:
 	// Constructors/Destructors
 	Shader();
 	virtual ~Shader() {}
+
+	// Constant Buffer
+	struct alignas(256) ConstantBuffer
+	{
+		XMFLOAT4X4 WVP;
+	};
 
 	// Accessors
 	ComPtr<ID3D12RootSignature>& GetRootSignature() { return m_rootSignature; }
@@ -32,21 +34,24 @@ public:
 	void SetInputElementDescs(D3D12_INPUT_ELEMENT_DESC* _inputElementDescs) { m_inputElementDescs = _inputElementDescs; }
 	void SetInputElemDescSize(unsigned int _size) { m_inputElemDescSize = _size; }
 	void SetShaderFile(LPCWSTR _shaderFile) { m_shaderFile = _shaderFile; }
+	void SetConstantBufferSize(UINT64 _size) { m_constantBufferSize = _size; }
+	UINT64 GetConstantBufferSize() const { return m_constantBufferSize; }
 
 	// Methods
 	void Initialize();
-	void SetPipelineState();
+	virtual void SetPipelineState();
 	unsigned int NextSRVIndex();
 
 protected:
 	virtual void CreatePipelineState();
+	virtual void CreateConstantBuffer(UINT64 _bufferSize);
 
 private:
 	// Methods
 	void CompileShaders();
 	void CreateRootSignature();
 	//void CreatePipelineState();
-	void CreateConstantBuffer();
+	//void CreateConstantBuffer();
 
 	// Members
 	ComPtr<ID3D12RootSignature> m_rootSignature;
@@ -56,6 +61,7 @@ private:
 	ComPtr<ID3D12DescriptorHeap> m_descrHeap;
 	ComPtr<ID3D12Resource> m_constantBuffer;
 	ConstantBuffer* m_constantData;
+	UINT64 m_constantBufferSize;
 	unsigned int m_srvIndex;
 	D3D12_INPUT_ELEMENT_DESC* m_inputElementDescs;
 	unsigned int m_inputElemDescSize;

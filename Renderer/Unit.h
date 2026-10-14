@@ -20,7 +20,7 @@ public:
 	void SetScale(XMFLOAT3 _scale) { m_scale = _scale; }
 
 	// Methods
-	void Render(XMMATRIX _viewProj) override;
+	virtual void Render(XMMATRIX _viewProj) override;
 
 private:
 	XMFLOAT3 m_position;
