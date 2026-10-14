@@ -42,3 +42,4 @@ float4 PSMain(PSInput input) : SV_TARGET
     float4 col1 = g_texture1.Sample(g_sampler, input.uv);
     return lerp(col0, col1, 0.3) * input.color;
 }
+
