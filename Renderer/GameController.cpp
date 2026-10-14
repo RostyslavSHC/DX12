@@ -75,6 +75,7 @@ void GameController::Run()
 		auto pos = unit.GetPosition();
 		auto rot = unit.GetRotation();
 		auto scl = unit.GetScale();
+		rot.y += 0.01f; // Automatically rotate the cube around the Y-axis
 
 		if (m_windowC->GetKeyStates()[VK_RIGHT]) pos.x += 0.01f;
 		if (m_windowC->GetKeyStates()[VK_LEFT]) pos.x -= 0.01f;
