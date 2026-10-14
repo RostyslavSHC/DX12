@@ -22,6 +22,7 @@ void ShaderPhong::CreateConstantBuffer(UINT64 _bufferSize)
     Shader::CreateConstantBuffer(sizeof(CB_Phong));
 }
 
+
 void ShaderPhong::SetPipelineState()
 {
     Shader::SetPipelineState();
@@ -29,8 +30,11 @@ void ShaderPhong::SetPipelineState()
     auto r = &Renderer::GetInstance();
     auto c = r->GetCommands()->GetCommandList().Get();
     CB_Phong* cbData = reinterpret_cast<CB_Phong*>(&GetConstantData()[r->GetFrameIndex()]);
-    XMStoreFloat4(&cbData->DiffuseColor, FXMVECTOR{ 1.0f, 1.0f, 1.0f, 1.0f });
+    XMStoreFloat4(&cbData->DiffuseColor, FXMVECTOR{ 0.0f, 1.0f, 0.0f, 1.0f });
     XMStoreFloat4(&cbData->AmbientLight, FXMVECTOR{ 0.2f, 0.2f, 0.2f, 1.0f });
-    XMStoreFloat3(&cbData->LightPosition, FXMVECTOR{ 0.5f, 1.0f, -2.0f, 0.0f });
+    XMStoreFloat3(&cbData->LightPosition, FXMVECTOR{ 0.5f, 0.5f, -2.0f, 0.0f });
     XMStoreFloat4(&cbData->LightColor, FXMVECTOR{ 1.0f, 1.0f, 1.0f, 1.0f });
+    XMStoreFloat(&cbData->SpecularStrength, FXMVECTOR{ 4.0f });
+    XMStoreFloat4(&cbData->SpecularColor, FXMVECTOR{ 1.0f, 0.0f, 0.0f, 0.0f });
+    XMStoreFloat4(&cbData->CameraPosition, FXMVECTOR{ 0.0f, 1.0f, -3.0f });
 }

@@ -38,7 +38,7 @@ void GameController::Run()
 	shaderColor.Initialize();
 	Unit light = Unit();
 	light.Initialize(&shaderColor);
-	light.SetPosition(XMFLOAT3(0.5f, 1.0f, -2.0f));
+	light.SetPosition(XMFLOAT3(0.5f, 0.5f, -2.0f));
 	light.SetScale(XMFLOAT3(0.1f, 0.1f, 0.1f));
 	units.push_back(&light);
 

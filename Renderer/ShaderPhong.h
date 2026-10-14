@@ -16,6 +16,10 @@ public:
         XMFLOAT3 LightPosition;
         float pad0; // Padding to align to 16 bytes
         XMFLOAT4 LightColor;
+        float SpecularStrength;
+        XMFLOAT3 pad1; // Padding to align to 16 bytes
+        XMFLOAT4 SpecularColor;
+        XMFLOAT4 CameraPosition;
     };
 
     // Methods
