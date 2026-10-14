@@ -8,6 +8,8 @@ ToolsController::ToolsController()
     m_getRedData = nullptr;
     m_getGreenData = nullptr;
     m_getBlueData = nullptr;
+    m_showSpecularForm = nullptr;
+    m_getSpecularPower = nullptr;
 }
 
 // Load the tools library
@@ -17,7 +19,7 @@ void ToolsController::LoadToolsLibrary()
     M_ASSERT(m_module != nullptr, "Failed to load ToolsGUI.dll"); // ERROR HERE, had to fix it
 
     // Get the address of the ShowToolsForm function
-    FARPROC address = GetProcAddress(m_module, "ShowToolsForm"); 
+    FARPROC address = GetProcAddress(m_module, "ShowToolsForm");
     m_showForm = reinterpret_cast<ShowToolsForm>(address);
 
     // Get the address of the GetToolsRedData function
@@ -31,4 +33,12 @@ void ToolsController::LoadToolsLibrary()
     // Get the address of the GetToolsBlueData function
     address = GetProcAddress(m_module, "GetToolsBlueData");
     m_getBlueData = reinterpret_cast<GetToolsBlueData>(address);
+
+    // Get the address of the ShowSpecularForm function
+    address = GetProcAddress(m_module, "ShowSpecularForm");
+    m_showSpecularForm = reinterpret_cast<ShowSpecularForm>(address);
+
+    // Get the address of the GetSpecularPower function
+    address = GetProcAddress(m_module, "GetSpecularPower");
+    m_getSpecularPower = reinterpret_cast<GetSpecularPower>(address);
 }

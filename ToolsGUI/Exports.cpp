@@ -1,4 +1,6 @@
+
 #include "ToolsForm.h"
+#include "SpecularForm.h"
 
 using namespace ToolsGUI; // Namespace
 
@@ -15,20 +17,72 @@ void __stdcall ShowToolsForm()
 extern "C" __declspec(dllexport)
 bool __stdcall GetToolsRedData()
 {
-    ToolsForm^ form = (ToolsForm^)Application::OpenForms[0];
-    return form->checkBoxRed->Checked;
+    for each (Form ^ form in Application::OpenForms)
+    {
+        ToolsForm^ toolsForm = dynamic_cast<ToolsForm^>(form);
+
+        if (toolsForm != nullptr)
+        {
+            return toolsForm->checkBoxRed->Checked;
+        }
+    }
+
+    return false;
 }
 
 extern "C" __declspec(dllexport)
 bool __stdcall GetToolsGreenData()
 {
-    ToolsForm^ form = (ToolsForm^)Application::OpenForms[0];
-    return form->checkBoxGreen->Checked;
+    for each (Form ^ form in Application::OpenForms)
+    {
+        ToolsForm^ toolsForm = dynamic_cast<ToolsForm^>(form);
+
+        if (toolsForm != nullptr)
+        {
+            return toolsForm->checkBoxGreen->Checked;
+        }
+    }
+
+    return false;
 }
 
 extern "C" __declspec(dllexport)
 bool __stdcall GetToolsBlueData()
 {
-    ToolsForm^ form = (ToolsForm^)Application::OpenForms[0];
-    return form->checkBoxBlue->Checked;
+    for each (Form ^ form in Application::OpenForms)
+    {
+        ToolsForm^ toolsForm = dynamic_cast<ToolsForm^>(form);
+
+        if (toolsForm != nullptr)
+        {
+            return toolsForm->checkBoxBlue->Checked;
+        }
+    }
+
+    return false;
+}
+
+// Show the specular lighting form
+extern "C" __declspec(dllexport)
+void __stdcall ShowSpecularForm()
+{
+    SpecularForm^ form = gcnew SpecularForm();
+    form->Show();
+}
+
+// Get the specular power slider value
+extern "C" __declspec(dllexport)
+int __stdcall GetSpecularPower()
+{
+    for each (Form ^ form in Application::OpenForms)
+    {
+        SpecularForm^ specularForm = dynamic_cast<SpecularForm^>(form);
+
+        if (specularForm != nullptr)
+        {
+            return specularForm->trackBarSpecular->Value;
+        }
+    }
+
+    return 4;
 }

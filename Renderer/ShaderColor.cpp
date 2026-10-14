@@ -29,5 +29,5 @@ void ShaderColor::SetPipelineState()
     auto c = r->GetCommands()->GetCommandList().Get();
     auto cb = GetConstantData()[r->GetFrameIndex()];
     CB_Color* cbData = reinterpret_cast<CB_Color*>(&GetConstantData()[r->GetFrameIndex()]);
-    XMStoreFloat4(&cbData->Color, FXMVECTOR{ 1.0f, 0.0f, 0.0f, 1.0f });
+    XMStoreFloat4(&cbData->Color, FXMVECTOR{ 1.0f, 1.0f, 1.0f, 1.0f });
 }

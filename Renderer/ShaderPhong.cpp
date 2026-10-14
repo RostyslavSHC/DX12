@@ -1,6 +1,6 @@
-
 #include "ShaderPhong.h"
 #include "Renderer.h"
+#include "ToolsController.h"
 
 ShaderPhong::ShaderPhong()
 {
@@ -34,8 +34,10 @@ void ShaderPhong::SetPipelineState()
     XMStoreFloat4(&cbData->AmbientLight, FXMVECTOR{ 0.2f, 0.2f, 0.2f, 1.0f });
     XMStoreFloat3(&cbData->LightPosition, FXMVECTOR{ 0.5f, 0.5f, -2.0f, 0.0f });
     XMStoreFloat4(&cbData->LightColor, FXMVECTOR{ 1.0f, 1.0f, 1.0f, 1.0f });
-    XMStoreFloat(&cbData->SpecularStrength, FXMVECTOR{ 4.0f });
+
+    float specularPower = (float)ToolsController::GetInstance().GetSpecularData();
+    XMStoreFloat(&cbData->SpecularStrength, FXMVECTOR{ specularPower });
+
     XMStoreFloat4(&cbData->SpecularColor, FXMVECTOR{ 1.0f, 0.0f, 0.0f, 0.0f });
     XMStoreFloat4(&cbData->CameraPosition, FXMVECTOR{ 0.0f, 1.0f, -3.0f });
 }
-

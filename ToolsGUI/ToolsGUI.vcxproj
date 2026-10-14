@@ -139,14 +139,21 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Exports.cpp" />
+    <ClCompile Include="SpecularForm.cpp" />
     <ClCompile Include="ToolsForm.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="SpecularForm.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
     <ClInclude Include="ToolsForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="SpecularForm.resx">
+      <DependentUpon>SpecularForm.h</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ToolsForm.resx">
       <DependentUpon>ToolsForm.h</DependentUpon>
     </EmbeddedResource>

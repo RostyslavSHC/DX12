@@ -30,7 +30,9 @@ void GameController::Initialize(HINSTANCE _hInstance, int _nShowCmd)
 
 void GameController::Run()
 {
-	m_toolsC->ShowForm();
+	//m_toolsC->ShowForm();
+
+	m_toolsC->ShowSpecular();
 
 
 	vector<IRenderable*> units;
