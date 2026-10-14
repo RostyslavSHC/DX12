@@ -8,7 +8,7 @@ public:
 	// Constructors / Destructors
 	Camera();
 	Camera(int _width, int _height);
-	Camera(int _width, int _height, int _setup);
+	// Camera(int _width, int _height, int _setup);
 
 	virtual ~Camera();
 

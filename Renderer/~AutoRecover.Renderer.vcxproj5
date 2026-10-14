@@ -146,37 +146,47 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CommandController.cpp" />
+    <ClCompile Include="DDSLoad.cpp" />
     <ClCompile Include="GameController.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="ShaderPhong.cpp" />
     <ClCompile Include="Singleton.h" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="ToolsController.cpp" />
     <ClCompile Include="Unit.cpp" />
+    <ClCompile Include="VertexStructs.cpp" />
     <ClCompile Include="WindowController.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CommandController.h" />
+    <ClInclude Include="DDSLoad.h" />
     <ClInclude Include="GameController.h" />
     <ClInclude Include="IRenderable.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="ShaderPhong.h" />
     <ClInclude Include="StandardIncludes.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="ToolsController.h" />
     <ClInclude Include="Unit.h" />
+    <ClInclude Include="VertexStructs.h" />
     <ClInclude Include="WindowController.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="Phong.hlsl" />
     <FxCompile Include="shaders.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

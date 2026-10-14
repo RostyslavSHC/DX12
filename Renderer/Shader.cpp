@@ -10,6 +10,9 @@ Shader::Shader()
 	m_constantBuffer = nullptr;
 	m_constantData = nullptr;
 	m_srvIndex = 0;
+	m_shaderFile = nullptr;
+	m_inputElemDescSize = 0;
+	m_inputElementDescs = nullptr;
 }
 
 unsigned int Shader::NextSRVIndex()
@@ -18,15 +21,15 @@ unsigned int Shader::NextSRVIndex()
 	return m_srvIndex;
 }
 
-void Shader::Initialize(LPCWSTR _shaderFile)
+void Shader::Initialize()
 {
-	CompileShaders(_shaderFile);
+	CompileShaders();
 	CreateRootSignature();
 	CreatePipelineState();
 	CreateConstantBuffer();
 }
 
-void Shader::CompileShaders(LPCWSTR _shaderFile)
+void Shader::CompileShaders()
 {
 #if defined(_DEBUG)
 	// Enable better shader debugging with the graphics debugging tools.
@@ -35,9 +38,9 @@ void Shader::CompileShaders(LPCWSTR _shaderFile)
 	UINT compileFlags = 0;
 #endif
 	ID3DBlob* errorBlob = nullptr;
-	auto res = D3DCompileFromFile(_shaderFile, nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &m_vertexShader, &errorBlob);
+	auto res = D3DCompileFromFile(m_shaderFile, nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &m_vertexShader, &errorBlob);
 	M_ASSERT(SUCCEEDED(res), (const char*)errorBlob->GetBufferPointer());
-	res = D3DCompileFromFile(_shaderFile, nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &m_pixelShader, &errorBlob);
+	res = D3DCompileFromFile(m_shaderFile, nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &m_pixelShader, &errorBlob);
 	M_ASSERT(SUCCEEDED(res), (const char*)errorBlob->GetBufferPointer());
 }
 
@@ -68,6 +71,7 @@ void Shader::CreateRootSignature()
 
 void Shader::CreatePipelineState()
 {
+	/*
 	// Define the vertex input layout.
 	D3D12_INPUT_ELEMENT_DESC inputElementDescs[] =
 	{
@@ -75,10 +79,11 @@ void Shader::CreatePipelineState()
 		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 28, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
 	};
+	*/
 
 	// Describe and create the graphics pipeline state object (PSO).
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
-	psoDesc.InputLayout = { inputElementDescs, _countof(inputElementDescs) };
+	psoDesc.InputLayout = { m_inputElementDescs, m_inputElemDescSize };
 	psoDesc.pRootSignature = m_rootSignature.Get();
 	psoDesc.VS = CD3DX12_SHADER_BYTECODE(m_vertexShader.Get());
 	psoDesc.PS = CD3DX12_SHADER_BYTECODE(m_pixelShader.Get());

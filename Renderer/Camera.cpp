@@ -1,35 +1,29 @@
+
 #include "Camera.h"
 
 Camera::Camera()
 {
-	// Clear matrices
-	m_projection = { };
-	m_view = { };
+    m_projection = {};
+    m_view = {};
 }
 
 Camera::Camera(int _width, int _height)
 {
-	// Create perspective projection matrix
-	XMMATRIX projection = XMMatrixPerspectiveFovLH(
-		DirectX::XMConvertToRadians(45.0f),
-		(float)_width / (float)_height,
-		0.1f,
-		100.0f);
+    XMMATRIX projection = XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(45.0f),
+        (float)_width / (float)_height,
+        0.1f,
+        100.0f);
+    XMStoreFloat4x4(&m_projection, projection);
 
-	XMStoreFloat4x4(&m_projection, projection);
+    // Or, for an ortho camera
+    // m_projection = XMMatrixOrthographicLH(_width, _height, 0.1f, 100.f);
 
-	// Or, for an ortho camera
-	// m_projection = XMMatrixOrthographicLH(_width, _height, 0.1f, 100f);
-
-	// Camera matrix
-	XMVECTOR camPos = { 0.0f, 0.0f, -1.0f };	// Camera position
-	XMVECTOR lookAt = { 0.0f, 0.0f, 0.0f };		// Point camera looks at
-	XMVECTOR camUp = { 0.0f, 1.0f, 0.0f };		// Up direction
-
-	XMMATRIX view = XMMatrixLookAtLH(camPos, lookAt, camUp);
-
-	// Store view matrix
-	XMStoreFloat4x4(&m_view, view);
+    // Camera matrix
+    XMVECTOR camPos = { 0.0f, 1.0f, -3.0f }; // Camera is at (0,0,-1) in World Space
+    XMVECTOR lookAt = { 0.0f, 0.0f, 0.0f }; // and looks at the origin
+    XMVECTOR camUp = { 0.0f, 1.0f, 0.0f }; // Head is up (set to 0,-1,0 to look upside-down)
+    XMMATRIX view = XMMatrixLookAtLH(camPos, lookAt, camUp);
+    XMStoreFloat4x4(&m_view, view);
 }
 
 Camera::~Camera()

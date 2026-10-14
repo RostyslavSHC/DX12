@@ -2,6 +2,7 @@
 #include "Renderer.h"
 #include "ToolsController.h"
 #include "Unit.h"
+#include "ShaderPhong.h"
 
 GameController::GameController()
 {
@@ -30,8 +31,8 @@ void GameController::Run()
 {
 	m_toolsC->ShowForm();
 
-	Shader shader = Shader();
-	shader.Initialize(L"shaders.hlsl");
+	ShaderPhong shader = ShaderPhong();
+	shader.Initialize();
 	Unit unit = Unit();
 	unit.Initialize(&shader);
 
@@ -63,7 +64,7 @@ void GameController::Run()
 		if (m_windowC->GetKeyStates()[VK_DOWN]) pos.y -= 0.01f;
 
 		if (m_windowC->GetKeyStates()['Q']) rot.y += 0.1f;
-		if (m_windowC->GetKeyStates()['E']) rot.y -= 0.1f;
+		if (m_windowC->GetKeyStates()['W']) rot.y -= 0.1f;
 		if (m_windowC->GetKeyStates()['A']) scl.x -= 0.1f;
 		if (m_windowC->GetKeyStates()['S']) scl.x += 0.1f;
 

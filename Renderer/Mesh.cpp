@@ -1,5 +1,7 @@
 #include "Mesh.h"
 #include "Renderer.h"
+#include "ShaderPhong.h"
+#include "VertexStructs.h"
 
 Mesh::Mesh()
 {
@@ -10,15 +12,15 @@ Mesh::Mesh()
 	m_indexBufferView = {};
 }
 
+
 Mesh::~Mesh()
 {
-	Texture* t = GetTexture0();
+	Texture* t = GetTexDiffuse();
 	if (t != nullptr)
 	{
 		delete t;
-		SetTexture0(nullptr);
+		SetTexDiffuse(nullptr);
 	}
-
 	t = GetTexture1();
 	if (t != nullptr)
 	{
@@ -31,58 +33,89 @@ void Mesh::Initialize(Shader* _shader)
 {
 	SetShader(_shader);
 	CreateVertexBuffer();
-	CreateIndexBuffer();
-
+	//CreateIndexBuffer();
 	Texture* t0 = new Texture();
 	t0->Initialize(L"..\\Assets\\Textures\\Wood.dds", _shader);
-	SetTexture0(t0);
+	SetTexDiffuse(t0);
 
 	Texture* t1 = new Texture();
 	t1->Initialize(L"..\\Assets\\Textures\\Emoji.dds", _shader);
 	SetTexture1(t1);
 }
 
+
 void Mesh::CreateVertexBuffer()
 {
-	Vertex triangleVertices[] =
+	vector<float> triangleVertices =
 	{
-		/* POSITION */				/* COLOR */						/* TEXCOORDS */
-		{ {-0.25f,  0.25f, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } },
-		{ { 0.25f, -0.25f, 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f }, { 1.0f, 1.0f } },
-		{ {-0.25f, -0.25f, 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f }, { 0.0f, 1.0f } },
-		{ { 0.25f,  0.25f, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f } }
+		// -> Copy vertex information here
+		/*POSITION* / /*NORMAL*/ /* TEXCOORDS */
+		-0.5f, -0.5f, -0.5f, 0, 0, -1, 0, 1, // Front Face
+		-0.5f, 0.5f, -0.5f, 0, 0, -1, 0, 0,
+		0.5f, 0.5f, -0.5f, 0, 0, -1, 1, 0,
+		-0.5f, -0.5f, -0.5f, 0, 0, -1, 0, 1,
+		0.5f, 0.5f, -0.5f, 0, 0, -1, 1, 0,
+		0.5f, -0.5f, -0.5f, 0, 0, -1, 1, 1,
+
+		-0.5f, -0.5f, 0.5f, 0, 0, 1, 1, 1, // Back Face
+		0.5f, -0.5f, 0.5f, 0, 0, 1, 0, 1,
+		0.5f, 0.5f, 0.5f, 0, 0, 1, 0, 0,
+		-0.5f, -0.5f, 0.5f, 0, 0, 1, 1, 1,
+		0.5f, 0.5f, 0.5f, 0, 0, 1, 0, 0,
+		-0.5f, 0.5f, 0.5f, 0, 0, 1, 1, 0,
+
+		-0.5f, 0.5f, -0.5f, 0, 1, 0, 0, 1, // Top Face
+		-0.5f, 0.5f, 0.5f, 0, 1, 0, 0, 0,
+		0.5f, 0.5f, 0.5f, 0, 1, 0, 1, 0,
+		-0.5f, 0.5f, -0.5f, 0, 1, 0, 0, 1,
+		0.5f, 0.5f, 0.5f, 0, 1, 0, 1, 0,
+		0.5f, 0.5f, -0.5f, 0, 1, 0, 1, 1,
+
+		-0.5f, -0.5f, -0.5f, 0, -1, 0, 1, 1, // Bottom Face
+		0.5f, -0.5f, -0.5f, 0, -1, 0, 0, 1,
+		0.5f, -0.5f, 0.5f, 0, -1, 0, 0, 0,
+		-0.5f, -0.5f, -0.5f, 0, -1, 0, 1, 1,
+		0.5f, -0.5f, 0.5f, 0, -1, 0, 0, 0,
+		-0.5f, -0.5f, 0.5f, 0, -1, 0, 1, 0,
+
+		0.5f, -0.5f, -0.5f, 1, 0, 0, 0, 1, // Right Face
+		0.5f, 0.5f, -0.5f, 1, 0, 0, 0, 0,
+		0.5f, 0.5f, 0.5f, 1, 0, 0, 1, 0,
+		0.5f, -0.5f, -0.5f, 1, 0, 0, 0, 1,
+		0.5f, 0.5f, 0.5f, 1, 0, 0, 1, 0,
+		0.5f, -0.5f, 0.5f, 1, 0, 0, 1, 1,
+
+		-0.5f, -0.5f, -0.5f, -1, 0, 0, 1, 1, // Left Face
+		-0.5f, -0.5f, 0.5f, -1, 0, 0, 0, 1,
+		-0.5f, 0.5f, 0.5f, -1, 0, 0, 0, 0,
+		-0.5f, -0.5f, -0.5f, -1, 0, 0, 1, 1,
+		-0.5f, 0.5f, 0.5f, -1, 0, 0, 0, 0,
+		-0.5f, 0.5f, -0.5f, -1, 0, 0, 1,
 	};
 
+	UINT vertexBufferSize = triangleVertices.size() * sizeof(float);
 	auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-	auto resourceDescr = CD3DX12_RESOURCE_DESC::Buffer(sizeof(triangleVertices));
+	auto resourceDescr = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize);
 	auto device = Renderer::GetInstance().GetDevice().Get();
-
-	M_ASSERT(SUCCEEDED(device->CreateCommittedResource(
-		&heapProperties,
-		D3D12_HEAP_FLAG_NONE,
-		&resourceDescr,
-		D3D12_RESOURCE_STATE_GENERIC_READ,
-		nullptr,
+	M_ASSERT(SUCCEEDED(device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE, &resourceDescr,
+		D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
 		IID_PPV_ARGS(&m_vertexBuffer))),
 		"Failed to create commit resource.");
 
 	// Copy the triangle data to the vertex buffer.
 	UINT8* pVertexDataBegin;
-	CD3DX12_RANGE readRange(0, 0);		// We do not intend to read from this resource on the CPU.
-	M_ASSERT(SUCCEEDED(m_vertexBuffer->Map(
-		0,
-		&readRange,
-		reinterpret_cast<void**>(&pVertexDataBegin))),
+	CD3DX12_RANGE readRange(0, 0);        // We do not intend to read from this resource on the CPU.
+	M_ASSERT(SUCCEEDED(m_vertexBuffer->Map(0, &readRange, reinterpret_cast<void**>(&pVertexDataBegin))),
 		"Failed to map vertex buffer");
-
-	memcpy(pVertexDataBegin, triangleVertices, sizeof(triangleVertices));
+	memcpy(pVertexDataBegin, triangleVertices.data(), vertexBufferSize);
 	m_vertexBuffer->Unmap(0, nullptr);
 
 	// Initialize the vertex buffer view.
 	m_vertexBufferView.BufferLocation = m_vertexBuffer->GetGPUVirtualAddress();
-	m_vertexBufferView.StrideInBytes = sizeof(Vertex);
-	m_vertexBufferView.SizeInBytes = sizeof(triangleVertices);
+	m_vertexBufferView.StrideInBytes = 8 * sizeof(float);
+	m_vertexBufferView.SizeInBytes = vertexBufferSize;
 }
+
 
 void Mesh::CreateIndexBuffer()
 {
@@ -134,5 +167,6 @@ void Mesh::Render(XMMATRIX _viewProj)
 	c->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	c->IASetVertexBuffers(0, 1, &m_vertexBufferView);
 	c->IASetIndexBuffer(&m_indexBufferView);
-	c->DrawIndexedInstanced(m_indexBufferSize / sizeof(unsigned short), 1, 0, 0, 0);
+	// c->DrawIndexedInstanced(m_indexBufferSize / sizeof(unsigned short), 1, 0, 0, 0);
+	c->DrawInstanced(36, 1, 0, 0);
 }
