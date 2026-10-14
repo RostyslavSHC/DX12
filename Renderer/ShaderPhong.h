@@ -12,6 +12,7 @@ public:
     struct CB_Phong : ConstantBuffer
     {
         XMFLOAT4 DiffuseColor;
+        XMFLOAT4 AmbientLight;
     };
 
     // Methods
