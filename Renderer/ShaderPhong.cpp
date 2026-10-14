@@ -28,8 +28,9 @@ void ShaderPhong::SetPipelineState()
     auto r = &Renderer::GetInstance();
     auto c = r->GetCommands()->GetCommandList().Get();
     uint8_t* base = reinterpret_cast<uint8_t*>(GetConstantData());
-    CB_Phong* cbData = reinterpret_cast<CB_Phong*>(
-        base + r->GetFrameIndex() * GetConstantBufferSize());
+    CB_Phong* cbData = reinterpret_cast<CB_Phong*>(base + r->GetFrameIndex() * GetConstantBufferSize());
     XMStoreFloat4(&cbData->DiffuseColor, FXMVECTOR{ 1.0f, 1.0f, 1.0f, 1.0f });
-    XMStoreFloat4(&cbData->AmbientLight, FXMVECTOR{ 0.0f, 0.1f, 0.0f, 1.0f });
+    XMStoreFloat4(&cbData->AmbientLight, FXMVECTOR{ 0.2f, 0.2f, 0.2f, 1.0f });
+    XMStoreFloat3(&cbData->LightDirection, FXMVECTOR{ 1.0f, -0.5f, 1.0f });
+    XMStoreFloat4(&cbData->LightColor, FXMVECTOR{ 0.5f, 0.0f, 0.5f, 1.0f });
 }
