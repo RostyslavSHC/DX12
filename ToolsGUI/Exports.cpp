@@ -32,3 +32,24 @@ bool __stdcall GetToolsBlueData()
     ToolsForm^ form = (ToolsForm^)Application::OpenForms[0];
     return form->checkBoxBlue->Checked;
 }
+
+
+
+
+
+
+
+
+extern "C" __declspec(dllexport)
+bool __stdcall GetToolsResetLightData()
+{
+    if (Application::OpenForms->Count == 0)
+        return false;
+
+    ToolsForm^ form = (ToolsForm^)Application::OpenForms[0];
+
+    bool reset = form->resetLightRequested; // Check whether reset was requested
+    form->resetLightRequested = false; // Clear the request after reading it
+
+    return reset;
+}

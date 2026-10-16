@@ -23,9 +23,15 @@ public:
     };
 
     // Methods
+    void SetLightPosition(XMFLOAT3 _position); // Updates the light source position
     virtual void SetPipelineState() override;
 
 protected:
     virtual void CreatePipelineState() override;
     virtual void CreateConstantBuffer(UINT64 _bufferSize) override;
+
+
+private:
+    // Members
+    XMFLOAT3 m_lightPosition; // Stores the position of the light source
 };

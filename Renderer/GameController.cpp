@@ -72,23 +72,54 @@ void GameController::Run()
 		m_renderer->GetBGColor()[1] = (float)m_toolsC->GetGreenData();
 		m_renderer->GetBGColor()[2] = (float)m_toolsC->GetBlueData();
 
-		auto pos = unit.GetPosition();
-		auto rot = unit.GetRotation();
-		auto scl = unit.GetScale();
 
+
+
+
+
+
+		auto pos = light.GetPosition(); // Get the current position of the red light cube
+
+		// Move the light on the X axis
 		if (m_windowC->GetKeyStates()[VK_RIGHT]) pos.x += 0.01f;
 		if (m_windowC->GetKeyStates()[VK_LEFT]) pos.x -= 0.01f;
+
+		// Move the light on the Y axis
 		if (m_windowC->GetKeyStates()[VK_UP]) pos.y += 0.01f;
 		if (m_windowC->GetKeyStates()[VK_DOWN]) pos.y -= 0.01f;
 
-		if (m_windowC->GetKeyStates()['Q']) rot.y += 0.1f;
-		if (m_windowC->GetKeyStates()['W']) rot.y -= 0.1f;
-		if (m_windowC->GetKeyStates()['A']) scl.x -= 0.1f;
-		if (m_windowC->GetKeyStates()['S']) scl.x += 0.1f;
+		// Move the light on the Z axis
+		if (m_windowC->GetKeyStates()['Z']) pos.z += 0.01f;
+		if (m_windowC->GetKeyStates()['X']) pos.z -= 0.01f;
 
-		unit.SetPosition(XMFLOAT3(pos.x, pos.y, pos.z));
-		unit.SetRotation(XMFLOAT3(rot.x, rot.y, rot.z));
-		unit.SetScale(XMFLOAT3(scl.x, scl.y, scl.z));
+
+
+
+
+
+
+
+
+
+
+		light.SetPosition(pos); // Update the red light cube's position
+
+		// Reset the light to its original position when the button is clicked
+		if (m_toolsC->GetResetLightData())
+		{
+			light.SetPosition(XMFLOAT3(0.5f, 0.5f, -2.0f));
+		}
+
+		shaderPhong.SetLightPosition(light.GetPosition()); // Make the light follow the red cube
+
+
+
+
+
+
+
+
+
 
 		m_renderer->Render(units, m_camera->GetViewProjection());
 	}

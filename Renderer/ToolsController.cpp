@@ -8,6 +8,7 @@ ToolsController::ToolsController()
     m_getRedData = nullptr;
     m_getGreenData = nullptr;
     m_getBlueData = nullptr;
+    m_getResetLightData = nullptr;
 }
 
 // Load the tools library
@@ -31,4 +32,14 @@ void ToolsController::LoadToolsLibrary()
     // Get the address of the GetToolsBlueData function
     address = GetProcAddress(m_module, "GetToolsBlueData");
     m_getBlueData = reinterpret_cast<GetToolsBlueData>(address);
+
+    // Get the address of the GetToolsResetLightData function
+    address = GetProcAddress(m_module, "GetToolsResetLightData");
+    m_getResetLightData = reinterpret_cast<GetToolsResetLightData>(address);
+    M_ASSERT(m_getResetLightData != nullptr, "Failed to load GetToolsResetLightData");
+}
+
+bool ToolsController::GetResetLightData() const
+{
+    return m_getResetLightData(); // Read the reset request from ToolsGUI
 }
