@@ -40,6 +40,16 @@ bool __stdcall GetToolsBlueData()
 
 
 
+
+
+
+
+
+
+
+
+
+
 extern "C" __declspec(dllexport)
 bool __stdcall GetToolsResetLightData()
 {
@@ -52,4 +62,58 @@ bool __stdcall GetToolsResetLightData()
     form->resetLightRequested = false; // Clear the request after reading it
 
     return reset;
+}
+
+
+
+
+
+// Get the current specular strength from the TrackBar
+extern "C" __declspec(dllexport)
+float __stdcall GetToolsSpecularStrengthData()
+{
+    if (Application::OpenForms->Count == 0)
+        return 0.0f;
+
+    ToolsForm^ form = (ToolsForm^)Application::OpenForms[0];
+
+    return static_cast<float>(form->trackBarSpecularStrength->Value) / 5.0f;
+}
+
+
+
+
+
+
+extern "C" __declspec(dllexport)
+float __stdcall GetToolsSpecularRedData()
+{
+    if (Application::OpenForms->Count == 0)
+        return 0.0f;
+
+    ToolsForm^ form = (ToolsForm^)Application::OpenForms[0];
+
+    return static_cast<float>(form->trackBarSpecularRed->Value) / 200.0f;
+}
+
+extern "C" __declspec(dllexport)
+float __stdcall GetToolsSpecularGreenData()
+{
+    if (Application::OpenForms->Count == 0)
+        return 0.0f;
+
+    ToolsForm^ form = (ToolsForm^)Application::OpenForms[0];
+
+    return static_cast<float>(form->trackBarSpecularGreen->Value) / 200.0f;
+}
+
+extern "C" __declspec(dllexport)
+float __stdcall GetToolsSpecularBlueData()
+{
+    if (Application::OpenForms->Count == 0)
+        return 0.0f;
+
+    ToolsForm^ form = (ToolsForm^)Application::OpenForms[0];
+
+    return static_cast<float>(form->trackBarSpecularBlue->Value) / 200.0f;
 }

@@ -111,6 +111,16 @@ void GameController::Run()
 		}
 
 		shaderPhong.SetLightPosition(light.GetPosition()); // Make the light follow the red cube
+		shaderPhong.SetSpecularStrength(m_toolsC->GetSpecularStrengthData()); // Update specular strength from the TrackBar
+
+		// Update the specular color using the RGB TrackBars
+		shaderPhong.SetSpecularColor(XMFLOAT4(
+			m_toolsC->GetSpecularRedData(),
+			m_toolsC->GetSpecularGreenData(),
+			m_toolsC->GetSpecularBlueData(),
+			1.0f
+		));
+
 
 
 

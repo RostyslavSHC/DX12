@@ -41,6 +41,26 @@ namespace ToolsGUI {
 	private: System::Windows::Forms::Button^ buttonResetLight;
 	public:
 	public: bool resetLightRequested = false; // True when the reset button is clicked
+	private: System::Windows::Forms::Label^ labelSpecularStrength;
+	public: System::Windows::Forms::TrackBar^ trackBarSpecularStrength;
+	private: System::Windows::Forms::Label^ labelSpecularColor;
+	private: System::Windows::Forms::Label^ labelSpecularRed;
+	private: System::Windows::Forms::Label^ labelSpecularGreen;
+	private: System::Windows::Forms::Label^ labelSpecularBlue;
+	public: System::Windows::Forms::TrackBar^ trackBarSpecularRed;
+	public: System::Windows::Forms::TrackBar^ trackBarSpecularGreen;
+	public: System::Windows::Forms::TrackBar^ trackBarSpecularBlue;
+	public:
+
+	public:
+
+	public:
+
+	public:
+
+
+
+	public:
 
 	private:
 		/// <summary>
@@ -60,12 +80,25 @@ namespace ToolsGUI {
 			this->checkBoxBlue = (gcnew System::Windows::Forms::CheckBox());
 			this->radioButtonMoveLight = (gcnew System::Windows::Forms::RadioButton());
 			this->buttonResetLight = (gcnew System::Windows::Forms::Button());
+			this->labelSpecularStrength = (gcnew System::Windows::Forms::Label());
+			this->trackBarSpecularStrength = (gcnew System::Windows::Forms::TrackBar());
+			this->labelSpecularColor = (gcnew System::Windows::Forms::Label());
+			this->labelSpecularRed = (gcnew System::Windows::Forms::Label());
+			this->labelSpecularGreen = (gcnew System::Windows::Forms::Label());
+			this->labelSpecularBlue = (gcnew System::Windows::Forms::Label());
+			this->trackBarSpecularRed = (gcnew System::Windows::Forms::TrackBar());
+			this->trackBarSpecularGreen = (gcnew System::Windows::Forms::TrackBar());
+			this->trackBarSpecularBlue = (gcnew System::Windows::Forms::TrackBar());
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBarSpecularStrength))->BeginInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBarSpecularRed))->BeginInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBarSpecularGreen))->BeginInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBarSpecularBlue))->BeginInit();
 			this->SuspendLayout();
 			// 
 			// checkBoxRed
 			// 
 			this->checkBoxRed->AutoSize = true;
-			this->checkBoxRed->Location = System::Drawing::Point(578, 126);
+			this->checkBoxRed->Location = System::Drawing::Point(726, 238);
 			this->checkBoxRed->Name = L"checkBoxRed";
 			this->checkBoxRed->Size = System::Drawing::Size(46, 17);
 			this->checkBoxRed->TabIndex = 0;
@@ -75,7 +108,7 @@ namespace ToolsGUI {
 			// checkBoxGreen
 			// 
 			this->checkBoxGreen->AutoSize = true;
-			this->checkBoxGreen->Location = System::Drawing::Point(578, 149);
+			this->checkBoxGreen->Location = System::Drawing::Point(726, 261);
 			this->checkBoxGreen->Name = L"checkBoxGreen";
 			this->checkBoxGreen->Size = System::Drawing::Size(55, 17);
 			this->checkBoxGreen->TabIndex = 1;
@@ -85,7 +118,7 @@ namespace ToolsGUI {
 			// checkBoxBlue
 			// 
 			this->checkBoxBlue->AutoSize = true;
-			this->checkBoxBlue->Location = System::Drawing::Point(578, 172);
+			this->checkBoxBlue->Location = System::Drawing::Point(726, 284);
 			this->checkBoxBlue->Name = L"checkBoxBlue";
 			this->checkBoxBlue->Size = System::Drawing::Size(47, 17);
 			this->checkBoxBlue->TabIndex = 2;
@@ -115,12 +148,111 @@ namespace ToolsGUI {
 			this->buttonResetLight->UseVisualStyleBackColor = true;
 			this->buttonResetLight->Click += gcnew System::EventHandler(this, &ToolsForm::buttonResetLight_Click);
 			// 
+			// labelSpecularStrength
+			// 
+			this->labelSpecularStrength->AutoSize = true;
+			this->labelSpecularStrength->Location = System::Drawing::Point(40, 95);
+			this->labelSpecularStrength->Name = L"labelSpecularStrength";
+			this->labelSpecularStrength->Size = System::Drawing::Size(92, 13);
+			this->labelSpecularStrength->TabIndex = 5;
+			this->labelSpecularStrength->Text = L"Specular Strength";
+			this->labelSpecularStrength->Click += gcnew System::EventHandler(this, &ToolsForm::labelSpecularStrength_Click);
+			// 
+			// trackBarSpecularStrength
+			// 
+			this->trackBarSpecularStrength->LargeChange = 10;
+			this->trackBarSpecularStrength->Location = System::Drawing::Point(145, 88);
+			this->trackBarSpecularStrength->Maximum = 100;
+			this->trackBarSpecularStrength->Name = L"trackBarSpecularStrength";
+			this->trackBarSpecularStrength->Size = System::Drawing::Size(470, 45);
+			this->trackBarSpecularStrength->TabIndex = 6;
+			this->trackBarSpecularStrength->Value = 5;
+			this->trackBarSpecularStrength->Scroll += gcnew System::EventHandler(this, &ToolsForm::trackBarSpecularStrength_Scroll);
+			// 
+			// labelSpecularColor
+			// 
+			this->labelSpecularColor->AutoSize = true;
+			this->labelSpecularColor->Location = System::Drawing::Point(40, 145);
+			this->labelSpecularColor->Name = L"labelSpecularColor";
+			this->labelSpecularColor->Size = System::Drawing::Size(76, 13);
+			this->labelSpecularColor->TabIndex = 7;
+			this->labelSpecularColor->Text = L"Specular Color";
+			// 
+			// labelSpecularRed
+			// 
+			this->labelSpecularRed->AutoSize = true;
+			this->labelSpecularRed->Location = System::Drawing::Point(125, 145);
+			this->labelSpecularRed->Name = L"labelSpecularRed";
+			this->labelSpecularRed->Size = System::Drawing::Size(15, 13);
+			this->labelSpecularRed->TabIndex = 8;
+			this->labelSpecularRed->Text = L"R";
+			// 
+			// labelSpecularGreen
+			// 
+			this->labelSpecularGreen->AutoSize = true;
+			this->labelSpecularGreen->Location = System::Drawing::Point(125, 190);
+			this->labelSpecularGreen->Name = L"labelSpecularGreen";
+			this->labelSpecularGreen->Size = System::Drawing::Size(15, 13);
+			this->labelSpecularGreen->TabIndex = 9;
+			this->labelSpecularGreen->Text = L"G";
+			// 
+			// labelSpecularBlue
+			// 
+			this->labelSpecularBlue->AutoSize = true;
+			this->labelSpecularBlue->Location = System::Drawing::Point(125, 235);
+			this->labelSpecularBlue->Name = L"labelSpecularBlue";
+			this->labelSpecularBlue->Size = System::Drawing::Size(14, 13);
+			this->labelSpecularBlue->TabIndex = 10;
+			this->labelSpecularBlue->Text = L"B";
+			// 
+			// trackBarSpecularRed
+			// 
+			this->trackBarSpecularRed->LargeChange = 10;
+			this->trackBarSpecularRed->Location = System::Drawing::Point(145, 138);
+			this->trackBarSpecularRed->Maximum = 200;
+			this->trackBarSpecularRed->Name = L"trackBarSpecularRed";
+			this->trackBarSpecularRed->Size = System::Drawing::Size(470, 45);
+			this->trackBarSpecularRed->TabIndex = 11;
+			this->trackBarSpecularRed->Value = 70;
+			this->trackBarSpecularRed->Scroll += gcnew System::EventHandler(this, &ToolsForm::trackBarSpecularRed_Scroll);
+			// 
+			// trackBarSpecularGreen
+			// 
+			this->trackBarSpecularGreen->LargeChange = 10;
+			this->trackBarSpecularGreen->Location = System::Drawing::Point(145, 183);
+			this->trackBarSpecularGreen->Maximum = 200;
+			this->trackBarSpecularGreen->Name = L"trackBarSpecularGreen";
+			this->trackBarSpecularGreen->Size = System::Drawing::Size(470, 45);
+			this->trackBarSpecularGreen->TabIndex = 12;
+			this->trackBarSpecularGreen->Value = 70;
+			this->trackBarSpecularGreen->Scroll += gcnew System::EventHandler(this, &ToolsForm::trackBarSpecularGreen_Scroll);
+			// 
+			// trackBarSpecularBlue
+			// 
+			this->trackBarSpecularBlue->LargeChange = 10;
+			this->trackBarSpecularBlue->Location = System::Drawing::Point(145, 228);
+			this->trackBarSpecularBlue->Maximum = 200;
+			this->trackBarSpecularBlue->Name = L"trackBarSpecularBlue";
+			this->trackBarSpecularBlue->Size = System::Drawing::Size(470, 45);
+			this->trackBarSpecularBlue->TabIndex = 13;
+			this->trackBarSpecularBlue->Value = 70;
+			this->trackBarSpecularBlue->Scroll += gcnew System::EventHandler(this, &ToolsForm::trackBarSpecularBlue_Scroll);
+			// 
 			// ToolsForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(817, 323);
 			this->ControlBox = false;
+			this->Controls->Add(this->trackBarSpecularBlue);
+			this->Controls->Add(this->trackBarSpecularGreen);
+			this->Controls->Add(this->trackBarSpecularRed);
+			this->Controls->Add(this->labelSpecularBlue);
+			this->Controls->Add(this->labelSpecularGreen);
+			this->Controls->Add(this->labelSpecularRed);
+			this->Controls->Add(this->labelSpecularColor);
+			this->Controls->Add(this->trackBarSpecularStrength);
+			this->Controls->Add(this->labelSpecularStrength);
 			this->Controls->Add(this->buttonResetLight);
 			this->Controls->Add(this->radioButtonMoveLight);
 			this->Controls->Add(this->checkBoxBlue);
@@ -130,6 +262,10 @@ namespace ToolsGUI {
 			this->Name = L"ToolsForm";
 			this->Text = L"ToolsForm";
 			this->TopMost = true;
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBarSpecularStrength))->EndInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBarSpecularRed))->EndInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBarSpecularGreen))->EndInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBarSpecularBlue))->EndInit();
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -144,6 +280,29 @@ namespace ToolsGUI {
 		resetLightRequested = true; // Request the light position to reset
 	}
 
+
+
+	private: System::Void labelSpecularStrength_Click(System::Object^ sender, System::EventArgs^ e) {
+
+	}
+
+	private: System::Void trackBarSpecularStrength_Scroll(System::Object^ sender, System::EventArgs^ e) {
+
+	}
+
+
+
+	private: System::Void trackBarSpecularRed_Scroll(System::Object^ sender, System::EventArgs^ e) {
+
+	}
+
+	private: System::Void trackBarSpecularGreen_Scroll(System::Object^ sender, System::EventArgs^ e) {
+
+	}
+
+	private: System::Void trackBarSpecularBlue_Scroll(System::Object^ sender, System::EventArgs^ e) {
+
+	}
 
 
 };

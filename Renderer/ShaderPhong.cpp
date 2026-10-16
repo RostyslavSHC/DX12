@@ -6,11 +6,23 @@ ShaderPhong::ShaderPhong()
 {
     SetShaderFile(L"phong.hlsl");
     m_lightPosition = XMFLOAT3(0.5f, 0.5f, -2.0f); // Initial light position
+    m_specularStrength = 4.0f; // Initial specular strength
+    m_specularColor = XMFLOAT4(0.35f, 0.35f, 0.35f, 1.0f); // Initial specular color
 }
 
 void ShaderPhong::SetLightPosition(XMFLOAT3 _position)
 {
     m_lightPosition = _position; // Store the updated light position
+}
+
+void ShaderPhong::SetSpecularStrength(float _strength)
+{
+    m_specularStrength = _strength; // Store the updated specular strength
+}
+
+void ShaderPhong::SetSpecularColor(XMFLOAT4 _color)
+{
+    m_specularColor = _color; // Store the updated specular color
 }
 
 
@@ -41,8 +53,8 @@ void ShaderPhong::SetPipelineState()
     XMStoreFloat4(&cbData->AmbientLight, FXMVECTOR{ 0.2f, 0.2f, 0.2f, 1.0f });
     cbData->LightPosition = m_lightPosition; // Send the current light position to the shader
     XMStoreFloat4(&cbData->LightColor, FXMVECTOR{ 1.0f, 1.0f, 1.0f, 1.0f });
-    XMStoreFloat(&cbData->SpecularStrength, FXMVECTOR{ 4.0f });
-    XMStoreFloat4(&cbData->SpecularColor, FXMVECTOR{ 1.0f, 0.0f, 0.0f, 0.0f });
+    cbData->SpecularStrength = m_specularStrength; // Send the current specular strength to the shader
+    cbData->SpecularColor = m_specularColor; // Send the current specular color to the shader
     XMStoreFloat4(&cbData->CameraPosition, FXMVECTOR{ 0.0f, 1.0f, -3.0f });
 }
 
