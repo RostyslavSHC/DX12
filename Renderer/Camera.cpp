@@ -29,3 +29,4 @@ Camera::Camera(int _width, int _height)
 Camera::~Camera()
 {
 }
+
