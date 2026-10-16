@@ -1,4 +1,3 @@
-
 #include "ShaderPhong.h"
 #include "Renderer.h"
 
