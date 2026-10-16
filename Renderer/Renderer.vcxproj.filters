@@ -66,6 +66,9 @@
     <ClCompile Include="ShaderColor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ShaderPositionColor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StandardIncludes.h">
@@ -116,6 +119,9 @@
     <ClInclude Include="ShaderColor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ShaderPositionColor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -128,6 +134,9 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="Color.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="positionColor.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

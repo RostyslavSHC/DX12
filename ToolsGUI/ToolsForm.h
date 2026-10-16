@@ -50,6 +50,9 @@ namespace ToolsGUI {
 	public: System::Windows::Forms::TrackBar^ trackBarSpecularRed;
 	public: System::Windows::Forms::TrackBar^ trackBarSpecularGreen;
 	public: System::Windows::Forms::TrackBar^ trackBarSpecularBlue;
+	public: System::Windows::Forms::RadioButton^ radioButtonColorByPosition;
+	public:
+	private: System::Windows::Forms::Button^ buttonResetCube;
 	public:
 
 	public:
@@ -89,6 +92,8 @@ namespace ToolsGUI {
 			this->trackBarSpecularRed = (gcnew System::Windows::Forms::TrackBar());
 			this->trackBarSpecularGreen = (gcnew System::Windows::Forms::TrackBar());
 			this->trackBarSpecularBlue = (gcnew System::Windows::Forms::TrackBar());
+			this->radioButtonColorByPosition = (gcnew System::Windows::Forms::RadioButton());
+			this->buttonResetCube = (gcnew System::Windows::Forms::Button());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBarSpecularStrength))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBarSpecularRed))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBarSpecularGreen))->BeginInit();
@@ -238,12 +243,36 @@ namespace ToolsGUI {
 			this->trackBarSpecularBlue->Value = 70;
 			this->trackBarSpecularBlue->Scroll += gcnew System::EventHandler(this, &ToolsForm::trackBarSpecularBlue_Scroll);
 			// 
+			// radioButtonColorByPosition
+			// 
+			this->radioButtonColorByPosition->AutoSize = true;
+			this->radioButtonColorByPosition->Location = System::Drawing::Point(28, 275);
+			this->radioButtonColorByPosition->Name = L"radioButtonColorByPosition";
+			this->radioButtonColorByPosition->Size = System::Drawing::Size(104, 17);
+			this->radioButtonColorByPosition->TabIndex = 14;
+			this->radioButtonColorByPosition->TabStop = true;
+			this->radioButtonColorByPosition->Text = L"Color By Position";
+			this->radioButtonColorByPosition->UseVisualStyleBackColor = true;
+			this->radioButtonColorByPosition->CheckedChanged += gcnew System::EventHandler(this, &ToolsForm::radioButtonColorByPosition_CheckedChanged);
+			// 
+			// buttonResetCube
+			// 
+			this->buttonResetCube->Location = System::Drawing::Point(40, 300);
+			this->buttonResetCube->Name = L"buttonResetCube";
+			this->buttonResetCube->Size = System::Drawing::Size(140, 25);
+			this->buttonResetCube->TabIndex = 15;
+			this->buttonResetCube->Text = L"Reset Cube Position";
+			this->buttonResetCube->UseVisualStyleBackColor = true;
+			this->buttonResetCube->Click += gcnew System::EventHandler(this, &ToolsForm::buttonResetCube_Click);
+			// 
 			// ToolsForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(817, 323);
+			this->ClientSize = System::Drawing::Size(801, 391);
 			this->ControlBox = false;
+			this->Controls->Add(this->buttonResetCube);
+			this->Controls->Add(this->radioButtonColorByPosition);
 			this->Controls->Add(this->trackBarSpecularBlue);
 			this->Controls->Add(this->trackBarSpecularGreen);
 			this->Controls->Add(this->trackBarSpecularRed);
@@ -304,6 +333,14 @@ namespace ToolsGUI {
 
 	}
 
+
+	private: System::Void radioButtonColorByPosition_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
+
+	}
+
+	private: System::Void buttonResetCube_Click(System::Object^ sender, System::EventArgs^ e) {
+
+	}
 
 };
 }

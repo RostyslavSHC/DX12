@@ -4,6 +4,7 @@
 #include "Unit.h"
 #include "ShaderPhong.h"
 #include "ShaderColor.h"
+#include "ShaderPositionColor.h"
 
 GameController::GameController()
 {
@@ -48,8 +49,22 @@ void GameController::Run()
 	unit.Initialize(&shaderPhong);
 	units.push_back(&unit);
 
+	// Create the shader for the position-based color effect
+	ShaderPositionColor shaderPositionColor = ShaderPositionColor();
+	shaderPositionColor.Initialize();
+	// Create the brick-textured cube
+	Unit brickUnit = Unit();
+	brickUnit.Initialize(&shaderPositionColor, L"..\\Assets\\Textures\\BrickWall.dds");
 
-	//ShaderPhong shader = ShaderPhong();
+	// Store the brick cube for Color By Position modevector<IRenderable*> brickUnits;
+
+	vector<IRenderable*> brickUnits;
+	brickUnits.push_back(&brickUnit);
+
+
+
+	//ShaderPhong shader = ShaderPhong();vector<IRenderable*> brickUnits;
+
 	//shader.Initialize();
 	//Unit unit = Unit();
 	//unit.Initialize(&shader);
@@ -77,7 +92,7 @@ void GameController::Run()
 
 
 
-
+		/*
 		auto pos = light.GetPosition(); // Get the current position of the red light cube
 
 		// Move the light on the X axis
@@ -91,18 +106,67 @@ void GameController::Run()
 		// Move the light on the Z axis
 		if (m_windowC->GetKeyStates()['Z']) pos.z += 0.01f;
 		if (m_windowC->GetKeyStates()['X']) pos.z -= 0.01f;
-
-
-
-
-
-
-
+		
 
 
 
 
 		light.SetPosition(pos); // Update the red light cube's position
+
+		*/
+
+
+		if (m_toolsC->GetColorByPositionData())
+		{
+			// Move the brick cube in Color By Position mode
+			auto pos = brickUnit.GetPosition();
+
+			if (m_windowC->GetKeyStates()[VK_RIGHT]) pos.x += 0.01f;
+			if (m_windowC->GetKeyStates()[VK_LEFT]) pos.x -= 0.01f;
+			if (m_windowC->GetKeyStates()[VK_UP]) pos.y += 0.01f;
+			if (m_windowC->GetKeyStates()[VK_DOWN]) pos.y -= 0.01f;
+			if (m_windowC->GetKeyStates()['Z']) pos.z += 0.01f;
+			if (m_windowC->GetKeyStates()['X']) pos.z -= 0.01f;
+
+			brickUnit.SetPosition(pos);
+		}
+		else
+		{
+			// Move the red light cube in Move Light mode
+			auto pos = light.GetPosition();
+
+			// Move the light on the X axis
+			if (m_windowC->GetKeyStates()[VK_RIGHT]) pos.x += 0.01f;
+			if (m_windowC->GetKeyStates()[VK_LEFT]) pos.x -= 0.01f;
+
+			// Move the light on the Y axis
+			if (m_windowC->GetKeyStates()[VK_UP]) pos.y += 0.01f;
+			if (m_windowC->GetKeyStates()[VK_DOWN]) pos.y -= 0.01f;
+
+			// Move the light on the Z axis
+			if (m_windowC->GetKeyStates()['Z']) pos.z += 0.01f;
+			if (m_windowC->GetKeyStates()['X']) pos.z -= 0.01f;
+
+			light.SetPosition(pos); // Update the red light cube's position
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 		// Reset the light to its original position when the button is clicked
 		if (m_toolsC->GetResetLightData())
@@ -128,9 +192,26 @@ void GameController::Run()
 
 
 
+		// Check whether Color By Position mode is selected
+		if (m_toolsC->GetColorByPositionData())
+		{
+			// Render only the brick cube
+			// vector<IRenderable*> brickUnits;
+			// brickUnits.push_back(&brickUnit);
+
+			m_renderer->Render(brickUnits, m_camera->GetViewProjection());
+		}
+		else
+		{
+			// Render the red light cube and wooden crate
+			m_renderer->Render(units, m_camera->GetViewProjection());
+		}
 
 
 
-		m_renderer->Render(units, m_camera->GetViewProjection());
+
+
+
+		// m_renderer->Render(units, m_camera->GetViewProjection());
 	}
 }

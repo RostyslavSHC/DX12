@@ -28,6 +28,7 @@ Mesh::~Mesh()
 	}
 }
 
+/*
 void Mesh::Initialize(Shader* _shader)
 {
 	SetShader(_shader);
@@ -41,6 +42,33 @@ void Mesh::Initialize(Shader* _shader)
 	t1->Initialize(L"..\\Assets\\Textures\\Emoji.dds", _shader);
 	SetTexture1(t1);
 }
+*/
+
+
+
+
+void Mesh::Initialize(Shader* _shader)
+{
+	Initialize(_shader, L"..\\Assets\\Textures\\Wood.dds"); // Use the original wood texture
+}
+
+void Mesh::Initialize(Shader* _shader, wstring _textureFilename)
+{
+	SetShader(_shader);
+	CreateVertexBuffer();
+	//CreateIndexBuffer();
+
+	Texture* t0 = new Texture();
+	t0->Initialize(_textureFilename, _shader); // Load the selected diffuse texture
+	SetTexDiffuse(t0);
+
+	Texture* t1 = new Texture();
+	t1->Initialize(L"..\\Assets\\Textures\\Emoji.dds", _shader);
+	SetTexture1(t1);
+}
+
+
+
 
 void Mesh::CreateVertexBuffer()
 {

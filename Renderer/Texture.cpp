@@ -84,9 +84,32 @@ void Texture::UploadTexture()
 	// Copy data to the intermediate upload heap and then schedule a copy from the upload heap to the Texture2D.
 	D3D12_SUBRESOURCE_DATA textureData = {};
 	textureData.pData = m_ddsLoader->GetData();
+
+
+	// DXT1 compresses a group of 4 × 4 pixels into an 8-byte block
+	// My original code callculates number of bytes in each row of blocks correctly for textures with widths divisible by 4,
+	// but then multiplies by the full image height instead of the number of compressed block rows
+	
 	int blocksPerRow = m_ddsLoader->GetHeader()->width / 4;
 	textureData.RowPitch = blocksPerRow * 8;
 	textureData.SlicePitch = textureData.RowPitch * m_ddsLoader->GetHeader()->height;
+	
+
+	/*
+	UINT width = m_ddsLoader->GetHeader()->width;
+	UINT height = m_ddsLoader->GetHeader()->height;
+
+	// DXT1 textures store pixels in 4x4 blocks, using 8 bytes per block
+	UINT blocksPerRow = (width + 3) / 4;
+	UINT blockRows = (height + 3) / 4;
+
+	textureData.RowPitch = blocksPerRow * 8;
+	textureData.SlicePitch = textureData.RowPitch * blockRows;
+	*/
+
+
+
+
 
 	auto c = r->GetCommands();
 	c->Reset();

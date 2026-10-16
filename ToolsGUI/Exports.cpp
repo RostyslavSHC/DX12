@@ -117,3 +117,21 @@ float __stdcall GetToolsSpecularBlueData()
 
     return static_cast<float>(form->trackBarSpecularBlue->Value) / 200.0f;
 }
+
+
+
+
+
+
+
+// Check whether Color By Position mode is selected
+extern "C" __declspec(dllexport)
+bool __stdcall GetToolsColorByPositionData()
+{
+    if (Application::OpenForms->Count == 0)
+        return false;
+
+    ToolsForm^ form = (ToolsForm^)Application::OpenForms[0];
+
+    return form->radioButtonColorByPosition->Checked;
+}

@@ -13,6 +13,7 @@ ToolsController::ToolsController()
     m_getSpecularRedData = nullptr;
     m_getSpecularGreenData = nullptr;
     m_getSpecularBlueData = nullptr;
+    m_getColorByPositionData = nullptr;
 }
 
 // Load the tools library
@@ -67,6 +68,19 @@ void ToolsController::LoadToolsLibrary()
     m_getSpecularBlueData = reinterpret_cast<GetToolsSpecularBlueData>(address);
     M_ASSERT(m_getSpecularBlueData != nullptr, "Failed to load GetToolsSpecularBlueData");
 
+
+
+
+
+
+
+
+
+    // Get the address of the GetToolsColorByPositionData function
+    address = GetProcAddress(m_module, "GetToolsColorByPositionData");
+    m_getColorByPositionData = reinterpret_cast<GetToolsColorByPositionData>(address);
+    M_ASSERT(m_getColorByPositionData != nullptr, "Failed to load GetToolsColorByPositionData");
+
 }
 
 bool ToolsController::GetResetLightData() const
@@ -97,4 +111,14 @@ float ToolsController::GetSpecularGreenData() const
 float ToolsController::GetSpecularBlueData() const
 {
     return m_getSpecularBlueData();
+}
+
+
+
+
+
+
+bool ToolsController::GetColorByPositionData() const
+{
+    return m_getColorByPositionData(); // Read the selected mode from ToolsGUI
 }

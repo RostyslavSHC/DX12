@@ -10,14 +10,14 @@ public:
 	virtual ~Unit();
 
 	// Accessors
-	XMFLOAT3 GetPosition() const { return m_position; }
-	void SetPosition(XMFLOAT3 _position) { m_position = _position; }
+	XMFLOAT3 GetPosition() const;
+	void SetPosition(XMFLOAT3 _position);
 
-	XMFLOAT3 GetRotation() const { return m_rotation; }
-	void SetRotation(XMFLOAT3 _rotation) { m_rotation = _rotation; }
+	XMFLOAT3 GetRotation() const;
+	void SetRotation(XMFLOAT3 _rotation);
 
-	XMFLOAT3 GetScale() const { return m_scale; }
-	void SetScale(XMFLOAT3 _scale) { m_scale = _scale; }
+	XMFLOAT3 GetScale() const;
+	void SetScale(XMFLOAT3 _scale);
 
 	// Methods
 	virtual void Render(XMMATRIX _viewProj) override;

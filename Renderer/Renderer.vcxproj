@@ -154,6 +154,7 @@
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderColor.cpp" />
     <ClCompile Include="ShaderPhong.cpp" />
+    <ClCompile Include="ShaderPositionColor.cpp" />
     <ClCompile Include="Singleton.h" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="ToolsController.cpp" />
@@ -166,6 +167,7 @@
     <ClInclude Include="CommandController.h" />
     <ClInclude Include="DDSLoad.h" />
     <ClInclude Include="GameController.h" />
+    <ClInclude Include="ShaderPositionColor.h" />
     <ClInclude Include="IRenderable.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Renderer.h" />
@@ -190,6 +192,12 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="Phong.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="positionColor.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>

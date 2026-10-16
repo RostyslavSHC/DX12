@@ -19,6 +19,7 @@ public:
     typedef float(__stdcall* GetToolsSpecularRedData)();
     typedef float(__stdcall* GetToolsSpecularGreenData)();
     typedef float(__stdcall* GetToolsSpecularBlueData)();
+    typedef bool(__stdcall* GetToolsColorByPositionData)();
 
     // Accessors
     void ShowForm() const { return m_showForm(); } // Show the form
@@ -30,6 +31,7 @@ public:
     float GetSpecularRedData() const; // Get the red specular component
     float GetSpecularGreenData() const; // Get the green specular component
     float GetSpecularBlueData() const; // Get the blue specular component
+    bool GetColorByPositionData() const; // Check whether Color By Position mode is selected
 
     // Methods
     void LoadToolsLibrary(); // Load the tools library
@@ -46,4 +48,5 @@ private:
     GetToolsSpecularRedData m_getSpecularRedData;
     GetToolsSpecularGreenData m_getSpecularGreenData;
     GetToolsSpecularBlueData m_getSpecularBlueData;
+    GetToolsColorByPositionData m_getColorByPositionData; // DLL function for Color By Position mode
 };

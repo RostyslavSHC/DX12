@@ -13,6 +13,40 @@ Unit::~Unit()
 {
 }
 
+
+
+XMFLOAT3 Unit::GetPosition() const
+{
+	return m_position;
+}
+
+void Unit::SetPosition(XMFLOAT3 _position)
+{
+	m_position = _position;
+}
+
+XMFLOAT3 Unit::GetRotation() const
+{
+	return m_rotation;
+}
+
+void Unit::SetRotation(XMFLOAT3 _rotation)
+{
+	m_rotation = _rotation;
+}
+
+XMFLOAT3 Unit::GetScale() const
+{
+	return m_scale;
+}
+
+void Unit::SetScale(XMFLOAT3 _scale)
+{
+	m_scale = _scale;
+}
+
+
+
 void Unit::Render(XMMATRIX _viewProj)
 {
 	auto r = &Renderer::GetInstance();
