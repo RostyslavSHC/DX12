@@ -21,6 +21,7 @@ public:
     typedef float(__stdcall* GetToolsSpecularBlueData)();
     typedef bool(__stdcall* GetToolsColorByPositionData)();
     typedef bool(__stdcall* GetToolsResetCubeData)();
+    typedef bool(__stdcall* GetToolsMoveLightToCubeData)();
 
     // Accessors
     void ShowForm() const { return m_showForm(); } // Show the form
@@ -34,6 +35,7 @@ public:
     float GetSpecularBlueData() const; // Get the blue specular component
     bool GetColorByPositionData() const; // Check whether Color By Position mode is selected
     bool GetResetCubeData() const; // Check whether the reset cube button was clicked
+    bool GetMoveLightToCubeData() const; // Check whether Move Light To Cube mode is selected
 
     // Methods
     void LoadToolsLibrary(); // Load the tools library
@@ -52,4 +54,5 @@ private:
     GetToolsSpecularBlueData m_getSpecularBlueData;
     GetToolsColorByPositionData m_getColorByPositionData; // DLL function for Color By Position mode
     GetToolsResetCubeData m_getResetCubeData; // DLL function for cube reset
+    GetToolsMoveLightToCubeData m_getMoveLightToCubeData; // DLL function for Move Light To Cube mode
 };

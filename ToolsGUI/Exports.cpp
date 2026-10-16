@@ -156,3 +156,17 @@ bool __stdcall GetToolsResetCubeData()
 
     return reset;
 }
+
+
+
+// Check whether Move Light To Cube mode is selected
+extern "C" __declspec(dllexport)
+bool __stdcall GetToolsMoveLightToCubeData()
+{
+    if (Application::OpenForms->Count == 0)
+        return false;
+
+    ToolsForm^ form = (ToolsForm^)Application::OpenForms[0];
+
+    return form->radioButtonMoveLightToCube->Checked;
+}

@@ -63,6 +63,69 @@ void GameController::Run()
 	vector<IRenderable*> brickUnits;
 	brickUnits.push_back(&brickUnit);
 
+	/*
+	// Create the flower-textured target cube for Move Light To Cube mode
+	Unit targetCube = Unit();
+	targetCube.Initialize(&shaderPositionColor,
+		L"..\\Assets\\Textures\\BrickWall.dds",
+		L"..\\Assets\\Textures\\Flowers.dds");
+	targetCube.SetPosition(XMFLOAT3(-1.5f, 0.0f, 0.0f));
+	*/
+
+
+
+	// Create a separate shader for the flower-textured target cube
+	ShaderPositionColor shaderTarget = ShaderPositionColor();
+	shaderTarget.Initialize();
+
+	// Create the flower-textured target cube for Move Light To Cube mode
+	Unit targetCube = Unit();
+	targetCube.Initialize(&shaderTarget,
+		L"..\\Assets\\Textures\\BrickWall.dds",
+		L"..\\Assets\\Textures\\Flowers.dds");
+
+	// Position the flower cube slightly above and left of the wooden crate
+	targetCube.SetPosition(XMFLOAT3(-0.8f, 0.4f, 0.8f));
+	targetCube.SetScale(XMFLOAT3(1.0f, 1.0f, 1.0f));
+
+	// Wooden crate in the middle
+	//unit.SetScale(XMFLOAT3(0.6f, 0.6f, 0.6f));
+
+
+
+
+
+	// Create a separate shader for the chasing red light
+	ShaderColor shaderChasingLight = ShaderColor();
+	shaderChasingLight.Initialize();
+
+	// Create the red light cube that automatically follows the target
+	Unit chasingLight = Unit();
+	chasingLight.Initialize(&shaderChasingLight);
+	// chasingLight.SetPosition(XMFLOAT3(1.5f, -1.0f, -1.5f));
+	chasingLight.SetPosition(XMFLOAT3(1.8f, -1.2f, -2.0f)); // Start near the camera, toward the bottom-right
+	chasingLight.SetScale(XMFLOAT3(0.1f, 0.1f, 0.1f));
+
+
+	// Create a separate shader for the wooden crate in Mode 3
+	ShaderPhong shaderMode3Crate = ShaderPhong();
+	shaderMode3Crate.Initialize();
+
+	// Create the wooden crate for Mode 3
+	Unit mode3Crate = Unit();
+	mode3Crate.Initialize(&shaderMode3Crate);
+
+	// Keep the wooden crate centered in Mode 3
+	mode3Crate.SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
+	mode3Crate.SetScale(XMFLOAT3(1.0f, 1.0f, 1.0f));
+
+	// Store all three cubes for Move Light To Cube mode
+	vector<IRenderable*> lightToCubeUnits;
+	lightToCubeUnits.push_back(&targetCube);
+	lightToCubeUnits.push_back(&mode3Crate);
+	lightToCubeUnits.push_back(&chasingLight);
+
+
 
 
 	//ShaderPhong shader = ShaderPhong();vector<IRenderable*> brickUnits;
@@ -118,6 +181,7 @@ void GameController::Run()
 		*/
 
 
+
 		if (m_toolsC->GetColorByPositionData())
 		{
 			// Move the brick cube in Color By Position mode
@@ -132,8 +196,22 @@ void GameController::Run()
 
 			brickUnit.SetPosition(pos);
 		}
-		else
+		else if (m_toolsC->GetMoveLightToCubeData())
 		{
+			// Move the flower-textured target cube in Move Light To Cube mode
+			auto pos = targetCube.GetPosition();
+
+			if (m_windowC->GetKeyStates()[VK_RIGHT]) pos.x += 0.01f;
+			if (m_windowC->GetKeyStates()[VK_LEFT]) pos.x -= 0.01f;
+			if (m_windowC->GetKeyStates()[VK_UP]) pos.y += 0.01f;
+			if (m_windowC->GetKeyStates()[VK_DOWN]) pos.y -= 0.01f;
+			if (m_windowC->GetKeyStates()['Z']) pos.z += 0.01f;
+			if (m_windowC->GetKeyStates()['X']) pos.z -= 0.01f;
+
+			targetCube.SetPosition(pos);
+		}
+		else
+		{	
 			// Move the red light cube in Move Light mode
 			auto pos = light.GetPosition();
 
@@ -170,11 +248,76 @@ void GameController::Run()
 
 
 
+
 		// Reset the light to its original position when the button is clicked
 		if (m_toolsC->GetResetLightData())
 		{
 			light.SetPosition(XMFLOAT3(0.5f, 0.5f, -2.0f));
 		}
+
+		/*
+		// Check whether the red light touches the cube in Move Light To Cube mode
+		if (m_toolsC->GetMoveLightToCubeData())
+		{
+			XMFLOAT3 lightPos = light.GetPosition();
+			XMFLOAT3 cubePos = unit.GetPosition();
+
+			// The cubes overlap when their centers are close enough on all three axes
+			bool collisionX = abs(lightPos.x - cubePos.x) <= 0.55f;
+			bool collisionY = abs(lightPos.y - cubePos.y) <= 0.55f;
+			bool collisionZ = abs(lightPos.z - cubePos.z) <= 0.55f;
+
+			if (collisionX && collisionY && collisionZ)
+			{
+				//MessageBoxA(NULL, "Collision detected!", "Collision Test", MB_OK); // Test collision
+				light.SetPosition(XMFLOAT3(0.5f, 0.5f, -2.0f)); // Reset the light after collision
+			}
+		}
+		*/
+
+
+
+		// Automatically move the red light toward the flower cube
+		if (m_toolsC->GetMoveLightToCubeData())
+		{
+			XMFLOAT3 lightPos = chasingLight.GetPosition();
+			XMFLOAT3 cubePos = targetCube.GetPosition();
+
+			// Calculate the direction from the red light to the cube's center
+			XMVECTOR lightVector = XMLoadFloat3(&lightPos);
+			XMVECTOR cubeVector = XMLoadFloat3(&cubePos);
+			XMVECTOR direction = XMVectorSubtract(cubeVector, lightVector);
+
+			// Calculate the distance between their centers
+			float distance = XMVectorGetX(XMVector3Length(direction));
+
+			// Reset the red light when it reaches the cube's center
+			if (distance <= 0.12f)
+			{
+				chasingLight.SetPosition(XMFLOAT3(1.8f, -1.2f, -2.0f)); // Reset near the camera
+			}
+			else
+			{
+				// Move the red light a small step toward the cube
+				XMVECTOR normalizedDirection = XMVector3Normalize(direction);
+				XMVECTOR movement = XMVectorScale(normalizedDirection, 0.005f);
+				XMVECTOR newPosition = XMVectorAdd(lightVector, movement);
+
+				XMFLOAT3 newLightPos;
+				XMStoreFloat3(&newLightPos, newPosition);
+
+				chasingLight.SetPosition(newLightPos);
+			}
+		}
+
+
+
+
+
+
+
+
+
 
 
 		// Reset the brick cube to its original position when the button is clicked
@@ -184,7 +327,22 @@ void GameController::Run()
 		}
 
 
-		shaderPhong.SetLightPosition(light.GetPosition()); // Make the light follow the red cube
+		// shaderPhong.SetLightPosition(light.GetPosition()); // Make the light follow the red cube
+
+
+		// Make the wooden crate receive light from the correct light cube
+		if (m_toolsC->GetMoveLightToCubeData())
+		{
+			shaderMode3Crate.SetLightPosition(chasingLight.GetPosition());
+		}
+		else
+		{
+			shaderPhong.SetLightPosition(light.GetPosition()); // Make the light follow the red cube
+		}
+
+
+
+
 		shaderPhong.SetSpecularStrength(m_toolsC->GetSpecularStrengthData()); // Update specular strength from the TrackBar
 
 		// Update the specular color using the RGB TrackBars
@@ -197,6 +355,15 @@ void GameController::Run()
 
 
 
+		// Update the specular settings for the Mode 3 wooden crate
+		shaderMode3Crate.SetSpecularStrength(m_toolsC->GetSpecularStrengthData());
+
+		shaderMode3Crate.SetSpecularColor(XMFLOAT4(
+			m_toolsC->GetSpecularRedData(),
+			m_toolsC->GetSpecularGreenData(),
+			m_toolsC->GetSpecularBlueData(),
+			1.0f
+		));
 
 
 
@@ -211,11 +378,17 @@ void GameController::Run()
 
 			m_renderer->Render(brickUnits, m_camera->GetViewProjection());
 		}
+		else if (m_toolsC->GetMoveLightToCubeData())
+		{
+			// Render the red light and target cube in Move Light To Cube mode
+			m_renderer->Render(lightToCubeUnits, m_camera->GetViewProjection());
+		}
 		else
 		{
 			// Render the red light cube and wooden crate
 			m_renderer->Render(units, m_camera->GetViewProjection());
 		}
+
 
 
 

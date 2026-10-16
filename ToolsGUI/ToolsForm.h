@@ -55,6 +55,8 @@ namespace ToolsGUI {
 	private: System::Windows::Forms::Button^ buttonResetCube;
 
 	public: bool resetCubeRequested = false; // True when the reset cube button is clicked
+	public: System::Windows::Forms::RadioButton^ radioButtonMoveLightToCube;
+	public:
 	public:
 
 	public:
@@ -96,6 +98,7 @@ namespace ToolsGUI {
 			this->trackBarSpecularBlue = (gcnew System::Windows::Forms::TrackBar());
 			this->radioButtonColorByPosition = (gcnew System::Windows::Forms::RadioButton());
 			this->buttonResetCube = (gcnew System::Windows::Forms::Button());
+			this->radioButtonMoveLightToCube = (gcnew System::Windows::Forms::RadioButton());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBarSpecularStrength))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBarSpecularRed))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBarSpecularGreen))->BeginInit();
@@ -267,12 +270,25 @@ namespace ToolsGUI {
 			this->buttonResetCube->UseVisualStyleBackColor = true;
 			this->buttonResetCube->Click += gcnew System::EventHandler(this, &ToolsForm::buttonResetCube_Click);
 			// 
+			// radioButtonMoveLightToCube
+			// 
+			this->radioButtonMoveLightToCube->AutoSize = true;
+			this->radioButtonMoveLightToCube->Location = System::Drawing::Point(28, 347);
+			this->radioButtonMoveLightToCube->Name = L"radioButtonMoveLightToCube";
+			this->radioButtonMoveLightToCube->Size = System::Drawing::Size(122, 17);
+			this->radioButtonMoveLightToCube->TabIndex = 17;
+			this->radioButtonMoveLightToCube->TabStop = true;
+			this->radioButtonMoveLightToCube->Text = L"Move Light To Cube";
+			this->radioButtonMoveLightToCube->UseVisualStyleBackColor = true;
+			this->radioButtonMoveLightToCube->CheckedChanged += gcnew System::EventHandler(this, &ToolsForm::radioButtonMoveLightToCube_CheckedChanged);
+			// 
 			// ToolsForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(801, 391);
 			this->ControlBox = false;
+			this->Controls->Add(this->radioButtonMoveLightToCube);
 			this->Controls->Add(this->buttonResetCube);
 			this->Controls->Add(this->radioButtonColorByPosition);
 			this->Controls->Add(this->trackBarSpecularBlue);
@@ -342,6 +358,10 @@ namespace ToolsGUI {
 
 	private: System::Void buttonResetCube_Click(System::Object^ sender, System::EventArgs^ e) {
 		resetCubeRequested = true; // Request the cube position to reset
+	}
+
+	private: System::Void radioButtonMoveLightToCube_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
+
 	}
 
 };

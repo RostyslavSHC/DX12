@@ -38,7 +38,8 @@ PSInput VSMain(VSInput _input)
     PSInput result;
 
     result.position = mul(float4(_input.position, 1.0f), WVP);
-    result.normal = mul(float4(_input.normal, 1.0f), InvWorld);
+    //result.normal = mul(float4(_input.normal, 1.0f), InvWorld);
+    result.normal = normalize(mul(float4(_input.normal, 0.0f), InvWorld).xyz); // ---------------------------------------------------------
     result.uv = _input.uv;
     result.pixelWorld = mul(float4(_input.position, 1.0f), World).xyz;
     result.viewDirection = normalize(CameraPosition.xyz - result.pixelWorld);
@@ -48,6 +49,7 @@ PSInput VSMain(VSInput _input)
 
 float4 PSMain(PSInput input) : SV_TARGET
 {
+    input.normal = normalize(input.normal); // ----------------------------------------------------------
     float3 lightDir = normalize(LightPosition - input.pixelWorld);
     float4 lambertian = clamp(dot(lightDir, input.normal), 0.0f, 1.0f);
     float3 refl = reflect(-lightDir, input.normal);
