@@ -85,7 +85,7 @@ void GameController::Run()
 		L"..\\Assets\\Textures\\Flowers.dds");
 
 	// Position the flower cube slightly above and left of the wooden crate
-	targetCube.SetPosition(XMFLOAT3(-0.8f, 0.4f, 0.8f));
+	targetCube.SetPosition(XMFLOAT3(-0.6f, 0.4f, 2.0f));
 	targetCube.SetScale(XMFLOAT3(1.0f, 1.0f, 1.0f));
 
 	// Wooden crate in the middle
@@ -102,9 +102,77 @@ void GameController::Run()
 	// Create the red light cube that automatically follows the target
 	Unit chasingLight = Unit();
 	chasingLight.Initialize(&shaderChasingLight);
+
+
+
+
+
+
+
+
+
+
 	// chasingLight.SetPosition(XMFLOAT3(1.5f, -1.0f, -1.5f));
-	chasingLight.SetPosition(XMFLOAT3(1.8f, -1.2f, -2.0f)); // Start near the camera, toward the bottom-right
+	// Create the red light's starting position near the bottom-right camera edge
+	float spawnDistance = 0.8f; // Distance in front of the camera
+	float halfHeight = spawnDistance * tanf(XMConvertToRadians(45.0f) / 2.0f);
+	float halfWidth = halfHeight *
+		((float)m_windowC->GetWindowWidth() / (float)m_windowC->GetWindowHeight());
+
+	// Camera looks from (0, 1, -3) toward the origin
+	XMVECTOR cameraPosition = XMVectorSet(0.0f, 1.0f, -3.0f, 0.0f);
+	XMVECTOR forward = XMVector3Normalize(
+		XMVectorSet(0.0f, -1.0f, 3.0f, 0.0f));
+
+	XMVECTOR right = XMVector3Normalize(
+		XMVector3Cross(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), forward));
+
+	XMVECTOR up = XMVector3Normalize(
+		XMVector3Cross(forward, right));
+
+	// Place the light slightly outside the bottom-right edge of the camera view
+	XMVECTOR spawnVector = XMVectorAdd(
+		cameraPosition,
+		XMVectorAdd(
+			XMVectorScale(forward, spawnDistance),
+			XMVectorAdd(
+				XMVectorScale(right, halfWidth * 1.1f),
+				XMVectorScale(up, -halfHeight * 1.1f))));
+
+	XMFLOAT3 chasingLightStart;
+	XMStoreFloat3(&chasingLightStart, spawnVector);
+
+	chasingLight.SetPosition(chasingLightStart);
 	chasingLight.SetScale(XMFLOAT3(0.1f, 0.1f, 0.1f));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 	// Create a separate shader for the wooden crate in Mode 3
@@ -116,14 +184,16 @@ void GameController::Run()
 	mode3Crate.Initialize(&shaderMode3Crate);
 
 	// Keep the wooden crate centered in Mode 3
-	mode3Crate.SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
+	mode3Crate.SetPosition(XMFLOAT3(0.0f, 0.0f, 0.6f));
 	mode3Crate.SetScale(XMFLOAT3(1.0f, 1.0f, 1.0f));
+
 
 	// Store all three cubes for Move Light To Cube mode
 	vector<IRenderable*> lightToCubeUnits;
 	lightToCubeUnits.push_back(&targetCube);
-	lightToCubeUnits.push_back(&mode3Crate);
 	lightToCubeUnits.push_back(&chasingLight);
+	lightToCubeUnits.push_back(&mode3Crate);
+
 
 
 
@@ -294,13 +364,13 @@ void GameController::Run()
 			// Reset the red light when it reaches the cube's center
 			if (distance <= 0.12f)
 			{
-				chasingLight.SetPosition(XMFLOAT3(1.8f, -1.2f, -2.0f)); // Reset near the camera
+				chasingLight.SetPosition(chasingLightStart); // Reset to the same camera-relative starting position
 			}
 			else
 			{
 				// Move the red light a small step toward the cube
 				XMVECTOR normalizedDirection = XMVector3Normalize(direction);
-				XMVECTOR movement = XMVectorScale(normalizedDirection, 0.005f);
+				XMVECTOR movement = XMVectorScale(normalizedDirection, 0.008f);
 				XMVECTOR newPosition = XMVectorAdd(lightVector, movement);
 
 				XMFLOAT3 newLightPos;
