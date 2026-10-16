@@ -135,3 +135,24 @@ bool __stdcall GetToolsColorByPositionData()
 
     return form->radioButtonColorByPosition->Checked;
 }
+
+
+
+
+
+
+
+// Check whether the cube position should be reset
+extern "C" __declspec(dllexport)
+bool __stdcall GetToolsResetCubeData()
+{
+    if (Application::OpenForms->Count == 0)
+        return false;
+
+    ToolsForm^ form = (ToolsForm^)Application::OpenForms[0];
+
+    bool reset = form->resetCubeRequested; // Check whether reset was requested
+    form->resetCubeRequested = false; // Clear the request after reading it
+
+    return reset;
+}

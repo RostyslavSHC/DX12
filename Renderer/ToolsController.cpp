@@ -14,6 +14,7 @@ ToolsController::ToolsController()
     m_getSpecularGreenData = nullptr;
     m_getSpecularBlueData = nullptr;
     m_getColorByPositionData = nullptr;
+    m_getResetCubeData = nullptr; // Initialize the cube reset function pointer
 }
 
 // Load the tools library
@@ -81,6 +82,14 @@ void ToolsController::LoadToolsLibrary()
     m_getColorByPositionData = reinterpret_cast<GetToolsColorByPositionData>(address);
     M_ASSERT(m_getColorByPositionData != nullptr, "Failed to load GetToolsColorByPositionData");
 
+
+
+
+
+    // Get the address of the GetToolsResetCubeData function
+    address = GetProcAddress(m_module, "GetToolsResetCubeData");
+    m_getResetCubeData = reinterpret_cast<GetToolsResetCubeData>(address);
+    M_ASSERT(m_getResetCubeData != nullptr, "Failed to load GetToolsResetCubeData");
 }
 
 bool ToolsController::GetResetLightData() const
@@ -121,4 +130,12 @@ float ToolsController::GetSpecularBlueData() const
 bool ToolsController::GetColorByPositionData() const
 {
     return m_getColorByPositionData(); // Read the selected mode from ToolsGUI
+}
+
+
+
+
+bool ToolsController::GetResetCubeData() const
+{
+    return m_getResetCubeData(); // Read the cube reset request from ToolsGUI
 }

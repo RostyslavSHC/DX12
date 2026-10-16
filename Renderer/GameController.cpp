@@ -176,6 +176,14 @@ void GameController::Run()
 			light.SetPosition(XMFLOAT3(0.5f, 0.5f, -2.0f));
 		}
 
+
+		// Reset the brick cube to its original position when the button is clicked
+		if (m_toolsC->GetResetCubeData())
+		{
+			brickUnit.SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
+		}
+
+
 		shaderPhong.SetLightPosition(light.GetPosition()); // Make the light follow the red cube
 		shaderPhong.SetSpecularStrength(m_toolsC->GetSpecularStrengthData()); // Update specular strength from the TrackBar
 

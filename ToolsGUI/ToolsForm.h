@@ -53,6 +53,8 @@ namespace ToolsGUI {
 	public: System::Windows::Forms::RadioButton^ radioButtonColorByPosition;
 	public:
 	private: System::Windows::Forms::Button^ buttonResetCube;
+
+	public: bool resetCubeRequested = false; // True when the reset cube button is clicked
 	public:
 
 	public:
@@ -339,7 +341,7 @@ namespace ToolsGUI {
 	}
 
 	private: System::Void buttonResetCube_Click(System::Object^ sender, System::EventArgs^ e) {
-
+		resetCubeRequested = true; // Request the cube position to reset
 	}
 
 };
