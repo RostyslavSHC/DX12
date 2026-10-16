@@ -54,10 +54,12 @@ void GameController::Run()
 	shaderPositionColor.Initialize();
 	// Create the brick-textured cube
 	Unit brickUnit = Unit();
-	brickUnit.Initialize(&shaderPositionColor, L"..\\Assets\\Textures\\BrickWall.dds");
+	// brickUnit.Initialize(&shaderPositionColor, L"..\\Assets\\Textures\\BrickWall.dds");
+	brickUnit.Initialize(&shaderPositionColor,
+		L"..\\Assets\\Textures\\BrickWall.dds",
+		L"..\\Assets\\Textures\\Flowers.dds");
 
-	// Store the brick cube for Color By Position modevector<IRenderable*> brickUnits;
-
+	// Store the brick cube for Color By Position mode
 	vector<IRenderable*> brickUnits;
 	brickUnits.push_back(&brickUnit);
 

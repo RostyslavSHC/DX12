@@ -20,6 +20,7 @@ struct VSInput
 };
 
 Texture2D g_diffuse : register(t0);
+Texture2D g_texture1 : register(t1);
 SamplerState g_sampler : register(s0);
 
 PSInput VSMain(VSInput _input)
@@ -49,9 +50,16 @@ float4 PSMain(PSInput input) : SV_TARGET
 
 
 
+
+
+
 float4 PSMain(PSInput input) : SV_TARGET
 {
-    float4 textureColor = g_diffuse.Sample(g_sampler, input.uv);
+    float4 brickColor = g_diffuse.Sample(g_sampler, input.uv);
+    float4 flowerColor = g_texture1.Sample(g_sampler, input.uv);
+
+    // Mix brick with flowers
+    float4 baseColor = lerp(brickColor, flowerColor, 0.25f);
 
     // Get the cube's center position in world space
     float3 cubePosition = float3(World[3][0], World[3][1], World[3][2]);
@@ -59,19 +67,17 @@ float4 PSMain(PSInput input) : SV_TARGET
     // Calculate the distance from the starting position on each axis
     float3 distance = abs(cubePosition);
 
-    // Start with the original texture color
-    float3 tint = float3(1.0f, 1.0f, 1.0f);
+    // Calculate the position-based color
+    float3 positionColor = saturate(distance / 2.0f);
 
-    // Apply a position-based tint when the cube moves
-    if (distance.x > 0.01f || distance.y > 0.01f || distance.z > 0.01f)
-    {
-        float3 positionColor = distance / max(max(distance.x, distance.y), distance.z);
-        float tintAmount = saturate(max(max(distance.x, distance.y), distance.z));
+    // Gradually increase the color effect as the cube moves
+    float tintAmount = saturate(max(max(distance.x, distance.y), distance.z) / 2.0f);
 
-        tint = lerp(float3(1.0f, 1.0f, 1.0f), positionColor, tintAmount);
-    }
+    // Create a brighter position-based color while preserving texture details
+    float3 tintedColor = baseColor.rgb * 0.45f + positionColor * 0.50f;
 
-    return float4(textureColor.rgb * tint, textureColor.a);
+    // Blend original texture with the position-based color
+    float3 finalColor = lerp(baseColor.rgb, tintedColor, tintAmount * 0.85f);
+
+    return float4(saturate(finalColor), baseColor.a);
 }
-
-

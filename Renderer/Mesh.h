@@ -13,7 +13,9 @@ public:
 
 	// Methods
 	void Initialize(Shader* _shader);
-	void Initialize(Shader* _shader, wstring _textureFilename); // Initialize a mesh with a selected texture
+	void Initialize(Shader* _shader, wstring _textureFilename); // Initialize mesh with selected texture
+	void Initialize(Shader* _shader, wstring _textureFilename, wstring _textureFilename2); // Initialize mesh with 2 selected textures
+
 	virtual void Render(XMMATRIX _viewProj);
 
 private:

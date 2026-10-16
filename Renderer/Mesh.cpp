@@ -47,12 +47,18 @@ void Mesh::Initialize(Shader* _shader)
 
 
 
+
 void Mesh::Initialize(Shader* _shader)
 {
-	Initialize(_shader, L"..\\Assets\\Textures\\Wood.dds"); // Use the original wood texture
+	Initialize(_shader, L"..\\Assets\\Textures\\Wood.dds", L"..\\Assets\\Textures\\Emoji.dds"); // Use the original wood and emoji textures
 }
 
 void Mesh::Initialize(Shader* _shader, wstring _textureFilename)
+{
+	Initialize(_shader, _textureFilename, L"..\\Assets\\Textures\\Emoji.dds"); // Use the selected texture and original emoji texture
+}
+
+void Mesh::Initialize(Shader* _shader, wstring _textureFilename, wstring _textureFilename2)
 {
 	SetShader(_shader);
 	CreateVertexBuffer();
@@ -63,9 +69,10 @@ void Mesh::Initialize(Shader* _shader, wstring _textureFilename)
 	SetTexDiffuse(t0);
 
 	Texture* t1 = new Texture();
-	t1->Initialize(L"..\\Assets\\Textures\\Emoji.dds", _shader);
+	t1->Initialize(_textureFilename2, _shader); // Load the selected second texture
 	SetTexture1(t1);
 }
+
 
 
 
