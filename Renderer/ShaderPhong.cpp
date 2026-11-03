@@ -49,6 +49,11 @@ void ShaderPhong::SetPipelineState()
         // 3. {1.0f, 0.7f, 1.8f}
         XMStoreFloat3(&cbData->lights[count].SpotDirection, origin - lightPos);
         XMStoreFloat2(&cbData->lights[count].SpotConeFalloff, FXMVECTOR{ XMConvertToRadians(10), 100.0f });
+        // Tried:
+		// 1. 10 Degrees, 100.0f - Narrow spotlight, teacher's multiple-light setting 
+		// 2. 20 Degrees, 100.0f - Wider illuminated area
+		// 3. 30 Degrees, 100.0f - Even wider spotlight
+		// 4. 40 Degrees, 10.0f - Softer falloff inside the cone
     }
     cbData->LightCount = 1;
 

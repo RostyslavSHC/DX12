@@ -68,6 +68,7 @@ PSInput VSMain(VSInput _input)
     return result;
 }
 
+
 float4 PSMain(PSInput input) : SV_TARGET
 {
     input.normal = normalize(input.normal);
@@ -76,15 +77,27 @@ float4 PSMain(PSInput input) : SV_TARGET
     for (uint count = 0; count < lightCount; count++)
     {
         float3 lightDir = normalize(lights[count].Position - input.pixelWorld);
-        float4 lambertianStrength = clamp(dot(lightDir, input.normal), 0.0f, 1.0f);
-        float3 refl = reflect(-lightDir, input.normal);
-        float4 specularStrength = pow(max(dot(refl, input.viewDirection), 0.0f), material.SpecularStrength);
-        float distance = length(lights[count].Position - input.pixelWorld);
-        float att = 1.0f / (lights[count].ConstLinQuad[0] + lights[count].ConstLinQuad[1] * distance + lights[count].ConstLinQuad[2] * (distance * distance));
-        float4 ambientColor = g_diffuse.Sample(g_sampler, input.uv) * lights[count].AmbientColor;
-        float4 diffuseColor = lambertianStrength * g_diffuse.Sample(g_sampler, input.uv) * material.DiffuseColor * att;
-        float4 specularColor = specularStrength * g_specular.Sample(g_sampler, input.uv) * material.SpecularColor * att;
-        finalColor += ((ambientColor + diffuseColor + specularColor) * lights[count].Color).rgb;
+
+        float a = cos(lights[count].SpotConeFalloff[0]);
+        float d = dot(normalize(lights[count].SpotDirection), -lightDir);
+        if (a < d)
+        {
+            float4 lambertianStrength = clamp(dot(lightDir, input.normal), 0.0f, 1.0f);
+            float3 refl = reflect(-lightDir, input.normal);
+            float4 specularStrength = pow(max(dot(refl, input.viewDirection), 0.0f), material.SpecularStrength);
+            float distance = length(lights[count].Position - input.pixelWorld);
+            float att = 1.0f / (lights[count].ConstLinQuad[0] + lights[count].ConstLinQuad[1] * distance + lights[count].ConstLinQuad[2] * (distance * distance));
+            att *= 1 - pow(clamp(a / d, 0.0f, 1.0f), lights[count].SpotConeFalloff[1]);
+            float4 ambientColor = g_diffuse.Sample(g_sampler, input.uv) * lights[count].AmbientColor;
+            float4 diffuseColor = lambertianStrength * g_diffuse.Sample(g_sampler, input.uv) * material.DiffuseColor * att;
+            float4 specularColor = specularStrength * g_specular.Sample(g_sampler, input.uv) * material.SpecularColor * att;
+            finalColor += ((ambientColor + diffuseColor + specularColor) * lights[count].Color).rgb;
+        }
+        else
+        {
+            float4 ambientColor = g_diffuse.Sample(g_sampler, input.uv) * lights[count].AmbientColor;
+            finalColor += ambientColor.rgb;
+        }
     }
 
     return float4(finalColor, 1.0f);
