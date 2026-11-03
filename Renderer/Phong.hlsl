@@ -9,7 +9,8 @@ struct Material
 struct Light
 {
     float4 AmbientColor;
-    float3 Position;
+    // float3 Position;
+    float3 Direction;
     float pad0;
     float4 Color;
 };
@@ -61,7 +62,9 @@ PSInput VSMain(VSInput _input)
 float4 PSMain(PSInput input) : SV_TARGET
 {
     input.normal = normalize(input.normal);
-    float3 lightDir = normalize(light.Position - input.pixelWorld);
+    // float3 lightDir = normalize(light.Position - input.pixelWorld);
+    float3 lightDir = normalize(-light.Direction);
+    
     float4 lambertianStrength = clamp(dot(lightDir, input.normal), 0.0f, 1.0f);
     float3 refl = reflect(-lightDir, input.normal);
     float4 specularStrength = pow(max(dot(refl, input.viewDirection), 0.0f), material.SpecularStrength);

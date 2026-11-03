@@ -20,7 +20,8 @@ public:
     struct Light
     {
         XMFLOAT4 AmbientColor;
-        XMFLOAT3 Position;
+        // XMFLOAT3 Position;
+		XMFLOAT3 Direction;
         float pad0;
         XMFLOAT4 Color;
     };
