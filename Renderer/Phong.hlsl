@@ -79,6 +79,8 @@ float4 PSMain(PSInput input) : SV_TARGET
         float4 specularStrength = pow(max(dot(refl, input.viewDirection), 0.0f), material.SpecularStrength);
         float distance = length(light.Position - input.pixelWorld);
         float att = 1.0f / (light.ConstLinQuad[0] + light.ConstLinQuad[1] * distance + light.ConstLinQuad[2] * (distance * distance));
+        att *= 1 - pow(clamp(a / d, 0.0f, 1.0f), light.SpotConeFalloff[1]); // ---------------------------------------------------------------------------
+        
         float4 ambientColor = g_diffuse.Sample(g_sampler, input.uv) * light.AmbientColor;
         float4 diffuseColor = lambertianStrength * g_diffuse.Sample(g_sampler, input.uv) * material.DiffuseColor * att;
         float4 specularColor = specularStrength * g_specular.Sample(g_sampler, input.uv) * material.SpecularColor * att;
