@@ -35,10 +35,11 @@ void ShaderPhong::SetPipelineState()
     XMStoreFloat4(&cbData->material.DiffuseColor, FXMVECTOR{ 1.0f, 1.0f, 1.0f, 1.0f });
     XMStoreFloat(&cbData->material.SpecularStrength, FXMVECTOR{ 4.0f });
     XMStoreFloat4(&cbData->material.SpecularColor, FXMVECTOR{ 2.0f, 0.0f, 0.0f, 1.0f });
-    // for (UINT count = 0; count < 4; count++)
-    for (UINT count = 0; count < 1; count++)
+    for (UINT count = 0; count < 5; count++)
+    // for (UINT count = 0; count < 1; count++)
     {
-        FXMVECTOR origin = { -0.8f + (0.5f * count), 0, 0 };
+        // FXMVECTOR origin = { -0.8f + (0.5f * count), 0, 0 };
+        FXMVECTOR origin = { -0.8f + (0.4f * count), 0, 0 };
         XMStoreFloat4(&cbData->lights[count].AmbientColor, FXMVECTOR{ 0.05f, 0.05f, 0.05f, 1.0f });
         XMStoreFloat3(&cbData->lights[count].Position, lightPos);
         XMStoreFloat4(&cbData->lights[count].Color, FXMVECTOR{ 0.0f + (count * 0.25f), 1.0f, 0.0f, 1.0f });
@@ -55,7 +56,7 @@ void ShaderPhong::SetPipelineState()
 		// 3. 30 Degrees, 100.0f - Even wider spotlight
 		// 4. 40 Degrees, 10.0f - Softer falloff inside the cone
     }
-    cbData->LightCount = 1;
+    cbData->LightCount = 5;
 
     XMStoreFloat4(&cbData->CameraPosition, FXMVECTOR{ 0.0f, 1.0f, -3.0f });
 }
