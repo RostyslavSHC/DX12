@@ -35,8 +35,10 @@ void ShaderPhong::SetPipelineState()
     XMStoreFloat(&cbData->material.SpecularStrength, FXMVECTOR{ 4.0f });
     XMStoreFloat4(&cbData->material.SpecularColor, FXMVECTOR{ 2.0f, 0.0f, 0.0f, 1.0f });
     XMStoreFloat4(&cbData->light.AmbientColor, FXMVECTOR{ 0.2f, 0.2f, 0.2f, 1.0f });
-    XMStoreFloat3(&cbData->light.Direction, FXMVECTOR{ 0.0f, 0.0f, 1.0f });
+
+    XMStoreFloat3(&cbData->light.Position, FXMVECTOR{ 0.5f, 0.5f, -2.0f, 0.0f });
     XMStoreFloat4(&cbData->light.Color, FXMVECTOR{ 1.0f, 1.0f, 1.0f, 1.0f });
+    XMStoreFloat3(&cbData->light.ConstLinQuad, FXMVECTOR{ 1.0f, 0.09f, 0.32f });
     XMStoreFloat4(&cbData->CameraPosition, FXMVECTOR{ 0.0f, 1.0f, -3.0f });
 }
 

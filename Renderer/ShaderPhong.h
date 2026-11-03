@@ -20,10 +20,12 @@ public:
     struct Light
     {
         XMFLOAT4 AmbientColor;
-        // XMFLOAT3 Position;
-		XMFLOAT3 Direction;
+        XMFLOAT3 Position;
+		// XMFLOAT3 Direction;
         float pad0;
         XMFLOAT4 Color;
+		XMFLOAT3 ConstLinQuad; // Pack 3 values: constant, linear, quadratic
+		float pad1;
     };
 
     struct CB_Phong : ConstantBuffer
