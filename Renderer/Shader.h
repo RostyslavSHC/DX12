@@ -21,7 +21,8 @@ public:
 	virtual ~Shader() {}
 
 	// Constant Buffer
-	struct alignas(256) ConstantBuffer
+	struct ConstantBuffer // Custom change to align ----------------------------------------------------------
+	// struct alignas(256) ConstantBuffer
 	{
 		XMFLOAT4X4 WVP;
 		XMFLOAT4X4 World;

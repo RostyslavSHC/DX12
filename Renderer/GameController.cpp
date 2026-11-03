@@ -65,17 +65,24 @@ void GameController::Run()
     t0->Initialize(L"..\\Assets\\Textures\\MetalFrameWood.dds", &shaderPhong);
     Texture* t1 = new Texture();
     t1->Initialize(L"..\\Assets\\Textures\\MetalFrame.dds", &shaderPhong);
-    for (int count = 0; count < 100; count++)
-    // for (int count = 0; count < 1; count++)
+
+
+
+
+    for (int countX = 0; countX < 10; countX++)
     {
-        Unit* unit = new Unit();
-        unit->Initialize(&shaderPhong);
-        unit->SetPosition({ RndF(-1.0f, 1.0f), RndF(-1.0f, 1.0f), RndF(-1.0f, 0.0f) });
-        unit->SetScale({ 0.2f, 0.2f, 0.2f });
-        unit->SetTexDiffuse(t0);
-        unit->SetTexSpecular(t1);
-        units.push_back(unit);
+        for (int countY = 0; countY < 10; countY++)
+        {
+            Unit* unit = new Unit();
+            unit->Initialize(&shaderPhong);
+            unit->SetPosition({ -1.0f + (countX * 0.2f), -1.0f + (countY * 0.2f), 0.0f });
+            unit->SetScale({ 0.2f, 0.2f, 0.2f });
+            unit->SetTexDiffuse(t0);
+            unit->SetTexSpecular(t1);
+            units.push_back(unit);
+        }
     }
+
 
     //Main message loop
     MSG msg = {};
