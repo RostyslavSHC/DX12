@@ -44,9 +44,9 @@ void ShaderPhong::SetPipelineState()
         XMStoreFloat4(&cbData->lights[count].Color, FXMVECTOR{ 0.0f + (count * 0.25f), 1.0f, 0.0f, 1.0f });
         XMStoreFloat3(&cbData->lights[count].ConstLinQuad, FXMVECTOR{ 1.0f, 0.09f, 0.32f });
         // Tried
-        // 1. {1.0f, 0.09f, 0.32f}
-        // 2. {1.0f, 0.09f, 0.032f}
-        // 3. {1.0f, 0.7f, 1.8f}
+        // 1. {1.0f, 0.09f, 0.32f} - Current lighting
+        // 2. {1.0f, 0.09f, 0.032f} - Brighter cubes farther from the light
+        // 3. {1.0f, 0.7f, 1.8f} - Light fades more quickly
         XMStoreFloat3(&cbData->lights[count].SpotDirection, origin - lightPos);
         XMStoreFloat2(&cbData->lights[count].SpotConeFalloff, FXMVECTOR{ XMConvertToRadians(10), 100.0f });
     }
