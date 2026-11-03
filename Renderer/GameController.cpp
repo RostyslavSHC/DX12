@@ -65,7 +65,8 @@ void GameController::Run()
     t0->Initialize(L"..\\Assets\\Textures\\MetalFrameWood.dds", &shaderPhong);
     Texture* t1 = new Texture();
     t1->Initialize(L"..\\Assets\\Textures\\MetalFrame.dds", &shaderPhong);
-    for (int count = 0; count < 100; count++)
+    // for (int count = 0; count < 100; count++)
+    for (int count = 0; count < 1; count++)
     {
         Unit* unit = new Unit();
         unit->Initialize(&shaderPhong);
