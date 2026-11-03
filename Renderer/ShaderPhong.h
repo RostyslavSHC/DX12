@@ -9,18 +9,29 @@ public:
     ShaderPhong();
 
     // Constant Buffer
-    struct CB_Phong : ConstantBuffer
+    struct Material
     {
         XMFLOAT4 DiffuseColor;
-        XMFLOAT4 AmbientLight;
-        XMFLOAT3 LightPosition;
-        float pad0; // Padding to align to 16 bytes
-        XMFLOAT4 LightColor;
         float SpecularStrength;
-        XMFLOAT3 pad1; // Padding to align to 16 bytes
+        XMFLOAT3 pad1;
         XMFLOAT4 SpecularColor;
+    };
+
+    struct Light
+    {
+        XMFLOAT4 AmbientColor;
+        XMFLOAT3 Position;
+        float pad0;
+        XMFLOAT4 Color;
+    };
+
+    struct CB_Phong : ConstantBuffer
+    {
+        Material material;
+        Light light;
         XMFLOAT4 CameraPosition;
     };
+
 
     // Methods
     virtual void SetPipelineState() override;

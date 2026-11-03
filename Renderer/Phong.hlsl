@@ -1,18 +1,29 @@
+struct Material
+{
+    float4 DiffuseColor;
+    float SpecularStrength;
+    float3 pad1;
+    float4 SpecularColor;
+};
+
+struct Light
+{
+    float4 AmbientColor;
+    float3 Position;
+    float pad0;
+    float4 Color;
+};
+
 cbuffer SceneData : register(b0)
 {
     float4x4 WVP;
     float4x4 World;
     float4x4 InvWorld;
-    float4 DiffuseColor;
-    float4 AmbientLight;
-    float3 LightPosition;
-    float pad0; // Padding to align to 16 bytes
-    float4 LightColor;
-    float SpecularStrength;
-    float3 pad1;
-    float4 SpecularColor;
+    Material material;
+    Light light;
     float4 CameraPosition;
 };
+
 
 struct PSInput
 {
@@ -48,11 +59,11 @@ PSInput VSMain(VSInput _input)
 
 float4 PSMain(PSInput input) : SV_TARGET
 {
-    float3 lightDir = normalize(LightPosition - input.pixelWorld);
+    float3 lightDir = normalize(light.Position - input.pixelWorld);
     float4 lambertian = clamp(dot(lightDir, input.normal), 0.0f, 1.0f);
     float3 refl = reflect(-lightDir, input.normal);
-    float4 specColor = pow(max(dot(refl, input.viewDirection), 0.0f), SpecularStrength) * SpecularColor;
-    float4 diffuseColor = g_diffuse.Sample(g_sampler, input.uv) * DiffuseColor * LightColor;
-    float4 diffuseIntensity = AmbientLight + lambertian;
+    float4 specColor = pow(max(dot(refl, input.viewDirection), 0.0f), material.SpecularStrength) * material.SpecularColor;
+    float4 diffuseColor = g_diffuse.Sample(g_sampler, input.uv) * material.DiffuseColor * light.Color;
+    float4 diffuseIntensity = light.AmbientColor + lambertian;
     return diffuseColor * diffuseIntensity + specColor;
 }

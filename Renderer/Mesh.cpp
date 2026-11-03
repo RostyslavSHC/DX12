@@ -34,7 +34,7 @@ void Mesh::Initialize(Shader* _shader)
 	CreateVertexBuffer();
 	//CreateIndexBuffer();
 	Texture* t0 = new Texture();
-	t0->Initialize(L"..\\Assets\\Textures\\Wood.dds", _shader);
+	t0->Initialize(L"..\\Assets\\Textures\\MetalFrameWood.dds", _shader);
 	SetTexDiffuse(t0);
 
 	Texture* t1 = new Texture();
