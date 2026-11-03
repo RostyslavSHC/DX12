@@ -15,6 +15,10 @@ struct Light
     float4 Color;
     float3 ConstLinQuad; // Pack 3 values: constant, linear, quadratic
     float pad1;
+    float3 SpotDirection;
+    float pad2;
+    float2 SpotConeFalloff; // Pack 2 values: inner cone, outer cone
+    float pad3;
 };
 
 cbuffer SceneData : register(b0)
@@ -65,14 +69,24 @@ float4 PSMain(PSInput input) : SV_TARGET
 {
     input.normal = normalize(input.normal);
     float3 lightDir = normalize(light.Position - input.pixelWorld);
-    // float3 lightDir = normalize(-light.Direction);
-    float4 lambertianStrength = clamp(dot(lightDir, input.normal), 0.0f, 1.0f);
-    float3 refl = reflect(-lightDir, input.normal);
-    float4 specularStrength = pow(max(dot(refl, input.viewDirection), 0.0f), material.SpecularStrength);
-    float distance = length(light.Position - input.pixelWorld);
-    float att = 1.0f / (light.ConstLinQuad[0] + light.ConstLinQuad[1] * distance + light.ConstLinQuad[2] * (distance * distance));
-    float4 ambientColor = g_diffuse.Sample(g_sampler, input.uv) * light.AmbientColor;
-    float4 diffuseColor = lambertianStrength * g_diffuse.Sample(g_sampler, input.uv) * material.DiffuseColor * att;
-    float4 specularColor = specularStrength * g_specular.Sample(g_sampler, input.uv) * material.SpecularColor * att;
-    return ((ambientColor + diffuseColor + specularColor) * light.Color);
+
+    float a = cos(light.SpotConeFalloff[0]);
+    float d = dot(normalize(light.SpotDirection), -lightDir);
+    if (a < d)
+    {
+        float4 lambertianStrength = clamp(dot(lightDir, input.normal), 0.0f, 1.0f);
+        float3 refl = reflect(-lightDir, input.normal);
+        float4 specularStrength = pow(max(dot(refl, input.viewDirection), 0.0f), material.SpecularStrength);
+        float distance = length(light.Position - input.pixelWorld);
+        float att = 1.0f / (light.ConstLinQuad[0] + light.ConstLinQuad[1] * distance + light.ConstLinQuad[2] * (distance * distance));
+        float4 ambientColor = g_diffuse.Sample(g_sampler, input.uv) * light.AmbientColor;
+        float4 diffuseColor = lambertianStrength * g_diffuse.Sample(g_sampler, input.uv) * material.DiffuseColor * att;
+        float4 specularColor = specularStrength * g_specular.Sample(g_sampler, input.uv) * material.SpecularColor * att;
+        return ((ambientColor + diffuseColor + specularColor) * light.Color);
+    }
+    else
+    {
+        float4 ambientColor = g_diffuse.Sample(g_sampler, input.uv) * light.AmbientColor;
+        return ambientColor;
+    }
 }

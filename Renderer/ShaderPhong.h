@@ -26,6 +26,10 @@ public:
         XMFLOAT4 Color;
 		XMFLOAT3 ConstLinQuad; // Pack 3 values: constant, linear, quadratic
 		float pad1;
+        XMFLOAT3 SpotDirection;
+		float pad2;
+        XMFLOAT2 SpotConeFalloff; // Pack 2 values: inner cone, outer cone
+		XMFLOAT2 pad3;
     };
 
     struct CB_Phong : ConstantBuffer
