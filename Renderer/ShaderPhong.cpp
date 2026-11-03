@@ -31,8 +31,8 @@ void ShaderPhong::SetPipelineState()
     auto c = r->GetCommands()->GetCommandList().Get();
     CB_Phong* cbData = reinterpret_cast<CB_Phong*>(&GetConstantData()[r->GetFrameIndex()]);
     XMStoreFloat4(&cbData->material.DiffuseColor, FXMVECTOR{ 1.0f, 1.0f, 1.0f, 1.0f });
-    XMStoreFloat(&cbData->material.SpecularStrength, FXMVECTOR{ 16.0f });
-    XMStoreFloat4(&cbData->material.SpecularColor, FXMVECTOR{ 1.0f, 1.0f, 1.0f, 1.0f });
+    XMStoreFloat(&cbData->material.SpecularStrength, FXMVECTOR{ 8.0f });
+    XMStoreFloat4(&cbData->material.SpecularColor, FXMVECTOR{ 2.0f, 2.0f, 2.0f, 1.0f });
     XMStoreFloat4(&cbData->light.AmbientColor, FXMVECTOR{ 0.2f, 0.2f, 0.2f, 1.0f });
     XMStoreFloat3(&cbData->light.Position, FXMVECTOR{ 0.5f, 0.5f, -2.0f, 0.0f });
     XMStoreFloat4(&cbData->light.Color, FXMVECTOR{ 1.0f, 1.0f, 1.0f, 1.0f });

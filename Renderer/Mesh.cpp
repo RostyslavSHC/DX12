@@ -38,7 +38,7 @@ void Mesh::Initialize(Shader* _shader)
 	SetTexDiffuse(t0);
 
 	Texture* t1 = new Texture();
-	t1->Initialize(L"..\\Assets\\Textures\\Emoji.dds", _shader);
+	t1->Initialize(L"..\\Assets\\Textures\\MetalFrame.dds", _shader);
 	SetTexture1(t1);
 }
 

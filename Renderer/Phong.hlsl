@@ -42,6 +42,7 @@ struct VSInput
 };
 
 Texture2D g_diffuse : register(t0);
+Texture2D g_specular : register(t1);
 SamplerState g_sampler : register(s0);
 
 PSInput VSMain(VSInput _input)
@@ -59,11 +60,13 @@ PSInput VSMain(VSInput _input)
 
 float4 PSMain(PSInput input) : SV_TARGET
 {
+    input.normal = normalize(input.normal);
     float3 lightDir = normalize(light.Position - input.pixelWorld);
-    float4 lambertian = clamp(dot(lightDir, input.normal), 0.0f, 1.0f);
+    float4 lambertianStrength = clamp(dot(lightDir, input.normal), 0.0f, 1.0f);
     float3 refl = reflect(-lightDir, input.normal);
-    float4 specColor = pow(max(dot(refl, input.viewDirection), 0.0f), material.SpecularStrength) * material.SpecularColor;
-    float4 diffuseColor = g_diffuse.Sample(g_sampler, input.uv) * material.DiffuseColor * light.Color;
-    float4 diffuseIntensity = light.AmbientColor + lambertian;
-    return diffuseColor * diffuseIntensity + specColor;
+    float4 specularStrength = pow(max(dot(refl, input.viewDirection), 0.0f), material.SpecularStrength);
+    float4 ambientColor = g_diffuse.Sample(g_sampler, input.uv) * light.AmbientColor;
+    float4 diffuseColor = lambertianStrength * g_diffuse.Sample(g_sampler, input.uv) * material.DiffuseColor;
+    float4 specularColor = specularStrength * g_specular.Sample(g_sampler, input.uv) * material.SpecularColor;
+    return ((ambientColor + diffuseColor + specularColor) * light.Color);
 }
