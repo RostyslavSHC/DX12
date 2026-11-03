@@ -14,6 +14,9 @@ Shader::Shader()
 	m_shaderFile = nullptr;
 	m_inputElemDescSize = 0;
 	m_inputElementDescs = nullptr;
+	m_cbSizeAligned = 0;
+	m_vertexType = nullptr;
+	m_currentObjectIndex = 0;
 
 }
 
@@ -109,10 +112,14 @@ void Shader::CreateConstantBuffer(UINT64 _bufferSize)
 	auto device = r->GetDevice().Get();
 
 	// Create the constant buffer.
+	const UINT64 cbSizeAligned = Align256((UINT)_bufferSize);
+	m_cbSizeAligned = cbSizeAligned;
+	const UINT64 totalSize = cbSizeAligned * r->GetFrameCount() * MAX_OBJECTS;
+
 	const UINT64 cbvElementSize = (_bufferSize + 255) & ~255;
 	const UINT64 constantBufferSize = cbvElementSize * r->GetFrameCount();
 	const CD3DX12_HEAP_PROPERTIES constantBufferHeapProps(D3D12_HEAP_TYPE_UPLOAD);
-	const CD3DX12_RESOURCE_DESC constantBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(constantBufferSize);
+	const CD3DX12_RESOURCE_DESC constantBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(totalSize);
 	M_ASSERT(SUCCEEDED(device->CreateCommittedResource(&constantBufferHeapProps, D3D12_HEAP_FLAG_NONE,
 		&constantBufferDesc, D3D12_RESOURCE_STATE_GENERIC_READ,
 		nullptr, IID_PPV_ARGS(&m_constantBuffer))),
@@ -151,4 +158,35 @@ void Shader::SetPipelineState()
 	UINT descriptorSize = r->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	CD3DX12_GPU_DESCRIPTOR_HANDLE srvHandle(m_descrHeap->GetGPUDescriptorHandleForHeapStart(), 1, descriptorSize);
 	r->GetCommands()->GetCommandList()->SetGraphicsRootDescriptorTable(1, srvHandle);
+}
+
+
+
+
+
+
+
+
+
+
+
+UINT64 Shader::ConstantBufferOffset()
+{
+	auto r = &Renderer::GetInstance();
+	return (r->GetFrameIndex() * MAX_OBJECTS * m_cbSizeAligned) + (m_currentObjectIndex * m_cbSizeAligned);
+}
+
+BYTE* Shader::ConstantBufferAddress()
+{
+	return reinterpret_cast<BYTE*>(m_constantData) + ConstantBufferOffset();
+}
+
+void Shader::BindObjectCB()
+{
+	auto r = &Renderer::GetInstance();
+
+	D3D12_GPU_VIRTUAL_ADDRESS address =
+		m_constantBuffer->GetGPUVirtualAddress() + ConstantBufferOffset();
+
+	r->GetCommands()->GetCommandList()->SetGraphicsRootConstantBufferView(0, address);
 }

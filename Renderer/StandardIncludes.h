@@ -7,6 +7,7 @@
 #include <algorithm> // Gives us useful C++ algorithms like sort(), min(), max(), etc
 #include <wrl.h> // Gives us the Windows Runtime Library
 #include <iostream> // Gives us std::cout
+#include <random> // Gives us random number generation
 
 //using Microsoft::WRL::ComPtr; // ComPtr is a smart pointer for COM objects
 using namespace Microsoft::WRL;

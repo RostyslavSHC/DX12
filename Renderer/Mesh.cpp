@@ -14,18 +14,6 @@ Mesh::Mesh()
 
 Mesh::~Mesh()
 {
-	Texture* t = GetTexDiffuse();
-	if (t != nullptr)
-	{
-		delete t;
-		SetTexDiffuse(nullptr);
-	}
-	t = GetTexture1();
-	if (t != nullptr)
-	{
-		delete t;
-		SetTexture1(nullptr);
-	}
 }
 
 void Mesh::Initialize(Shader* _shader)
@@ -33,13 +21,6 @@ void Mesh::Initialize(Shader* _shader)
 	SetShader(_shader);
 	CreateVertexBuffer();
 	//CreateIndexBuffer();
-	Texture* t0 = new Texture();
-	t0->Initialize(L"..\\Assets\\Textures\\MetalFrameWood.dds", _shader);
-	SetTexDiffuse(t0);
-
-	Texture* t1 = new Texture();
-	t1->Initialize(L"..\\Assets\\Textures\\MetalFrame.dds", _shader);
-	SetTexture1(t1);
 }
 
 void Mesh::CreateVertexBuffer()
@@ -212,12 +193,13 @@ void Mesh::CreateIndexBuffer()
 
 void Mesh::Render(XMMATRIX _viewProj)
 {
-	GetShader()->SetPipelineState();
+	// GetShader()->SetPipelineState();
 
 	auto r = &Renderer::GetInstance();
 	auto c = r->GetCommands()->GetCommandList().Get();
+	auto cbData = reinterpret_cast<Shader::ConstantBuffer*>(GetShader()->ConstantBufferAddress());
 
-	Shader::ConstantBuffer* cbData = &GetShader()->GetConstantData()[r->GetFrameIndex()];
+	// Shader::ConstantBuffer* cbData = &GetShader()->GetConstantData()[r->GetFrameIndex()];
 	XMStoreFloat4x4(&cbData->WVP, XMMatrixTranspose(_viewProj));
 
 	c->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

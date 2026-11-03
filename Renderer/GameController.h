@@ -17,6 +17,10 @@ public:
     void Run();
 
 private:
+    // Methods
+	float RndF(float _min, float _max);
+
+	// Members
     WindowController* m_windowC;
     Renderer* m_renderer;
     Camera* m_camera;

@@ -40,11 +40,25 @@ public:
 	UINT64 GetConstantBufferSize() const { return m_constantBufferSize; }
 	void SetVertexType(VTX_Base* _vertexType) { m_vertexType = _vertexType; }
 	VTX_Base* GetVertexType() { return m_vertexType; }
+	UINT64 GetCBSizeAligned() const { return m_cbSizeAligned; }
+	int GetCurrentObjectIndex() const { return m_currentObjectIndex; }
+	void ResetCurrentObjectIndex() { m_currentObjectIndex = 0; }
+	void IncrementCurrentObjectIndex() { m_currentObjectIndex++; }
+
 
 	// Methods
 	void Initialize();
 	virtual void SetPipelineState();
 	unsigned int NextSRVIndex();
+	inline UINT Align256(UINT size)
+	{
+		return (size + 255) & ~255;
+	}
+	void BindObjectCB();
+	BYTE* ConstantBufferAddress();
+
+	// Members
+	static constexpr UINT64 MAX_OBJECTS = 100;
 
 protected:
 	virtual void CreatePipelineState();
@@ -54,8 +68,7 @@ private:
 	// Methods
 	void CompileShaders();
 	void CreateRootSignature();
-	//void CreatePipelineState();
-	//void CreateConstantBuffer();
+	UINT64 ConstantBufferOffset();
 
 	// Members
 	ComPtr<ID3D12RootSignature> m_rootSignature;
@@ -71,4 +84,6 @@ private:
 	unsigned int m_inputElemDescSize;
 	LPCWSTR m_shaderFile;
 	VTX_Base* m_vertexType;
+	UINT64 m_cbSizeAligned;
+	int m_currentObjectIndex = 0;
 };

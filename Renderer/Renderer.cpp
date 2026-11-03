@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include "Shader.h"
 
 // Default constructor
 Renderer::Renderer()
@@ -247,7 +248,10 @@ void Renderer::Render(vector<IRenderable*>& _renderables, XMMATRIX _viewProj)
     c->ClearRenderTargetView(rtvHandle, m_bgColor, 0, nullptr);
     for (auto& renderable : _renderables)
     {
+        renderable->GetShader()->SetPipelineState();
+        renderable->GetShader()->BindObjectCB();
         renderable->Render(_viewProj);
+		renderable->GetShader()->IncrementCurrentObjectIndex();
     }
     m_commands->AddBarrier(m_renderTargets[m_frameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
     m_commands->Close();
