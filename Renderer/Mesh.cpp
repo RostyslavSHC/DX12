@@ -73,8 +73,10 @@ void Mesh::CreateVertexBuffer(string _fileName)
             meshData.push_back(v.nrm.nx);
             meshData.push_back(v.nrm.ny);
             meshData.push_back(v.nrm.nz);
-            meshData.push_back(v.tex.u);
-            meshData.push_back(v.tex.v);
+            //meshData.push_back(v.tex.u);
+            //meshData.push_back(v.tex.v);
+            meshData.push_back(v.tex.u * 25.0f);
+            meshData.push_back(v.tex.v * 1.0f);
         }
         vertexBufferStride = 8 * sizeof(float);
         break;
