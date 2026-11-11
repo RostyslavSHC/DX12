@@ -40,7 +40,7 @@ void Mesh::Initialize(string _filename, Shader* _shader)
 void Mesh::CreateVertexBuffer(string _fileName)
 {
     OBJLoader objLoader;
-    objLoader.ReadFile("..\\Assets\\Models\\teapot.obj");
+    objLoader.ReadFile(_fileName);
     objLoader.ProcessOBJ();
 
     if (objLoader.GetMapDiffuse() != "")

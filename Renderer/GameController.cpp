@@ -56,7 +56,7 @@ void GameController::Run()
     shaderPhong.Initialize();
 
     Unit* unit = new Unit();
-    unit->Initialize("..\\Assets\\Models\\Teapot.obj", &shaderPhong);
+    unit->Initialize("..\\Assets\\Models\\TorusKnot.obj", &shaderPhong);
     unit->SetPosition({ 0.0f, 0.0f, 0.0f });
     unit->SetScale({ 0.04f, 0.04f, 0.04f });
     units.push_back(unit);
