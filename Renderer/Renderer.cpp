@@ -274,6 +274,7 @@ void Renderer::Render(vector<IRenderable*>& _renderables, XMMATRIX _viewProj)
     // FontController::GetInstance().Write(L"Arial 20", D2D1_RECT_F{ 20, 80, 800, 120 }, D2D1::ColorF::White, m_frameIndex);
     FontController::GetInstance().Write(L"Segoe UI_32", D2D1_RECT_F{ 20, 20, 800, 60 }, D2D1::ColorF::Yellow, m_frameIndex);
     FontController::GetInstance().Write(L"Arial_20", D2D1_RECT_F{ 20, 80, 800, 120 }, D2D1::ColorF::White, m_frameIndex);
+    FontController::GetInstance().Write(L"Segoe UI_32", D2D1_RECT_F{ 20, 140, 800, 180 }, D2D1::ColorF::Red, m_frameIndex);
     m_commands->AddBarrier(m_renderTargets[m_frameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
     m_commands->Close();
     m_commands->Execute();

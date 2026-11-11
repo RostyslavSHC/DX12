@@ -79,6 +79,9 @@ void FontController::CreateBrushes()
     m_brushes[D2D1::ColorF::White] = brush;
     M_ASSERT(SUCCEEDED(m_d2dContext->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Yellow), &brush)), "Failed to create brush.");
     m_brushes[D2D1::ColorF::Yellow] = brush;
+
+    M_ASSERT(SUCCEEDED(m_d2dContext->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &brush)), "Failed to create brush.");
+    m_brushes[D2D1::ColorF::Red] = brush;
 }
 
 void FontController::CreateFontFace(wstring _fontName, int _dipSize, DWRITE_FONT_WEIGHT _weight)
