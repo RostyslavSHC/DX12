@@ -24,6 +24,7 @@ void GameController::Initialize(HINSTANCE _hInstance, int _nShowCmd)
     m_windowC->Create(_hInstance, _nShowCmd, WindowMode::WINDOWED);
     m_renderer = &Renderer::GetInstance();
     m_renderer->ConfigurePipeline(false, m_windowC->GetHWND(), m_windowC->GetWindowWidth(), m_windowC->GetWindowHeight());
+    FontController::GetInstance().Initialize(m_renderer->GetDevice().Get(), m_renderer->GetCommands(), m_renderer->GetRenderTargets(), Renderer::GetFrameCount());
     m_camera = new Camera(m_windowC->GetWindowWidth(), m_windowC->GetWindowHeight()); // Create the camera
     m_toolsC = &ToolsController::GetInstance();
     m_toolsC->LoadToolsLibrary();
@@ -56,7 +57,8 @@ void GameController::Run()
     shaderPhong.Initialize();
 
     Unit* unit = new Unit();
-    unit->Initialize("..\\Assets\\Models\\TorusKnot.obj", &shaderPhong);
+    // unit->Initialize("..\\Assets\\Models\\TorusKnot.obj", &shaderPhong);
+    unit->Initialize("..\\Assets\\Models\\Teapot.obj", &shaderPhong);
     unit->SetPosition({ 0.0f, 0.0f, 0.0f });
     unit->SetScale({ 0.04f, 0.04f, 0.04f });
     units.push_back(unit);

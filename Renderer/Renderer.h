@@ -15,6 +15,7 @@ public:
     ComPtr<ID3D12Device>& GetDevice() { return m_device; } // Return the D3D12 device
     ComPtr<IDXGISwapChain3>& GetSwapChain() { return m_swapChain; }
     ComPtr<ID3D12DescriptorHeap>& GetRTVHeap() { return m_rtvHeap; }
+    ComPtr<ID3D12Resource>* GetRenderTargets() { return m_renderTargets; }
     CommandController* GetCommands() { return m_commands; }
     float* GetBGColor() { return m_bgColor; }
 

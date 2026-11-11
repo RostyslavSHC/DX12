@@ -92,6 +92,19 @@ void Renderer::CreateDevice(bool _userWarpDevice)
         GetHardwareAdapter(m_factory.Get(), &hardwareAdapter); // Get the hardware adapter
         M_ASSERT(SUCCEEDED(D3D12CreateDevice(hardwareAdapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&m_device))), "Credte hardware device failed"); // Create the hardware device and make sure it works
     }
+
+    ComPtr<ID3D12InfoQueue> infoQueue;
+    if (SUCCEEDED(m_device->QueryInterface(IID_PPV_ARGS(&infoQueue))))
+    {
+        D3D12_MESSAGE_ID hide[] = { D3D12_MESSAGE_ID_CREATERESOURCE_STATE_IGNORED };
+        D3D12_INFO_QUEUE_FILTER filter = {};
+        filter.DenyList.NumIDs = _countof(hide);
+        filter.DenyList.pIDList = hide;
+        infoQueue->AddStorageFilterEntries(&filter);
+    }
+
+
+
 }
 
 // Get the hardware adapter
@@ -253,6 +266,14 @@ void Renderer::Render(vector<IRenderable*>& _renderables, XMMATRIX _viewProj)
         renderable->Render(_viewProj);
 		renderable->GetShader()->IncrementCurrentObjectIndex();
     }
+
+    m_commands->Close();
+    m_commands->Execute();
+    m_commands->GetCommandList()->Reset(m_commands->GetCommandAllocator().Get(), nullptr);
+    // FontController::GetInstance().Write(L"Segoe UI 32", D2D1_RECT_F{ 20, 20, 800, 60 }, D2D1::ColorF::Yellow, m_frameIndex);
+    // FontController::GetInstance().Write(L"Arial 20", D2D1_RECT_F{ 20, 80, 800, 120 }, D2D1::ColorF::White, m_frameIndex);
+    FontController::GetInstance().Write(L"Segoe UI_32", D2D1_RECT_F{ 20, 20, 800, 60 }, D2D1::ColorF::Yellow, m_frameIndex);
+    FontController::GetInstance().Write(L"Arial_20", D2D1_RECT_F{ 20, 80, 800, 120 }, D2D1::ColorF::White, m_frameIndex);
     m_commands->AddBarrier(m_renderTargets[m_frameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
     m_commands->Close();
     m_commands->Execute();

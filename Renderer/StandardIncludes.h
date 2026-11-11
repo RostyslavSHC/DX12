@@ -9,6 +9,7 @@
 #include <iostream> // Gives us std::cout
 #include <random> // Gives us random number generation
 #include <fstream>
+#include <map>
 
 //using Microsoft::WRL::ComPtr; // ComPtr is a smart pointer for COM objects
 using namespace Microsoft::WRL;
@@ -19,6 +20,9 @@ using namespace std; // So we don't have to use std::
 // DirectX12
 #include <initguid.h>
 #include <d3d12.h> // Direct3D 12
+#include <d3d11on12.h>
+#include <d2d1_3.h>
+#include <dwrite_3.h>
 #include <dxgi1_6.h> // DirectX Graphics Infrastructure 1.6
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
@@ -35,6 +39,7 @@ using namespace DirectX;
 //#include "Renderer.h"
 //#include "Shader.h"
 #include "Mesh.h"
+#include "FontController.h"
 
 
 
