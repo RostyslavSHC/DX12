@@ -18,13 +18,16 @@ Texture::~Texture()
 	}
 }
 
-void Texture::Initialize(wstring _filename, Shader* _shader)
+
+void Texture::Initialize(string _filename, Shader* _shader)
 {
-	LoadTextureFromFile(_filename);
+	wstring wFilenamestr(_filename.begin(), _filename.end());
+	LoadTextureFromFile(wFilenamestr);
 	CreateTexture();
 	CreateShaderResourceView(_shader);
 	UploadTexture();
 }
+
 
 void Texture::LoadTextureFromFile(wstring _filename)
 {

@@ -35,7 +35,9 @@ public:
     struct CB_Phong : ConstantBuffer
     {
         Material material;
-        Light light;
+        Light lights[8];
+        UINT LightCount;
+        XMFLOAT3 pad0;
         XMFLOAT4 CameraPosition;
     };
 

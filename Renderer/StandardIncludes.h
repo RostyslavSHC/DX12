@@ -8,6 +8,7 @@
 #include <wrl.h> // Gives us the Windows Runtime Library
 #include <iostream> // Gives us std::cout
 #include <random> // Gives us random number generation
+#include <fstream>
 
 //using Microsoft::WRL::ComPtr; // ComPtr is a smart pointer for COM objects
 using namespace Microsoft::WRL;
