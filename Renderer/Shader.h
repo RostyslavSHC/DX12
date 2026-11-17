@@ -49,7 +49,7 @@ public:
 
 	// Methods
 	void Initialize();
-	virtual void SetPipelineState();
+	virtual void SetPipelineState(IRenderable* _renderable);
 	unsigned int NextSRVIndex();
 	inline UINT Align256(UINT size)
 	{
@@ -60,6 +60,7 @@ public:
 
 	// Members
 	static constexpr UINT64 MAX_OBJECTS = 100;
+	static constexpr UINT MAX_TEXTURES = 8;
 
 protected:
 	virtual void CreatePipelineState();

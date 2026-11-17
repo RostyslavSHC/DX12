@@ -15,7 +15,7 @@ public:
     };
 
     // Methods
-    virtual void SetPipelineState() override;
+    virtual void SetPipelineState(IRenderable* _renderable) override;
 
 protected:
     // Methods

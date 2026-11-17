@@ -2,9 +2,14 @@ struct Material
 {
     float4 DiffuseColor;
     float SpecularStrength;
-    float3 pad1;
+    int texIndDiffuse;
+    int texIndSpecular;
+    float pad0;
     float4 SpecularColor;
 };
+
+
+
 #define MAX_LIGHTS 8
 struct Light
 {
@@ -51,9 +56,12 @@ struct VSInput
     float2 uv : TEXCOORD0;
 };
 
+#define MAX_TEXTURES 8
+Texture2D g_Textures[MAX_TEXTURES] : register(t0);
+SamplerState g_sampler : register(s0);
+
 Texture2D g_diffuse : register(t0);
 Texture2D g_specular : register(t1);
-SamplerState g_sampler : register(s0);
 
 PSInput VSMain(VSInput _input)
 {
@@ -69,24 +77,39 @@ PSInput VSMain(VSInput _input)
 }
 
 
+
+float4 SampleTexture(int index, float2 uv)
+{
+    if (index == -1) return float4(0, 0, 0, 1);
+    if (index == 0) return g_Textures[0].Sample(g_sampler, uv);
+    if (index == 1) return g_Textures[1].Sample(g_sampler, uv);
+    if (index == 2) return g_Textures[2].Sample(g_sampler, uv);
+    if (index == 3) return g_Textures[3].Sample(g_sampler, uv);
+    if (index == 4) return g_Textures[4].Sample(g_sampler, uv);
+    if (index == 5) return g_Textures[5].Sample(g_sampler, uv);
+    if (index == 6) return g_Textures[6].Sample(g_sampler, uv);
+    if (index == 7) return g_Textures[7].Sample(g_sampler, uv);
+    return float4(1, 0, 1, 1); // debug pink
+}
+
+
 float4 PSMain(PSInput input) : SV_TARGET
 {
     input.normal = normalize(input.normal);
     float3 finalColor = float3(0.0f, 0.0f, 0.0f);
-
     for (uint count = 0; count < lightCount; count++)
     {
         float3 lightDir = normalize(lights[count].Position - input.pixelWorld);
-        float4 lambertianStrength = clamp(dot(lightDir, input.normal), 0.0f, 1.0f);
+        float4 LambertianStrength = clamp(dot(lightDir, input.normal), 0.0f, 1.0f);
         float3 refl = reflect(-lightDir, input.normal);
         float4 specularStrength = pow(max(dot(refl, input.viewDirection), 0.0f), material.SpecularStrength);
         float distance = length(lights[count].Position - input.pixelWorld);
-        float att = 1.0f / (lights[count].ConstLinQuad[0] + lights[count].ConstLinQuad[1] * distance + lights[count].ConstLinQuad[2] * (distance * distance));
-        float4 ambientColor = g_diffuse.Sample(g_sampler, input.uv) * lights[count].AmbientColor;
-        float4 diffuseColor = lambertianStrength * g_diffuse.Sample(g_sampler, input.uv) * material.DiffuseColor * att;
-        float4 specularColor = specularStrength * g_specular.Sample(g_sampler, input.uv) * material.SpecularColor * att;
+        float att = 1.0f / (lights[count].ConstLinQuad[0] + lights[count].ConstLinQuad[1] * distance +
+            lights[count].ConstLinQuad[2] * (distance * distance));
+        float4 ambientColor = SampleTexture(material.texIndDiffuse, input.uv) * lights[count].AmbientColor;
+        float4 diffuseColor = LambertianStrength * SampleTexture(material.texIndDiffuse, input.uv) * material.DiffuseColor * att;
+        float4 specularColor = specularStrength * SampleTexture(material.texIndSpecular, input.uv) * material.SpecularColor * att;
         finalColor += ((ambientColor + diffuseColor + specularColor) * lights[count].Color).rgb;
     }
-
     return float4(finalColor, 1.0f);
 }

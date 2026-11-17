@@ -11,6 +11,9 @@ public:
     Texture();
     virtual ~Texture();
 
+    // Accessors
+    int GetIndex() { return m_index; }
+
     // Methods
     void Initialize(string _filename, Shader* _shader);
 
@@ -24,4 +27,5 @@ private:
     // Members
     DDSLoad* m_ddsLoader;
     ComPtr<ID3D12Resource> m_texture;
+    int m_index;
 };

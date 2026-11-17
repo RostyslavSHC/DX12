@@ -311,10 +311,12 @@ void Renderer::Render(vector<IRenderable*>& _renderables, XMMATRIX _viewProj)
     c->RSSetScissorRects(1, &m_scissorRect);
     c->ClearRenderTargetView(rtvHandle, m_bgColor, 0, nullptr);
     c->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+
     for (auto& renderable : _renderables)
     {
-        renderable->GetShader()->SetPipelineState();
-        renderable->GetShader()->BindObjectCB();
+        Shader* s = renderable->GetShader();
+        s->SetPipelineState(renderable);
+        s->BindObjectCB();
         renderable->Render(_viewProj);
         renderable->GetShader()->IncrementCurrentObjectIndex();
     }

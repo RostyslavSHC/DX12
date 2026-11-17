@@ -13,7 +13,9 @@ public:
     {
         XMFLOAT4 DiffuseColor;
         float SpecularStrength;
-        XMFLOAT3 pad1;
+        uint32_t TexIndDiffuse;
+        uint32_t TexIndSpecular;
+        float pad0;
         XMFLOAT4 SpecularColor;
     };
 
@@ -43,7 +45,7 @@ public:
 
 
     // Methods
-    virtual void SetPipelineState() override;
+    virtual void SetPipelineState(IRenderable* _renderable) override;
 
 protected:
     virtual void CreatePipelineState() override;

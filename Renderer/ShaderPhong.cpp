@@ -21,9 +21,13 @@ void ShaderPhong::CreateConstantBuffer(UINT64 _bufferSize)
     Shader::CreateConstantBuffer(sizeof(CB_Phong));
 }
 
-void ShaderPhong::SetPipelineState()
+
+
+
+
+void ShaderPhong::SetPipelineState(IRenderable* _renderable)
 {
-    Shader::SetPipelineState();
+    Shader::SetPipelineState(_renderable);
 
     auto r = &Renderer::GetInstance();
     auto c = r->GetCommands()->GetCommandList().Get();
@@ -32,6 +36,10 @@ void ShaderPhong::SetPipelineState()
     XMStoreFloat4(&cbData->material.DiffuseColor, FXMVECTOR{ 1.0f, 1.0f, 1.0f, 1.0f });
     XMStoreFloat(&cbData->material.SpecularStrength, FXMVECTOR{ 4.0f });
     XMStoreFloat4(&cbData->material.SpecularColor, FXMVECTOR{ 1.0f, 0.0f, 0.0f, 1.0f });
+
+    cbData->material.TexIndDiffuse = _renderable->GetTexDiffuse()->GetIndex();
+    if (_renderable->GetTexSpecular() == nullptr) cbData->material.TexIndSpecular = -1;
+    else cbData->material.TexIndSpecular = _renderable->GetTexSpecular()->GetIndex();
 
     for (UINT count = 0; count < 1; count++)
         // for (UINT count = 0; count < 5; count++)

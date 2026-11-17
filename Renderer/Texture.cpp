@@ -7,6 +7,7 @@ Texture::Texture()
 {
 	m_texture = nullptr;
 	m_ddsLoader = nullptr;
+	m_index = -1;
 }
 
 Texture::~Texture()
@@ -60,7 +61,9 @@ void Texture::CreateShaderResourceView(Shader* _shader)
 	auto r = &Renderer::GetInstance();
 	auto device = r->GetDevice().Get();
 	UINT descriptorSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle(_shader->GetDescrHeap()->GetCPUDescriptorHandleForHeapStart(), _shader->NextSRVIndex(), descriptorSize);
+	UINT srvIndex = _shader->NextSRVIndex();
+	CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle(_shader->GetDescrHeap()->GetCPUDescriptorHandleForHeapStart(), srvIndex, descriptorSize);
+	m_index = srvIndex - 1;
 
 	// Describe and create a SRV for the texture.
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
