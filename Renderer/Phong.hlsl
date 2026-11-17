@@ -95,6 +95,12 @@ float4 SampleTexture(int index, float2 uv)
 
 float4 PSMain(PSInput input) : SV_TARGET
 {
+    float4 diffColor = SampleTexture(material.texIndDiffuse, input.uv);
+    if (diffColor.a == 0.0f)
+    {
+        discard;
+    }
+
     input.normal = normalize(input.normal);
     float3 finalColor = float3(0.0f, 0.0f, 0.0f);
     for (uint count = 0; count < lightCount; count++)
@@ -106,8 +112,8 @@ float4 PSMain(PSInput input) : SV_TARGET
         float distance = length(lights[count].Position - input.pixelWorld);
         float att = 1.0f / (lights[count].ConstLinQuad[0] + lights[count].ConstLinQuad[1] * distance +
             lights[count].ConstLinQuad[2] * (distance * distance));
-        float4 ambientColor = SampleTexture(material.texIndDiffuse, input.uv) * lights[count].AmbientColor;
-        float4 diffuseColor = LambertianStrength * SampleTexture(material.texIndDiffuse, input.uv) * material.DiffuseColor * att;
+        float4 ambientColor = diffColor * lights[count].AmbientColor;
+        float4 diffuseColor = LambertianStrength * diffColor * material.DiffuseColor * att;
         float4 specularColor = specularStrength * SampleTexture(material.texIndSpecular, input.uv) * material.SpecularColor * att;
         finalColor += ((ambientColor + diffuseColor + specularColor) * lights[count].Color).rgb;
     }
