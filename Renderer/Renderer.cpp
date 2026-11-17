@@ -45,6 +45,7 @@ void Renderer::ConfigurePipeline(bool _userWarpDevice, HWND _hwnd, int _wWidth, 
 
     CreateSwapChain(_hwnd, _wWidth, _wHeight); // Create the swap chain
     CreateRenderTargetView(); // Create the render target view
+    CreateDepthBufferView(_wWidth, _wHeight);
     CreateFence(); // Create the fence
     CreateViewport(_wWidth, _wHeight);
 
@@ -52,6 +53,55 @@ void Renderer::ConfigurePipeline(bool _userWarpDevice, HWND _hwnd, int _wWidth, 
     m_factory->MakeWindowAssociation(_hwnd, DXGI_MWA_NO_ALT_ENTER);
     m_initialized = true;
 }
+
+
+
+
+
+
+
+
+
+void Renderer::CreateDepthBufferView(int _wWidth, int _wHeight)
+{
+    D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
+    dsvHeapDesc.NumDescriptors = 1;
+    dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+    dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+    M_ASSERT(SUCCEEDED(m_device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&m_dsvHeap))),"Failed to create depth buffer descriptor heap.");
+
+    D3D12_RESOURCE_DESC depthDesc = {};
+    depthDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+    depthDesc.Width = _wWidth;
+    depthDesc.Height = _wHeight;
+    depthDesc.DepthOrArraySize = 1;
+    depthDesc.MipLevels = 1;
+    depthDesc.Format = DXGI_FORMAT_D32_FLOAT;
+    depthDesc.SampleDesc.Count = 1;
+    depthDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+    depthDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+
+    D3D12_CLEAR_VALUE depthClear = {};
+    depthClear.Format = DXGI_FORMAT_D32_FLOAT;
+    depthClear.DepthStencil.Depth = 1.0f;
+    depthClear.DepthStencil.Stencil = 0;
+
+    CD3DX12_HEAP_PROPERTIES props(D3D12_HEAP_TYPE_DEFAULT);
+    M_ASSERT(SUCCEEDED(m_device->CreateCommittedResource(&props, D3D12_HEAP_FLAG_NONE, &depthDesc,
+        D3D12_RESOURCE_STATE_DEPTH_WRITE, &depthClear, IID_PPV_ARGS(&m_depthBuffer))),
+        "Failed to create depth buffer committed resource.");
+
+    D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+    dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+    dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+
+    m_device->CreateDepthStencilView(m_depthBuffer.Get(), &dsvDesc, m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
+}
+
+
+
+
+
 
 void Renderer::CreateViewport(int _width, int _wHeight)
 {
@@ -254,27 +304,27 @@ void Renderer::Render(vector<IRenderable*>& _renderables, XMMATRIX _viewProj)
     m_commands->Reset();
     m_commands->AddBarrier(m_renderTargets[m_frameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
     CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), m_frameIndex, m_rtvDescriptorSize);
+    auto dsvHandle = m_dsvHeap->GetCPUDescriptorHandleForHeapStart();
     auto c = m_commands->GetCommandList().Get();
-    c->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
+    c->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
     c->RSSetViewports(1, &m_viewport);
     c->RSSetScissorRects(1, &m_scissorRect);
     c->ClearRenderTargetView(rtvHandle, m_bgColor, 0, nullptr);
+    c->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
     for (auto& renderable : _renderables)
     {
         renderable->GetShader()->SetPipelineState();
         renderable->GetShader()->BindObjectCB();
         renderable->Render(_viewProj);
-		renderable->GetShader()->IncrementCurrentObjectIndex();
+        renderable->GetShader()->IncrementCurrentObjectIndex();
     }
 
     m_commands->Close();
     m_commands->Execute();
     m_commands->GetCommandList()->Reset(m_commands->GetCommandAllocator().Get(), nullptr);
-    // FontController::GetInstance().Write(L"Segoe UI 32", D2D1_RECT_F{ 20, 20, 800, 60 }, D2D1::ColorF::Yellow, m_frameIndex);
-    // FontController::GetInstance().Write(L"Arial 20", D2D1_RECT_F{ 20, 80, 800, 120 }, D2D1::ColorF::White, m_frameIndex);
-    FontController::GetInstance().Write(L"Segoe UI_32", D2D1_RECT_F{ 20, 20, 800, 60 }, D2D1::ColorF::Yellow, m_frameIndex);
-    FontController::GetInstance().Write(L"Arial_20", D2D1_RECT_F{ 20, 80, 800, 120 }, D2D1::ColorF::White, m_frameIndex);
-    FontController::GetInstance().Write(L"Segoe UI_32", D2D1_RECT_F{ 20, 140, 800, 180 }, D2D1::ColorF::Red, m_frameIndex);
+    // FontController::GetInstance().Write(L"Segoe UI_32", D2D1_RECT_F{ 20, 20, 800, 60 }, D2D1::ColorF::Yellow, m_frameIndex);
+    // FontController::GetInstance().Write(L"Arial_20", D2D1_RECT_F{ 20, 80, 800, 120 }, D2D1::ColorF::White, m_frameIndex);
+    // FontController::GetInstance().Write(L"Segoe UI_32", D2D1_RECT_F{ 20, 140, 800, 180 }, D2D1::ColorF::Red, m_frameIndex);
     m_commands->AddBarrier(m_renderTargets[m_frameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
     m_commands->Close();
     m_commands->Execute();

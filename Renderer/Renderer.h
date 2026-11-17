@@ -27,15 +27,14 @@ public:
 
 private:
     // Methods
-    UINT EnableDebugLayer(); // Enable the debug layer
-    void CreateDevice(bool _userWarpDevice); // Create the D3D12 device
-    void GetHardwareAdapter(_In_ IDXGIFactory1* _factory, _Outptr_result_maybenull_ IDXGIAdapter1** _adapter, bool reqHighPerfAdapter = false); // Get the hardware adapter
-
-    void CreateSwapChain(HWND _hwnd, int _wWidth, int _wHeight); // Create the swap chain
-    void CreateRenderTargetView(); // Create the render target view
-    void CreateFence(); // Create the fence
-    void CreateViewport(int _width, int _wHeight);
-    // void PopulateCommandList(IRenderable* _renderable, XMMATRIX _viewProj);
+    UINT EnableDebugLayer();
+    void CreateDevice(bool _useWarpDevice);
+    void GetHardwareAdapter(_In_ IDXGIFactory1* _factory, _Outptr_result_maybenull_ IDXGIAdapter1** _adapter, bool reqHighPerfAdapter = false);
+    void CreateSwapChain(HWND _hwnd, int _width, int _height);
+    void CreateRenderTargetView();
+    void CreateDepthBufferView(int _width, int _height);
+    void CreateFence();
+    void CreateViewport(int _width, int _height);
 
     // Members
     static const UINT m_frameCount = 2; // The number of frames in the swap chain
@@ -44,6 +43,8 @@ private:
     ComPtr<IDXGISwapChain3> m_swapChain;
     ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
     ComPtr<ID3D12Resource> m_renderTargets[m_frameCount];
+    ComPtr<ID3D12Resource> m_depthBuffer;
+    ComPtr<ID3D12DescriptorHeap> m_dsvHeap;
     ComPtr<ID3D12Fence> m_fence;
     CommandController* m_commands;
     CD3DX12_VIEWPORT m_viewport;

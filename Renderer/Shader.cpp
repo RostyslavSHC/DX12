@@ -86,6 +86,13 @@ void Shader::CreatePipelineState()
 	};
 	*/
 
+	// Create depth stencil state
+	D3D12_DEPTH_STENCIL_DESC dsDesc = {};
+	dsDesc.DepthEnable = TRUE;
+	dsDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+	dsDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
+	dsDesc.StencilEnable = FALSE;
+
 	// Describe and create the graphics pipeline state object (PSO).
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
 	psoDesc.InputLayout = { m_inputElementDescs, m_inputElemDescSize };
@@ -94,8 +101,10 @@ void Shader::CreatePipelineState()
 	psoDesc.PS = CD3DX12_SHADER_BYTECODE(m_pixelShader.Get());
 	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-	psoDesc.DepthStencilState.DepthEnable = FALSE;
-	psoDesc.DepthStencilState.StencilEnable = FALSE;
+	//psoDesc.DepthStencilState.DepthEnable = FALSE;
+	//psoDesc.DepthStencilState.StencilEnable = FALSE;
+	psoDesc.DepthStencilState = dsDesc;
+	psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
 	psoDesc.SampleMask = UINT_MAX;
 	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	psoDesc.NumRenderTargets = 1;
