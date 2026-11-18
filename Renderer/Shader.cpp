@@ -106,7 +106,8 @@ void Shader::CreatePipelineState()
 	blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
 
 	D3D12_RASTERIZER_DESC rasterDesc = {};
-	rasterDesc.FillMode = D3D12_FILL_MODE_WIREFRAME;
+	// rasterDesc.FillMode = D3D12_FILL_MODE_WIREFRAME;
+	rasterDesc.FillMode = D3D12_FILL_MODE_SOLID;
 	rasterDesc.CullMode = D3D12_CULL_MODE_NONE; // Disable culling
 	rasterDesc.FrontCounterClockwise = FALSE;
 	rasterDesc.DepthClipEnable = TRUE;
