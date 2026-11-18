@@ -108,7 +108,7 @@ void Shader::CreatePipelineState()
 	D3D12_RASTERIZER_DESC rasterDesc = {};
 	// rasterDesc.FillMode = D3D12_FILL_MODE_WIREFRAME;
 	rasterDesc.FillMode = D3D12_FILL_MODE_SOLID;
-	rasterDesc.CullMode = D3D12_CULL_MODE_NONE; // Disable culling
+	rasterDesc.CullMode = D3D12_CULL_MODE_FRONT; // Disable culling
 	rasterDesc.FrontCounterClockwise = FALSE;
 	rasterDesc.DepthClipEnable = TRUE;
 
