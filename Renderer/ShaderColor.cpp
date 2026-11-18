@@ -21,9 +21,9 @@ void ShaderColor::CreateConstantBuffer(UINT64 _bufferSize)
     Shader::CreateConstantBuffer(sizeof(CB_Color));
 }
 
-void ShaderColor::SetPipelineState(IRenderable* _renderable)
+void ShaderColor::SetPipelineState(IRenderable* _renderable, PipelineStateDefs _def)
 {
-    Shader::SetPipelineState(_renderable);
+    Shader::SetPipelineState(_renderable, EN_PSD_WIREFRAME);
 
     auto r = &Renderer::GetInstance();
     auto c = r->GetCommands()->GetCommandList().Get();

@@ -15,7 +15,8 @@ public:
     };
 
     // Methods
-    virtual void SetPipelineState(IRenderable* _renderable) override;
+    // virtual void SetPipelineState(IRenderable* _renderable) override;
+    virtual void SetPipelineState(IRenderable* _renderable, PipelineStateDefs _def = EN_PSD_DEFAULT) override;
 
 protected:
     // Methods

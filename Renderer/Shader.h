@@ -14,6 +14,14 @@ struct Vertex
 };
 */
 
+enum PipelineStateDefs
+{
+	EN_PSD_DEFAULT = 0,
+	EN_PSD_CULL_FRONT,
+	EN_PSD_WIREFRAME,
+	EN_PSD_COUNT
+};
+
 class Shader
 {
 public:
@@ -31,7 +39,7 @@ public:
 
 	// Accessors
 	ComPtr<ID3D12RootSignature>& GetRootSignature() { return m_rootSignature; }
-	ComPtr<ID3D12PipelineState>& GetPipelineState() { return m_pipelineState; }
+	ComPtr<ID3D12PipelineState>& GetPipelineState(PipelineStateDefs _def) { return m_pipelineStates[_def]; }
 	ComPtr<ID3D12DescriptorHeap>& GetDescrHeap() { return m_descrHeap; }
 	ConstantBuffer* GetConstantData() const { return m_constantData; }
 	void SetInputElementDescs(D3D12_INPUT_ELEMENT_DESC* _inputElementDescs) { m_inputElementDescs = _inputElementDescs; }
@@ -49,7 +57,7 @@ public:
 
 	// Methods
 	void Initialize();
-	virtual void SetPipelineState(IRenderable* _renderable);
+	virtual void SetPipelineState(IRenderable* _renderable, PipelineStateDefs _def = EN_PSD_DEFAULT);
 	unsigned int NextSRVIndex();
 	inline UINT Align256(UINT size)
 	{
@@ -68,13 +76,15 @@ protected:
 
 private:
 	// Methods
+	void CreatePipelineState(PipelineStateDefs _def);
 	void CompileShaders();
 	void CreateRootSignature();
 	UINT64 ConstantBufferOffset();
 
 	// Members
 	ComPtr<ID3D12RootSignature> m_rootSignature;
-	ComPtr<ID3D12PipelineState> m_pipelineState;
+	map<int, ComPtr<ID3D12PipelineState>> m_pipelineStates;
+	// ComPtr<ID3D12PipelineState> m_pipelineState;
 	ComPtr<ID3DBlob> m_vertexShader;
 	ComPtr<ID3DBlob> m_pixelShader;
 	ComPtr<ID3D12DescriptorHeap> m_descrHeap;
@@ -88,4 +98,5 @@ private:
 	VTX_Base* m_vertexType;
 	UINT64 m_cbSizeAligned;
 	int m_currentObjectIndex = 0;
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC m_psoDescBase;
 };

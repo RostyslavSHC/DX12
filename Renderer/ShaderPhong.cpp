@@ -25,9 +25,9 @@ void ShaderPhong::CreateConstantBuffer(UINT64 _bufferSize)
 
 
 
-void ShaderPhong::SetPipelineState(IRenderable* _renderable)
+void ShaderPhong::SetPipelineState(IRenderable* _renderable, PipelineStateDefs _def)
 {
-    Shader::SetPipelineState(_renderable);
+    Shader::SetPipelineState(_renderable, EN_PSD_CULL_FRONT);
 
     auto r = &Renderer::GetInstance();
     auto c = r->GetCommands()->GetCommandList().Get();

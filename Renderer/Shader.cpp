@@ -4,7 +4,7 @@
 Shader::Shader()
 {
 	m_rootSignature = nullptr;
-	m_pipelineState = nullptr;
+	// m_pipelineState = nullptr;
 	m_vertexShader = nullptr;
 	m_pixelShader = nullptr;
 	m_constantBuffer = nullptr;
@@ -17,6 +17,7 @@ Shader::Shader()
 	m_cbSizeAligned = 0;
 	m_vertexType = nullptr;
 	m_currentObjectIndex = 0;
+	m_psoDescBase = {};
 
 }
 
@@ -76,61 +77,77 @@ void Shader::CreateRootSignature()
 
 void Shader::CreatePipelineState()
 {
-	/*
-	// Define the vertex input layout.
-	D3D12_INPUT_ELEMENT_DESC inputElementDescs[] =
+	CreatePipelineState(EN_PSD_DEFAULT);
+
+	m_psoDescBase.RasterizerState.CullMode = D3D12_CULL_MODE_FRONT;
+	CreatePipelineState(EN_PSD_CULL_FRONT);
+
+	m_psoDescBase.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
+	m_psoDescBase.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME;
+	CreatePipelineState(EN_PSD_WIREFRAME);
+}
+
+void Shader::CreatePipelineState(PipelineStateDefs _def)
+{
+	if (_def == EN_PSD_DEFAULT)
 	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 28, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
-	};
-	*/
+		/*
+		// Define the vertex input layout.
+		D3D12_INPUT_ELEMENT_DESC inputElementDescs[] =
+		{
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 28, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+		};
+		*/
 
-	// Create depth stencil state
-	D3D12_DEPTH_STENCIL_DESC dsDesc = {};
-	dsDesc.DepthEnable = TRUE;
-	dsDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
-	dsDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
-	dsDesc.StencilEnable = FALSE;
+		// Create depth stencil state
+		D3D12_DEPTH_STENCIL_DESC dsDesc = {};
+		dsDesc.DepthEnable = TRUE;
+		dsDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+		dsDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
+		dsDesc.StencilEnable = FALSE;
 
-	// Create blending state
-	CD3DX12_BLEND_DESC blendDesc(D3D12_DEFAULT);
-	blendDesc.RenderTarget[0].BlendEnable = TRUE;
-	// Color blending
-	blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
-	blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
-	blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
-	// Alpha blending
-	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
-	blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
-	blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+		// Create blending state
+		CD3DX12_BLEND_DESC blendDesc(D3D12_DEFAULT);
+		blendDesc.RenderTarget[0].BlendEnable = TRUE;
+		// Color blending
+		blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+		blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+		blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+		// Alpha blending
+		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+		blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+		blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
 
-	D3D12_RASTERIZER_DESC rasterDesc = {};
-	// rasterDesc.FillMode = D3D12_FILL_MODE_WIREFRAME;
-	rasterDesc.FillMode = D3D12_FILL_MODE_SOLID;
-	rasterDesc.CullMode = D3D12_CULL_MODE_FRONT; // Disable culling
-	rasterDesc.FrontCounterClockwise = FALSE;
-	rasterDesc.DepthClipEnable = TRUE;
+		D3D12_RASTERIZER_DESC rasterDesc = {};
+		// rasterDesc.FillMode = D3D12_FILL_MODE_WIREFRAME;
+		rasterDesc.FillMode = D3D12_FILL_MODE_SOLID;
+		rasterDesc.CullMode = D3D12_CULL_MODE_BACK;
+		rasterDesc.FrontCounterClockwise = FALSE;
+		rasterDesc.DepthClipEnable = TRUE;
 
+		// Describe and create the graphics pipeline state object (PSO).
+		m_psoDescBase = {};
+		m_psoDescBase.InputLayout = { m_inputElementDescs, m_inputElemDescSize };
+		m_psoDescBase.pRootSignature = m_rootSignature.Get();
+		m_psoDescBase.VS = CD3DX12_SHADER_BYTECODE(m_vertexShader.Get());
+		m_psoDescBase.PS = CD3DX12_SHADER_BYTECODE(m_pixelShader.Get());
+		m_psoDescBase.RasterizerState = rasterDesc;
+		m_psoDescBase.DepthStencilState = dsDesc;
+		m_psoDescBase.BlendState = blendDesc;
+		m_psoDescBase.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+		m_psoDescBase.SampleMask = UINT_MAX;
+		m_psoDescBase.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+		m_psoDescBase.NumRenderTargets = 1;
+		m_psoDescBase.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+		m_psoDescBase.SampleDesc.Count = 1;
+	}
 
-	// Describe and create the graphics pipeline state object (PSO).
-	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
-	psoDesc.InputLayout = { m_inputElementDescs, m_inputElemDescSize };
-	psoDesc.pRootSignature = m_rootSignature.Get();
-	psoDesc.VS = CD3DX12_SHADER_BYTECODE(m_vertexShader.Get());
-	psoDesc.PS = CD3DX12_SHADER_BYTECODE(m_pixelShader.Get());
-	psoDesc.RasterizerState = rasterDesc;
-	// psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-	psoDesc.DepthStencilState = dsDesc;
-	psoDesc.BlendState = blendDesc;
-	psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
-	psoDesc.SampleMask = UINT_MAX;
-	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-	psoDesc.NumRenderTargets = 1;
-	psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
-	psoDesc.SampleDesc.Count = 1;
 	auto device = Renderer::GetInstance().GetDevice().Get();
-	auto res = device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_pipelineState));
+	ComPtr<ID3D12PipelineState> ps;
+	auto res = device->CreateGraphicsPipelineState(&m_psoDescBase, IID_PPV_ARGS(&ps));
+	m_pipelineStates[_def] = ps;
 	M_ASSERT(SUCCEEDED(res), "Failed to create graphics pipeline state");
 }
 
@@ -161,11 +178,11 @@ void Shader::CreateConstantBuffer(UINT64 _bufferSize)
 		"Failed to map constant buffer.");
 }
 
-void Shader::SetPipelineState(IRenderable* _renderable)
+void Shader::SetPipelineState(IRenderable* _renderable, PipelineStateDefs _def)
 {
 	auto r = &Renderer::GetInstance();
 	auto c = r->GetCommands()->GetCommandList().Get();
-	c->SetPipelineState(m_pipelineState.Get());
+	c->SetPipelineState(m_pipelineStates[_def].Get());
 	c->SetGraphicsRootSignature(m_rootSignature.Get());
 	ID3D12DescriptorHeap* heaps[] = { m_descrHeap.Get() };
 	c->SetDescriptorHeaps(_countof(heaps), heaps);
@@ -175,16 +192,6 @@ void Shader::SetPipelineState(IRenderable* _renderable)
 	CD3DX12_GPU_DESCRIPTOR_HANDLE srvHandle(m_descrHeap->GetGPUDescriptorHandleForHeapStart(), 1, descriptorSize);
 	r->GetCommands()->GetCommandList()->SetGraphicsRootDescriptorTable(1, srvHandle);
 }
-
-
-
-
-
-
-
-
-
-
 
 UINT64 Shader::ConstantBufferOffset()
 {
