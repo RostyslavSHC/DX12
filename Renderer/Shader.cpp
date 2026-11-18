@@ -105,13 +105,21 @@ void Shader::CreatePipelineState()
 	blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
 	blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
 
+	D3D12_RASTERIZER_DESC rasterDesc = {};
+	rasterDesc.FillMode = D3D12_FILL_MODE_WIREFRAME;
+	rasterDesc.CullMode = D3D12_CULL_MODE_NONE; // Disable culling
+	rasterDesc.FrontCounterClockwise = FALSE;
+	rasterDesc.DepthClipEnable = TRUE;
+
+
 	// Describe and create the graphics pipeline state object (PSO).
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
 	psoDesc.InputLayout = { m_inputElementDescs, m_inputElemDescSize };
 	psoDesc.pRootSignature = m_rootSignature.Get();
 	psoDesc.VS = CD3DX12_SHADER_BYTECODE(m_vertexShader.Get());
 	psoDesc.PS = CD3DX12_SHADER_BYTECODE(m_pixelShader.Get());
-	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+	psoDesc.RasterizerState = rasterDesc;
+	// psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	psoDesc.DepthStencilState = dsDesc;
 	psoDesc.BlendState = blendDesc;
 	psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
