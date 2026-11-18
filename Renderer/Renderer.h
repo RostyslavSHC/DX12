@@ -32,7 +32,7 @@ private:
     void GetHardwareAdapter(_In_ IDXGIFactory1* _factory, _Outptr_result_maybenull_ IDXGIAdapter1** _adapter, bool reqHighPerfAdapter = false);
     void CreateSwapChain(HWND _hwnd, int _width, int _height);
     void CreateRenderTargetView();
-    void CreateDepthBufferView(int _width, int _height);
+    void CreateDepthBufferView(int _wWidth, int _wHeight);
     void CreateFence();
     void CreateViewport(int _width, int _height);
 

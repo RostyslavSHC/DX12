@@ -59,15 +59,22 @@ void GameController::Run()
     Unit* unit = new Unit();
     // unit->Initialize("..\\Assets\\Models\\TorusKnot.obj", &shaderPhong);
     unit->Initialize("..\\Assets\\Models\\Teapot.obj", &shaderPhong);
-    unit->SetPosition({ 0.0f, 0.0f, 0.0f });
+    unit->SetPosition({ 0.0f, 0.0f, 0.35f });
     unit->SetScale({ 0.04f, 0.04f, 0.04f });
     units.push_back(unit);
 
     unit = new Unit();
     unit->Initialize("..\\Assets\\Models\\Plane.obj", &shaderPhong);
-    unit->SetPosition({ 0.0f, 0.0f, 0.0f });
+    unit->SetPosition({ 0.0f, 0.0f, 1.0f });
     unit->SetRotation({ 0.0f, 135.0f, 0.0f });
     unit->SetScale({ 0.3f, 0.3f, 0.3f });
+    units.push_back(unit);
+
+    unit = new Unit();
+    unit->Initialize("..\\Assets\\Models\\Window.obj", &shaderPhong);
+    unit->SetPosition({ 0.0f, 0.5f, -0.1f });
+    unit->SetRotation({ 0.0f, 135.0f, 0.0f });
+    unit->SetScale({ 0.125f, 0.125f, 0.125f });
     units.push_back(unit);
 
     //Main message loop

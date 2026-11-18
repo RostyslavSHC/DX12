@@ -50,7 +50,7 @@ void ShaderPhong::SetPipelineState(IRenderable* _renderable)
         XMStoreFloat4(&cbData->lights[count].AmbientColor, FXMVECTOR{ 0.1f, 0.1f, 0.1f, 1.0f });
         XMStoreFloat3(&cbData->lights[count].Position, lightPos);
         XMStoreFloat4(&cbData->lights[count].Color, FXMVECTOR{ 1.0f, 1.0f, 1.0f, 1.0f });
-        XMStoreFloat3(&cbData->lights[count].ConstLinQuad, FXMVECTOR{ 1.0f, 0.09f, 0.32f });
+        XMStoreFloat3(&cbData->lights[count].ConstLinQuad, FXMVECTOR{ 1.0f, 0.02f, 0.005f });
 
         // Tried
         // 1. {1.0f, 0.09f, 0.32f} - Current lighting

@@ -2,6 +2,25 @@
 
 #include "StandardIncludes.h"
 
+typedef struct {
+	DXGI_FORMAT dxgiFormat;
+	uint32_t resourceDimension;
+	uint32_t miscFlag;       // See D3D11_RESOURCE_MISC_FLAG
+	uint32_t arraySize;
+	uint32_t miscFlags2;     // See DDS_MISC_FLAGS2
+} DDS_HEADER_DXT10;
+
+// Resource Dimensions for the struct above
+enum DDS_RESOURCE_DIMENSION {
+	DDS_DIMENSION_TEXTURE1D = 2,
+	DDS_DIMENSION_TEXTURE2D = 3,
+	DDS_DIMENSION_TEXTURE3D = 4,
+};
+
+
+
+
+
 struct DDS_PIXELFORMAT
 {
 	UINT size;

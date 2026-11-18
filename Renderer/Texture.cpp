@@ -88,11 +88,14 @@ void Texture::UploadTexture()
 	M_ASSERT(SUCCEEDED(res), "Failed to create texture upload heap.");
 
 	// Copy data to the intermediate upload heap and then schedule a copy from the upload heap to the Texture2D.
+	UINT64 width = m_ddsLoader->GetHeader()->width;
+	UINT64 height = m_ddsLoader->GetHeader()->height;
 	D3D12_SUBRESOURCE_DATA textureData = {};
 	textureData.pData = m_ddsLoader->GetData();
+
 	int blocksPerRow = m_ddsLoader->GetHeader()->width / 4;
-	textureData.RowPitch = blocksPerRow * 8;
-	textureData.SlicePitch = textureData.RowPitch * m_ddsLoader->GetHeader()->height;
+	textureData.RowPitch = (width / 4) * 16; // 16 bytes for DXT3/BC2
+	textureData.SlicePitch = textureData.RowPitch * (height / 4);
 
 	auto c = r->GetCommands();
 	c->Reset();

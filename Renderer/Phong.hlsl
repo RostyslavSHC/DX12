@@ -117,5 +117,5 @@ float4 PSMain(PSInput input) : SV_TARGET
         float4 specularColor = specularStrength * SampleTexture(material.texIndSpecular, input.uv) * material.SpecularColor * att;
         finalColor += ((ambientColor + diffuseColor + specularColor) * lights[count].Color).rgb;
     }
-    return float4(finalColor, 1.0f);
+    return float4(finalColor, diffColor.a);
 }

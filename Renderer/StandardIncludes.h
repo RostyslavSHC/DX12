@@ -55,6 +55,14 @@ using namespace DirectX;
     if (!(_cond)) { OutputDebugStringA(_msg); OutputDebugStringA(GetError()); std::abort(); \
 }
 
+
+#ifndef MAKEFOURCC
+#define MAKEFOURCC(ch0, ch1, ch2, ch3) \
+    ((uint32_t)(uint8_t)(ch0) | ((uint32_t)(uint8_t)(ch1) << 8) | \
+    ((uint32_t)(uint8_t)(ch2) << 16) | ((uint32_t)(uint8_t)(ch3) << 24))
+#endif
+
+
 static LPVOID lpErrorMessage; // Variable that will hold the Windows error message
 
 static char* GetError() // Function that gets the latest Windows error as text
