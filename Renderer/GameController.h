@@ -23,6 +23,6 @@ private:
 	// Members
     WindowController* m_windowC;
     Renderer* m_renderer;
-    Camera* m_camera;
+    // Camera* m_camera;
     ToolsController* m_toolsC;
 };

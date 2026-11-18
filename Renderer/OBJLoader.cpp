@@ -93,8 +93,19 @@ void OBJLoader::ProcessOBJ()
                     {
                         if (token.size() == 0) continue;
                         auto indices = SplitString(token, '/');
-                        Vertex v = { m_positions[stoi(indices[0]) - 1], m_texcoords[stoi(indices[1]) - 1],
-                            m_normals[stoi(indices[2]) - 1] };
+                        Vertex v;
+                        // Vertex v = { m_positions[stoi(indices[0]) - 1], m_texcoords[stoi(indices[1]) - 1], m_normals[stoi(indices[2]) - 1] };
+
+                        if ((m_texcoords.size() > 0) && (m_normals.size() > 0))
+                        {
+                            v = { m_positions[stoi(indices[0]) - 1], m_texcoords[stoi(indices[1]) - 1],
+                                m_normals[stoi(indices[2]) - 1] };
+                        }
+                        else
+                        {
+                            v = { m_positions[stoi(indices[0]) - 1],{ 0, 0, 0 },{ 0, 0, 0 } };
+                        }
+
                         faceVertices.push_back(v);
                     }
                     m_vertices.push_back(faceVertices[0]);

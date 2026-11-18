@@ -1,16 +1,16 @@
-
 #include "GameController.h"
 #include "Renderer.h"
 #include "ToolsController.h"
 #include "Unit.h"
 #include "ShaderPhong.h"
 #include "ShaderColor.h"
+#include "ShaderSkybox.h"
 
 GameController::GameController()
 {
     m_windowC = nullptr;
     m_renderer = nullptr;
-    m_camera = nullptr;
+    // m_camera = nullptr;
     m_toolsC = nullptr;
 }
 
@@ -25,7 +25,8 @@ void GameController::Initialize(HINSTANCE _hInstance, int _nShowCmd)
     m_renderer = &Renderer::GetInstance();
     m_renderer->ConfigurePipeline(false, m_windowC->GetHWND(), m_windowC->GetWindowWidth(), m_windowC->GetWindowHeight());
     FontController::GetInstance().Initialize(m_renderer->GetDevice().Get(), m_renderer->GetCommands(), m_renderer->GetRenderTargets(), Renderer::GetFrameCount());
-    m_camera = new Camera(m_windowC->GetWindowWidth(), m_windowC->GetWindowHeight()); // Create the camera
+    
+    Camera::SetCurrent(new Camera(m_windowC->GetWindowWidth(), m_windowC->GetWindowHeight())); // Create the camera
     m_toolsC = &ToolsController::GetInstance();
     m_toolsC->LoadToolsLibrary();
     srand(0); // Seed the random number generator with a fixed value for reproducibility
@@ -40,6 +41,7 @@ float GameController::RndF(float _min, float _max)
     return distribution(engine);
 }
 
+
 void GameController::Run()
 {
     m_toolsC->ShowForm();
@@ -47,14 +49,21 @@ void GameController::Run()
     vector<IRenderable*> units;
     ShaderColor shaderColor = ShaderColor();
     shaderColor.Initialize();
+    ShaderPhong shaderPhong = ShaderPhong();
+    shaderPhong.Initialize();
+    ShaderSkybox shaderSkybox = ShaderSkybox();
+    shaderSkybox.Initialize();
+
+    Unit* skybox = new Unit();
+    skybox->Initialize("..\\Assets\\Models\\Skybox.obj", &shaderSkybox);
+    skybox->SetPosition({ 0.0f, 0.0f, 0.0f });
+    units.push_back(skybox);
+
     Unit* light = new Unit();
     light->Initialize("..\\Assets\\Models\\Teapot.obj", &shaderColor);
     light->SetPosition(XMFLOAT3(0.5f, 0.5f, -2.0f));
     light->SetScale(XMFLOAT3(0.01f, 0.01f, 0.01f));
     units.push_back(light);
-
-    ShaderPhong shaderPhong = ShaderPhong();
-    shaderPhong.Initialize();
 
     Unit* unit = new Unit();
     // unit->Initialize("..\\Assets\\Models\\TorusKnot.obj", &shaderPhong);
@@ -95,7 +104,7 @@ void GameController::Run()
         m_renderer->GetBGColor()[1] = (float)m_toolsC->GetGreenData();
         m_renderer->GetBGColor()[2] = (float)m_toolsC->GetBlueData();
 
-        Unit* unit = static_cast<Unit*>(units[1]);
+        Unit* unit = static_cast<Unit*>(units[3]);
         auto pos = unit->GetPosition();
         auto rot = unit->GetRotation();
         auto scl = unit->GetScale();
@@ -116,7 +125,9 @@ void GameController::Run()
 
         shaderColor.ResetCurrentObjectIndex();
         shaderPhong.ResetCurrentObjectIndex();
-        m_renderer->Render(units, m_camera->GetViewProjection());
+        shaderSkybox.ResetCurrentObjectIndex();
+        Camera::Current()->Rotate();
+        m_renderer->Render(units, Camera::Current()->GetViewProjection());
     }
 
     for (auto u : units)
@@ -124,4 +135,8 @@ void GameController::Run()
         delete u;
     }
     units.clear();
+
+    delete Camera::Current();
+    Camera::SetCurrent(nullptr);
 }
+

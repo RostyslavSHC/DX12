@@ -72,6 +72,12 @@
     <ClCompile Include="FontController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ShaderSkybox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Skybox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StandardIncludes.h">
@@ -128,6 +134,12 @@
     <ClInclude Include="FontController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ShaderSkybox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Skybox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -140,6 +152,9 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="Color.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Skybox.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

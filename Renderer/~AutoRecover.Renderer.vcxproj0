@@ -82,6 +82,12 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d12.lib
+;d3d11.lib;d2d1.lib
+;dwrite.lib
+;dxgi.lib
+;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>d3d12.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Manifest>
       <EnableSegmentHeap>true</EnableSegmentHeap>
@@ -100,6 +106,12 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d12.lib
+;d3d11.lib;d2d1.lib
+;dwrite.lib
+;dxgi.lib
+;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>d3d12.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Manifest>
       <EnableSegmentHeap>true</EnableSegmentHeap>
@@ -118,7 +130,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EntryPointSymbol>
       </EntryPointSymbol>
-      <AdditionalDependencies>d3d12.lib;dxgi.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d12.lib;d3d11.lib;d2d1.lib
+;dwrite.lib
+
+;dxgi.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <DelayLoadDLLs>d3d12.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Manifest>
@@ -147,6 +162,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CommandController.cpp" />
     <ClCompile Include="DDSLoad.cpp" />
+    <ClCompile Include="FontController.cpp" />
     <ClCompile Include="GameController.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -166,6 +182,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CommandController.h" />
     <ClInclude Include="DDSLoad.h" />
+    <ClInclude Include="FontController.h" />
     <ClInclude Include="GameController.h" />
     <ClInclude Include="IRenderable.h" />
     <ClInclude Include="Mesh.h" />
@@ -203,6 +220,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
+    <FxCompile Include="Skybox.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

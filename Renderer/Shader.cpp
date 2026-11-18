@@ -80,10 +80,12 @@ void Shader::CreatePipelineState()
 	CreatePipelineState(EN_PSD_DEFAULT);
 
 	m_psoDescBase.RasterizerState.CullMode = D3D12_CULL_MODE_FRONT;
+	m_psoDescBase.DepthStencilState.DepthEnable = FALSE;
 	CreatePipelineState(EN_PSD_CULL_FRONT);
 
 	m_psoDescBase.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
 	m_psoDescBase.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME;
+	m_psoDescBase.DepthStencilState.DepthEnable = TRUE;
 	CreatePipelineState(EN_PSD_WIREFRAME);
 }
 

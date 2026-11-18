@@ -1,6 +1,8 @@
 #include "Mesh.h"
 #include "Renderer.h"
+#include "SkyBox.h"
 #include "ShaderPhong.h"
+#include "ShaderSkybox.h"
 #include "VertexStructs.h"
 #include "OBJLoader.h"
 
@@ -45,9 +47,20 @@ void Mesh::CreateVertexBuffer(string _fileName)
 
     if (objLoader.GetMapDiffuse() != "")
     {
-        Texture* t = new Texture();
-        t->Initialize("..\\Assets\\Textures\\" + objLoader.GetMapDiffuse(), GetShader());
-        SetTexDiffuse(t);
+        Texture* t0;
+        if (dynamic_cast<ShaderSkybox*>(GetShader()) != nullptr)
+        {
+            t0 = new Skybox();
+        }
+        else
+        {
+            t0 = new Texture();
+        }
+
+
+        // Texture* t = new Texture();
+        t0->Initialize("..\\Assets\\Textures\\" + objLoader.GetMapDiffuse(), GetShader());
+        SetTexDiffuse(t0);
     }
 
     if (objLoader.GetMapSpecular() != "")

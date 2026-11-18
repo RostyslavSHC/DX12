@@ -8,6 +8,7 @@ Texture::Texture()
 	m_texture = nullptr;
 	m_ddsLoader = nullptr;
 	m_index = -1;
+	m_arraySize = 1;
 }
 
 Texture::~Texture()
@@ -36,8 +37,10 @@ void Texture::LoadTextureFromFile(wstring _filename)
 	m_ddsLoader->Load(_filename);
 }
 
-void Texture::CreateTexture()
+void Texture::CreateTexture(UINT16 _arraySize)
 {
+	m_arraySize = _arraySize;
+
 	// Create the texture.
 	D3D12_RESOURCE_DESC textureDesc = {};
 	textureDesc.MipLevels = 1;
@@ -45,7 +48,7 @@ void Texture::CreateTexture()
 	textureDesc.Width = m_ddsLoader->GetHeader()->width;
 	textureDesc.Height = m_ddsLoader->GetHeader()->height;
 	textureDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
-	textureDesc.DepthOrArraySize = 1;
+	textureDesc.DepthOrArraySize = _arraySize;
 	textureDesc.SampleDesc.Count = 1;
 	textureDesc.SampleDesc.Quality = 0;
 	textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
@@ -56,7 +59,7 @@ void Texture::CreateTexture()
 		"Failed to create committed texture resource.");
 }
 
-void Texture::CreateShaderResourceView(Shader* _shader)
+void Texture::CreateShaderResourceView(Shader* _shader, D3D12_SRV_DIMENSION _dimension)
 {
 	auto r = &Renderer::GetInstance();
 	auto device = r->GetDevice().Get();
@@ -69,7 +72,7 @@ void Texture::CreateShaderResourceView(Shader* _shader)
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	srvDesc.Format = m_ddsLoader->GetFormat();
-	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.ViewDimension = _dimension;
 	srvDesc.Texture2D.MipLevels = 1;
 	device->CreateShaderResourceView(m_texture.Get(), &srvDesc, srvHandle);
 }
@@ -78,7 +81,7 @@ void Texture::UploadTexture()
 {
 	// Create the GPU upload buffer.
 	ComPtr<ID3D12Resource> textureUploadHeap;
-	const UINT64 uploadBufferSize = GetRequiredIntermediateSize(m_texture.Get(), 0, 1);
+	const UINT64 uploadBufferSize = GetRequiredIntermediateSize(m_texture.Get(), 0, m_arraySize);
 	auto heapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	auto resDescr = CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize);
 	auto r = &Renderer::GetInstance();
@@ -90,16 +93,28 @@ void Texture::UploadTexture()
 	// Copy data to the intermediate upload heap and then schedule a copy from the upload heap to the Texture2D.
 	UINT64 width = m_ddsLoader->GetHeader()->width;
 	UINT64 height = m_ddsLoader->GetHeader()->height;
+
+	std::vector<D3D12_SUBRESOURCE_DATA> textureData(m_arraySize);
+	for (UINT i = 0; i < m_arraySize; ++i)
+	{
+		textureData[i].RowPitch = (width / 4) * 16; // 16 bytes for DXT3/BC2
+		textureData[i].SlicePitch = textureData[i].RowPitch * (height / 4);
+		textureData[i].pData = m_ddsLoader->GetData() + (i * textureData[i].SlicePitch);
+	}
+
+
+	/*
 	D3D12_SUBRESOURCE_DATA textureData = {};
 	textureData.pData = m_ddsLoader->GetData();
 
 	int blocksPerRow = m_ddsLoader->GetHeader()->width / 4;
 	textureData.RowPitch = (width / 4) * 16; // 16 bytes for DXT3/BC2
 	textureData.SlicePitch = textureData.RowPitch * (height / 4);
+	*/
 
 	auto c = r->GetCommands();
 	c->Reset();
-	UpdateSubresources(c->GetCommandList().Get(), m_texture.Get(), textureUploadHeap.Get(), 0, 0, 1, &textureData);
+	UpdateSubresources(c->GetCommandList().Get(), m_texture.Get(), textureUploadHeap.Get(), 0, 0, m_arraySize, textureData.data());
 	c->AddBarrier(m_texture.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 	c->Close();
 	c->Execute();
