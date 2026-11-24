@@ -2,6 +2,8 @@
 
 #include "Shader.h"
 
+#define MAX_LIGHTS 8
+
 class ShaderPhong : public Shader
 {
 public:
@@ -37,9 +39,10 @@ public:
     struct CB_Phong : ConstantBuffer
     {
         Material material;
-        Light lights[8];
+        Light lights[MAX_LIGHTS];
         UINT LightCount;
-        XMFLOAT3 pad0;
+        UINT InstancingEnabled;
+        XMFLOAT2 pad0;
         XMFLOAT4 CameraPosition;
     };
 

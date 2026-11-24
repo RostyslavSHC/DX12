@@ -34,7 +34,8 @@ cbuffer SceneData : register(b0)
     Material material;
     Light lights[MAX_LIGHTS];
     uint lightCount;
-    float3 pad0;
+    uint instancingEnabled;
+    float2 pad0;
     // Light light;
     float4 CameraPosition;
 };
@@ -65,25 +66,33 @@ struct VSInput
 Texture2D g_Textures[MAX_TEXTURES] : register(t0);
 SamplerState g_sampler : register(s0);
 
+
 PSInput VSMain(VSInput _input)
 {
     PSInput result;
-    float4x4 world = mul(World, _input.instWorld);
-    float4x4 invWorld = mul(InvWorld, _input.instWorldInv);
-    float4 worldPos = mul(float4(_input.position, 1.0f), _input.instWorld);
+    float4x4 world = World;
+    float4x4 invWorld = InvWorld;
+    float4 worldPos = float4(_input.position, 1.0f);
+
+    if (instancingEnabled == 1)
+    {
+        world = mul(world, _input.instWorld);
+        invWorld = mul(invWorld, _input.instWorldInv);
+        worldPos = mul(worldPos, _input.instWorld);
+    }
+
     result.position = mul(worldPos, WVP);
     result.normal = mul(float4(_input.normal, 0.0f), invWorld);
     result.uv = _input.uv;
     result.pixelWorld = mul(float4(_input.position, 1.0f), world).xyz;
     result.viewDirection = normalize(CameraPosition.xyz - result.pixelWorld);
-    float3 T = normalize(mul(world, float4(_input.tangent, 0.0))).xyz;
-    float3 B = normalize(mul(world, float4(_input.bitangent, 0.0))).xyz;
-    float3 N = normalize(mul(world, float4(_input.normal, 0.0))).xyz;
+    float3 T = normalize(mul(float4(_input.tangent, 0.0), world)).xyz;
+    float3 B = normalize(mul(float4(_input.bitangent, 0.0), world)).xyz;
+    float3 N = normalize(mul(float4(_input.normal, 0.0), world)).xyz;
     result.TBN = float3x3(T, B, N);
 
     return result;
 }
-
 
 
 

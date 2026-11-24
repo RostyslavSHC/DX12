@@ -10,7 +10,7 @@ class IRenderable
 {
 public:
     // Constructors/Destructors
-    IRenderable() { m_shader = nullptr; m_texDiffuse = nullptr; m_texSpecular = nullptr; m_texNormal = nullptr; }
+    IRenderable() { m_shader = nullptr; m_texDiffuse = nullptr; m_texSpecular = nullptr; m_texNormal = nullptr; m_isInstanced = false;  }
     virtual ~IRenderable() {}
 
     // Accessors
@@ -22,6 +22,8 @@ public:
     void SetTexSpecular(Texture* _texture) { m_texSpecular = _texture; }
     Texture* GetTexNormal() { return m_texNormal; }
     void SetTexNormal(Texture* _texture) { m_texNormal = _texture; }
+    bool IsInstanced() const { return m_isInstanced; }
+    void SetIsInstanced(bool _isInstanced) { m_isInstanced = _isInstanced; }
 
 
 
@@ -34,4 +36,5 @@ private:
     Texture* m_texDiffuse;
     Texture* m_texSpecular;
     Texture* m_texNormal;
+    bool m_isInstanced;
 };

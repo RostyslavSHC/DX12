@@ -48,6 +48,7 @@ void Mesh::Initialize(string _filename, Shader* _shader, vector<InstanceData>* _
     CreateVertexBuffer(_filename);
     if (_instances != nullptr)
     {
+        SetIsInstanced(true);
         CreateInstanceBuffer(*_instances);
     }
     //CreateIndexBuffer();
@@ -347,7 +348,7 @@ void Mesh::Render(XMMATRIX _viewProj)
     XMStoreFloat4x4(&cbData->WVP, XMMatrixTranspose(_viewProj));
     c->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-    if (m_instanceBuffer != nullptr)
+    if (IsInstanced())
     {
         D3D12_VERTEX_BUFFER_VIEW views[2] = { m_vertexBufferView, m_instanceBufferView };
         c->IASetVertexBuffers(0, 2, views);

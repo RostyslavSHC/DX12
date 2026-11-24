@@ -81,8 +81,14 @@ void GameController::Run()
     units.push_back(light);
 
 
-
     Unit* unit = new Unit();
+    unit->Initialize("..\\Assets\\Models\\Teapot.obj", &shaderPhong);
+    unit->SetPosition({ 1.0f, 0.0f, 0.0f });
+    unit->SetScale({ 0.025f, 0.025f, 0.025f });
+    units.push_back(unit);
+
+
+    unit = new Unit();
     vector<InstanceData> instances;
 
     for (int count = 0; count < 2000; count++)
@@ -149,6 +155,10 @@ void GameController::Run()
         if (m_windowC->GetKeyStates()[VK_LEFT]) pos.x -= 0.01f;
         if (m_windowC->GetKeyStates()[VK_UP]) pos.y += 0.01f;
         if (m_windowC->GetKeyStates()[VK_DOWN]) pos.y -= 0.01f;
+
+        // ----------EXTRA ----------
+        if (m_windowC->GetKeyStates()['E']) pos.z -= 0.05f;
+        if (m_windowC->GetKeyStates()['R']) pos.z += 0.05f;
 
         if (m_windowC->GetKeyStates()['Q']) rot.y += 0.1f;
         if (m_windowC->GetKeyStates()['W']) rot.y -= 0.1f;

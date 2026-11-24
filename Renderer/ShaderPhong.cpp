@@ -73,9 +73,10 @@ void ShaderPhong::SetPipelineState(IRenderable* _renderable, PipelineStateDefs _
     }
 
     cbData->LightCount = 1;
-
+    cbData->InstancingEnabled = _renderable->IsInstanced();
     // ---------- PROBLEM: Camera class doesn't have a GetPosition() method, and XMStoreFloat4 requires XMVECTOR ----------
     // XMStoreFloat4(&cbData->CameraPosition, Camera::Current()->GetPosition());
+
     XMStoreFloat4(&cbData->CameraPosition, FXMVECTOR{ 0.0f, 1.0f, -3.0f });
 
 }
