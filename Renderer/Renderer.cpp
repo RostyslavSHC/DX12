@@ -318,10 +318,10 @@ void Renderer::Render(vector<IRenderable*>& _renderables, XMMATRIX _viewProj)
         Shader* s = renderable->GetShader();
         s->SetPipelineState(renderable);
         s->BindObjectCB();
-        for (int count = 0; count < 1000; count++)
-        {
+        // for (int count = 0; count < 1000; count++)
+        // {
             renderable->Render(_viewProj);
-        }
+        // }
         renderable->GetShader()->IncrementCurrentObjectIndex();
     }
 
