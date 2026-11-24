@@ -47,6 +47,7 @@ struct PSInput
     float2 uv : TEXCOORD0;
     float3 pixelWorld : POSITION0;
     float3 viewDirection : POSITION1;
+    float3x3 TBN : TANGENTSPACE;
 };
 
 struct VSInput
@@ -54,6 +55,8 @@ struct VSInput
     float3 position : POSITION;
     float3 normal : NORMAL0;
     float2 uv : TEXCOORD0;
+    float3 tangent : TANGENT0;
+    float3 bitangent : BITANGENT0;
 };
 
 #define MAX_TEXTURES 8
@@ -72,6 +75,11 @@ PSInput VSMain(VSInput _input)
     result.uv = _input.uv;
     result.pixelWorld = mul(float4(_input.position, 1.0f), World).xyz;
     result.viewDirection = normalize(CameraPosition.xyz - result.pixelWorld);
+    
+    float3 T = normalize(mul(World, float4(_input.tangent, 0.0))).xyz;
+    float3 B = normalize(mul(World, float4(_input.bitangent, 0.0))).xyz;
+    float3 N = normalize(mul(World, float4(_input.normal, 0.0))).xyz;
+    result.TBN = float3x3(T, B, N);
 
     return result;
 }
@@ -110,8 +118,8 @@ float4 PSMain(PSInput input) : SV_TARGET
         {
             input.normal = SampleTexture(material.texIndNormal, input.uv).xyz;
             input.normal = input.normal * 2.0f - 1.0f;
-            float3x3 normalMatrix = (float3x3) World;
-            input.normal = normalize(mul(input.normal, normalMatrix));
+            // float3x3 normalMatrix = (float3x3) World;
+            input.normal = normalize(mul(input.normal, input.TBN));
         }
         
         float3 lightDir = normalize(lights[count].Position - input.pixelWorld);

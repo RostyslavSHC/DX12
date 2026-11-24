@@ -8,7 +8,7 @@ ShaderPhong::ShaderPhong()
 
 void ShaderPhong::CreatePipelineState()
 {
-    VTX_PosNormTex* vtx = new VTX_PosNormTex();
+    VTX_PosNormTexTanBit* vtx = new VTX_PosNormTexTanBit();
     SetVertexType(vtx);
     SetInputElementDescs(vtx->InputElementDescs);
     SetInputElemDescSize(_countof(vtx->InputElementDescs));

@@ -46,6 +46,42 @@ void Mesh::Initialize(string _filename, Shader* _shader)
     //CreateIndexBuffer();
 }
 
+// Slide 30 - Calculate Tangents and Bitangents
+void Mesh::CalculateTangents(vector<Vertex*>& _vertices, XMFLOAT3& _tangent, XMFLOAT3& _bitangent)
+{
+    XMFLOAT3 xp0 = { _vertices[0]->pos.x, _vertices[0]->pos.y, _vertices[0]->pos.z };
+    XMFLOAT3 xp1 = { _vertices[1]->pos.x, _vertices[1]->pos.y, _vertices[1]->pos.z };
+    XMFLOAT3 xp2 = { _vertices[2]->pos.x, _vertices[2]->pos.y, _vertices[2]->pos.z };
+
+    XMFLOAT2 xuv0 = { _vertices[0]->tex.u, _vertices[0]->tex.v };
+    XMFLOAT2 xuv1 = { _vertices[1]->tex.u, _vertices[1]->tex.v };
+    XMFLOAT2 xuv2 = { _vertices[2]->tex.u, _vertices[2]->tex.v };
+
+    XMVECTOR p0 = XMLoadFloat3(&xp0);
+    XMVECTOR p1 = XMLoadFloat3(&xp1);
+    XMVECTOR p2 = XMLoadFloat3(&xp2);
+
+    XMVECTOR uv0 = XMLoadFloat2(&xuv0);
+    XMVECTOR uv1 = XMLoadFloat2(&xuv1);
+    XMVECTOR uv2 = XMLoadFloat2(&xuv2);
+
+    XMFLOAT3 edge1; XMStoreFloat3(&edge1, p1 - p0);
+    XMFLOAT3 edge2; XMStoreFloat3(&edge2, p2 - p0);
+
+    XMFLOAT2 deltaUV1; XMStoreFloat2(&deltaUV1, uv1 - uv0);
+    XMFLOAT2 deltaUV2; XMStoreFloat2(&deltaUV2, uv2 - uv0);
+
+    float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+
+    _tangent.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+    _tangent.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+    _tangent.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+
+    _bitangent.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
+    _bitangent.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
+    _bitangent.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
+}
+
 void Mesh::CreateVertexBuffer(string _fileName)
 {
     OBJLoader objLoader;
@@ -63,7 +99,6 @@ void Mesh::CreateVertexBuffer(string _fileName)
         {
             t0 = new Texture();
         }
-
 
         // Texture* t = new Texture();
         t0->Initialize("..\\Assets\\Textures\\" + objLoader.GetMapDiffuse(), GetShader());
@@ -84,7 +119,6 @@ void Mesh::CreateVertexBuffer(string _fileName)
         SetTexNormal(t2);
     }
 
-
     VTX_Base* vtxb = GetShader()->GetVertexType();
     UINT vertexBufferSize = 0;
     UINT vertexBufferStride = 0;
@@ -92,6 +126,61 @@ void Mesh::CreateVertexBuffer(string _fileName)
 
     switch (vtxb->GetVertexType())
     {
+        // Slides 31-32 - Tangent-space vertex data
+    case EN_VT_POSNRMTEXTANBIT:
+    {
+        vector<Vertex*> triangle;
+        vector<XMFLOAT3> tangents;
+        vector<XMFLOAT3> bitangents;
+        XMFLOAT3 tangent;
+        XMFLOAT3 bitangent;
+
+        auto& vs = objLoader.GetVertices();
+
+        for (unsigned int j = 0; j < vs.size(); j += 3)
+        {
+            triangle.clear();
+
+            for (unsigned int vc = j; vc < j + 3; vc++)
+            {
+                triangle.push_back(&vs[vc]);
+            }
+
+            CalculateTangents(triangle, tangent, bitangent);
+            tangents.push_back(tangent);
+            bitangents.push_back(bitangent);
+        }
+
+        for (unsigned int j = 0; j < vs.size(); j++)
+        {
+            auto& v = vs[j];
+
+            meshData.push_back(v.pos.x);
+            meshData.push_back(v.pos.y);
+            meshData.push_back(v.pos.z);
+
+            meshData.push_back(v.nrm.nx);
+            meshData.push_back(v.nrm.ny);
+            meshData.push_back(v.nrm.nz);
+
+            meshData.push_back(v.tex.u);
+            meshData.push_back(v.tex.v);
+
+            int index = j / 3;
+
+            meshData.push_back(tangents[index].x);
+            meshData.push_back(tangents[index].y);
+            meshData.push_back(tangents[index].z);
+
+            meshData.push_back(bitangents[index].x);
+            meshData.push_back(bitangents[index].y);
+            meshData.push_back(bitangents[index].z);
+        }
+
+        vertexBufferStride = 14 * sizeof(float);
+        break;
+    }
+
     case EN_VT_POSNRMTEX:
         for (auto& v : objLoader.GetVertices())
         {
@@ -119,19 +208,30 @@ void Mesh::CreateVertexBuffer(string _fileName)
     }
 
     vertexBufferSize = (UINT)meshData.size() * sizeof(float);
+
     auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
     auto resourceDescr = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize);
     auto device = Renderer::GetInstance().GetDevice().Get();
-    M_ASSERT(SUCCEEDED(device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE, &resourceDescr,
-        D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
+
+    M_ASSERT(SUCCEEDED(device->CreateCommittedResource(
+        &heapProperties,
+        D3D12_HEAP_FLAG_NONE,
+        &resourceDescr,
+        D3D12_RESOURCE_STATE_GENERIC_READ,
+        nullptr,
         IID_PPV_ARGS(&m_vertexBuffer))),
         "Failed to create commit resource.");
 
     // Copy the triangle data to the vertex buffer.
     UINT8* pVertexDataBegin;
-    CD3DX12_RANGE readRange(0, 0);        // We do not intend to read from this resource on the CPU.
-    M_ASSERT(SUCCEEDED(m_vertexBuffer->Map(0, &readRange, reinterpret_cast<void**>(&pVertexDataBegin))),
+    CD3DX12_RANGE readRange(0, 0);
+
+    M_ASSERT(SUCCEEDED(m_vertexBuffer->Map(
+        0,
+        &readRange,
+        reinterpret_cast<void**>(&pVertexDataBegin))),
         "Failed to map vertex buffer");
+
     memcpy(pVertexDataBegin, meshData.data(), vertexBufferSize);
     m_vertexBuffer->Unmap(0, nullptr);
 
@@ -154,16 +254,17 @@ void Mesh::CreateIndexBuffer()
     auto device = Renderer::GetInstance().GetDevice().Get();
 
     M_ASSERT(SUCCEEDED(device->CreateCommittedResource(
-        &hProp, // Use upload heap
+        &hProp,
         D3D12_HEAP_FLAG_NONE,
         &rDesc,
-        D3D12_RESOURCE_STATE_GENERIC_READ, // Start in a state the GPU can read from
+        D3D12_RESOURCE_STATE_GENERIC_READ,
         nullptr,
         IID_PPV_ARGS(&m_indexBuffer))),
         "Failed to create index buffer commit resource");
 
     UINT8* pIndexDataBegin;
-    CD3DX12_RANGE readRange(0, 0); // No intention to allow CPU read rights, so read range is (0, 0).
+    CD3DX12_RANGE readRange(0, 0);
+
     M_ASSERT(SUCCEEDED(m_indexBuffer->Map(
         0,
         &readRange,
@@ -192,6 +293,9 @@ void Mesh::Render(XMMATRIX _viewProj)
     c->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     c->IASetVertexBuffers(0, 1, &m_vertexBufferView);
     c->IASetIndexBuffer(&m_indexBufferView);
+
     // c->DrawIndexedInstanced(m_indexBufferSize / sizeof(unsigned short), 1, 0, 0, 0);
-    c->DrawInstanced(m_vertexBufferView.SizeInBytes / m_vertexBufferView.StrideInBytes, 1, 0, 0);
+    c->DrawInstanced(
+        m_vertexBufferView.SizeInBytes / m_vertexBufferView.StrideInBytes,
+        1, 0, 0);
 }

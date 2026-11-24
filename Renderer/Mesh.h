@@ -3,6 +3,7 @@
 #include "StandardIncludes.h"
 
 class Texture;
+class Vertex;
 
 class Mesh : public IRenderable
 {
@@ -17,6 +18,7 @@ public:
 
 private:
     // Methods
+    void CalculateTangents(vector<Vertex*>& _vertices, XMFLOAT3& _tangent, XMFLOAT3& _bitangent);
     void CreateVertexBuffer(string _fileName);
     void CreateIndexBuffer();
 
