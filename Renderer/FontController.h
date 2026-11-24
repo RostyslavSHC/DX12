@@ -2,6 +2,16 @@
 
 #include "StandardIncludes.h"
 
+
+struct BufferedText
+{
+    wstring text;
+    wstring font;
+    D2D1_RECT_F destination;
+    D2D1::ColorF::Enum color;
+};
+
+
 class FontController : public Singleton<FontController>
 {
 public:
@@ -11,7 +21,9 @@ public:
 
     // Methods
     void Initialize(ID3D12Device* _d3d12Device, CommandController* _commandController, ComPtr<ID3D12Resource>* _renderTargets, UINT _frameCount);
-    void Write(wstring _font, D2D1_RECT_F _destination, D2D1::ColorF::Enum _color, UINT _frameIndex);
+
+    void Write(wstring _text, wstring _font, D2D1_RECT_F _destination, D2D1::ColorF::Enum _color);
+    void WriteBuffered(UINT _frameIndex);
 
 private:
     // Methods
@@ -37,4 +49,5 @@ private:
     vector<ComPtr<ID2D1Bitmap1>> m_d2dTargets;
     map<wstring, ComPtr<IDWriteTextFormat>> m_fonts;
     map<D2D1::ColorF::Enum, ComPtr<ID2D1SolidColorBrush>> m_brushes;
+    vector<BufferedText> m_bufferedText;
 };

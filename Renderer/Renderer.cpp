@@ -222,6 +222,7 @@ void Renderer::CreateSwapChain(HWND _hwnd, int _wWidth, int _wHeight)
     // Describe and create the swap chain
     DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {}; // Describe the swap chain
     swapChainDesc.BufferCount = m_frameCount;
+    swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
     swapChainDesc.Width = _wWidth;
     swapChainDesc.Height = _wHeight;
     swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // Use 32-bit color
@@ -317,20 +318,21 @@ void Renderer::Render(vector<IRenderable*>& _renderables, XMMATRIX _viewProj)
         Shader* s = renderable->GetShader();
         s->SetPipelineState(renderable);
         s->BindObjectCB();
-        renderable->Render(_viewProj);
+        for (int count = 0; count < 1000; count++)
+        {
+            renderable->Render(_viewProj);
+        }
         renderable->GetShader()->IncrementCurrentObjectIndex();
     }
 
     m_commands->Close();
     m_commands->Execute();
     m_commands->GetCommandList()->Reset(m_commands->GetCommandAllocator().Get(), nullptr);
-    // FontController::GetInstance().Write(L"Segoe UI_32", D2D1_RECT_F{ 20, 20, 800, 60 }, D2D1::ColorF::Yellow, m_frameIndex);
-    // FontController::GetInstance().Write(L"Arial_20", D2D1_RECT_F{ 20, 80, 800, 120 }, D2D1::ColorF::White, m_frameIndex);
-    // FontController::GetInstance().Write(L"Segoe UI_32", D2D1_RECT_F{ 20, 140, 800, 180 }, D2D1::ColorF::Red, m_frameIndex);
+    FontController::GetInstance().WriteBuffered(m_frameIndex);
     m_commands->AddBarrier(m_renderTargets[m_frameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
     m_commands->Close();
     m_commands->Execute();
-    M_ASSERT(SUCCEEDED(m_swapChain->Present(1, 0)), "Failed to present swapchain.");
+    M_ASSERT(SUCCEEDED(m_swapChain->Present(0, DXGI_PRESENT_ALLOW_TEARING)), "Failed to present swapchain.");
 
     WaitForPreviousFrame();
 }

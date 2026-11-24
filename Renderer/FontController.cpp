@@ -97,19 +97,36 @@ void FontController::CreateFontFace(wstring _fontName, int _dipSize, DWRITE_FONT
     m_fonts[key] = font;
 }
 
-void FontController::Write(wstring _font, D2D1_RECT_F _destination, D2D1::ColorF::Enum _color, UINT _frameIndex)
-{
-    M_ASSERT(m_brushes.contains(_color), "Brush color not instantiated.");
 
+void FontController::Write(wstring _text, wstring _font, D2D1_RECT_F _destination, D2D1::ColorF::Enum _color)
+{
+    m_bufferedText.emplace_back(BufferedText{ _text, _font, _destination, _color });
+}
+
+
+void FontController::WriteBuffered(UINT _frameIndex)
+{
     ID3D11Resource* res[] = { m_wrappedBuffers[_frameIndex].Get() };
     m_d3d11On12->AcquireWrappedResources(res, 1);
 
     m_d2dContext->SetTarget(m_d2dTargets[_frameIndex].Get());
     m_d2dContext->BeginDraw();
-    m_d2dContext->DrawTextW(L"Hello DX12 + DirectWrite", 25, m_fonts[_font].Get(),
-        _destination, m_brushes[_color].Get());
-    M_ASSERT(SUCCEEDED(m_d2dContext->EndDraw()), "Failed to draw text");
+
+    for (auto& text : m_bufferedText)
+    {
+        M_ASSERT(m_brushes.contains(text.color), "Brush color not instantiated.");
+
+        m_d2dContext->DrawTextW(
+            text.text.c_str(),
+            text.text.length(),
+            m_fonts[text.font].Get(),
+            text.destination,
+            m_brushes[text.color].Get());
+
+        M_ASSERT(SUCCEEDED(m_d2dContext->EndDraw()), "Failed to draw text");
+    }
 
     m_d3d11On12->ReleaseWrappedResources(res, 1);
     m_d3d11Context->Flush();
+    m_bufferedText.clear();
 }

@@ -41,6 +41,25 @@ float GameController::RndF(float _min, float _max)
     return distribution(engine);
 }
 
+double GameController::GetTime()
+{
+    static LARGE_INTEGER frequency;
+    static BOOL useHighRes = QueryPerformanceFrequency(&frequency);
+
+    LARGE_INTEGER currentTime;
+    QueryPerformanceCounter(&currentTime);
+    return (double)(currentTime.QuadPart) / (double)frequency.QuadPart;
+}
+
+
+
+
+
+
+
+
+
+
 
 
 void GameController::Run()
@@ -62,17 +81,32 @@ void GameController::Run()
     units.push_back(light);
 
     Unit* unit = new Unit();
-    unit->Initialize("..\\Assets\\Models\\Wall.obj", &shaderPhong);
-    unit->SetPosition({ 0.0f, 0.25f, -1.9f });
-    unit->SetRotation({ 0.0f, 134.8f, 0.0f });
-    unit->SetScale({ 0.125f, 0.125f, 0.125f });
+    unit->Initialize("..\\Assets\\Models\\Teapot.obj", &shaderPhong);
+    unit->SetPosition({ 0.0f, 0.0f, 0.0f });
+    unit->SetScale({ 0.04f, 0.04f, 0.04f });
     units.push_back(unit);
 
     //Main message loop
     MSG msg = {};
     bool running = true;
+    double lastTime = GetTime();
+    int fps = 0;
+    wstring fpsS = L"0";
+
+
+
+
     while (running)
     {
+        double currentTime = GetTime();
+        fps++;
+        if (currentTime - lastTime >= 1)
+        {
+            fpsS = L"FPS: " + to_wstring(fps);
+            fps = 0;
+            lastTime = currentTime;
+        }
+
         while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
         {
             if (msg.message == WM_QUIT) running = false;
@@ -105,6 +139,7 @@ void GameController::Run()
         unit->SetRotation(XMFLOAT3(rot.x, rot.y, rot.z));
         unit->SetScale(XMFLOAT3(scl.x, scl.y, scl.z));
 
+        FontController::GetInstance().Write(fpsS, L"Arial_20", D2D1_RECT_F(20, 80, 800, 120), D2D1::ColorF::Yellow);
         shaderColor.ResetCurrentObjectIndex();
         shaderPhong.ResetCurrentObjectIndex();
         shaderSkybox.ResetCurrentObjectIndex();

@@ -19,6 +19,7 @@ public:
 private:
     // Methods
 	float RndF(float _min, float _max);
+    double GetTime();
 
 	// Members
     WindowController* m_windowC;
