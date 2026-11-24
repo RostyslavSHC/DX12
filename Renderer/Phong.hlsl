@@ -4,7 +4,7 @@ struct Material
     float SpecularStrength;
     int texIndDiffuse;
     int texIndSpecular;
-    float pad0;
+    int texIndNormal;
     float4 SpecularColor;
 };
 
@@ -105,6 +105,15 @@ float4 PSMain(PSInput input) : SV_TARGET
     float3 finalColor = float3(0.0f, 0.0f, 0.0f);
     for (uint count = 0; count < lightCount; count++)
     {
+        
+        if (material.texIndNormal != -1)
+        {
+            input.normal = SampleTexture(material.texIndNormal, input.uv).xyz;
+            input.normal = input.normal * 2.0f - 1.0f;
+            float3x3 normalMatrix = (float3x3) World;
+            input.normal = normalize(mul(input.normal, normalMatrix));
+        }
+        
         float3 lightDir = normalize(lights[count].Position - input.pixelWorld);
         float4 LambertianStrength = clamp(dot(lightDir, input.normal), 0.0f, 1.0f);
         float3 refl = reflect(-lightDir, input.normal);

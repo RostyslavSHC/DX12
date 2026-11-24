@@ -30,6 +30,13 @@ Mesh::~Mesh()
         delete t;
         SetTexSpecular(nullptr);
     }
+
+    t = GetTexNormal();
+    if (t != nullptr)
+    {
+        delete t;
+        SetTexNormal(nullptr);
+    }
 }
 
 void Mesh::Initialize(string _filename, Shader* _shader)
@@ -69,6 +76,14 @@ void Mesh::CreateVertexBuffer(string _fileName)
         t->Initialize("..\\Assets\\Textures\\" + objLoader.GetMapSpecular(), GetShader());
         SetTexSpecular(t);
     }
+
+    if (objLoader.GetMapNormal() != "")
+    {
+        Texture* t2 = new Texture();
+        t2->Initialize("..\\Assets\\Textures\\" + objLoader.GetMapNormal(), GetShader());
+        SetTexNormal(t2);
+    }
+
 
     VTX_Base* vtxb = GetShader()->GetVertexType();
     UINT vertexBufferSize = 0;

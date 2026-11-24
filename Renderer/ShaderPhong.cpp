@@ -25,6 +25,7 @@ void ShaderPhong::CreateConstantBuffer(UINT64 _bufferSize)
 
 
 
+
 void ShaderPhong::SetPipelineState(IRenderable* _renderable, PipelineStateDefs _def)
 {
     // Shader::SetPipelineState(_renderable, EN_PSD_CULL_FRONT);
@@ -33,22 +34,25 @@ void ShaderPhong::SetPipelineState(IRenderable* _renderable, PipelineStateDefs _
     auto r = &Renderer::GetInstance();
     auto c = r->GetCommands()->GetCommandList().Get();
     auto cbData = reinterpret_cast<CB_Phong*>(ConstantBufferAddress());
-    FXMVECTOR lightPos = FXMVECTOR{ 0.0f, 0.5f, -1.0f, 0.0f };
+
+    FXMVECTOR lightPos = FXMVECTOR{ 0.0f, 0.5f, -2.5f, 0.0f };
+
     XMStoreFloat4(&cbData->material.DiffuseColor, FXMVECTOR{ 1.0f, 1.0f, 1.0f, 1.0f });
     XMStoreFloat(&cbData->material.SpecularStrength, FXMVECTOR{ 4.0f });
-    XMStoreFloat4(&cbData->material.SpecularColor, FXMVECTOR{ 1.0f, 0.0f, 0.0f, 1.0f });
+    XMStoreFloat4(&cbData->material.SpecularColor, FXMVECTOR{ 1.0f, 1.0f, 1.0f, 1.0f });
 
     cbData->material.TexIndDiffuse = _renderable->GetTexDiffuse()->GetIndex();
+
     if (_renderable->GetTexSpecular() == nullptr) cbData->material.TexIndSpecular = -1;
     else cbData->material.TexIndSpecular = _renderable->GetTexSpecular()->GetIndex();
+    if (_renderable->GetTexNormal() == nullptr) cbData->material.TexIndNormal = -1;
+    else cbData->material.TexIndNormal = _renderable->GetTexNormal()->GetIndex();
 
     for (UINT count = 0; count < 1; count++)
-        // for (UINT count = 0; count < 5; count++)
     {
         FXMVECTOR origin = { -0.8f + (0.5f * count), 0, 0 };
-        // FXMVECTOR origin = { -0.8f + (0.4f * count), 0, 0 };
 
-        XMStoreFloat4(&cbData->lights[count].AmbientColor, FXMVECTOR{ 0.1f, 0.1f, 0.1f, 1.0f });
+        XMStoreFloat4(&cbData->lights[count].AmbientColor, FXMVECTOR{ 0.2f, 0.2f, 0.2f, 1.0f });
         XMStoreFloat3(&cbData->lights[count].Position, lightPos);
         XMStoreFloat4(&cbData->lights[count].Color, FXMVECTOR{ 1.0f, 1.0f, 1.0f, 1.0f });
         XMStoreFloat3(&cbData->lights[count].ConstLinQuad, FXMVECTOR{ 1.0f, 0.02f, 0.005f });
@@ -70,5 +74,9 @@ void ShaderPhong::SetPipelineState(IRenderable* _renderable, PipelineStateDefs _
 
     cbData->LightCount = 1;
 
+    // ---------- PROBLEM: Camera class doesn't have a GetPosition() method, and XMStoreFloat4 requires XMVECTOR ----------
+    // XMStoreFloat4(&cbData->CameraPosition, Camera::Current()->GetPosition());
     XMStoreFloat4(&cbData->CameraPosition, FXMVECTOR{ 0.0f, 1.0f, -3.0f });
+
 }
+

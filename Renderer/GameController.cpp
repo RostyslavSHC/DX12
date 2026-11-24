@@ -42,6 +42,7 @@ float GameController::RndF(float _min, float _max)
 }
 
 
+
 void GameController::Run()
 {
     m_toolsC->ShowForm();
@@ -54,35 +55,16 @@ void GameController::Run()
     ShaderSkybox shaderSkybox = ShaderSkybox();
     shaderSkybox.Initialize();
 
-    Unit* skybox = new Unit();
-    skybox->Initialize("..\\Assets\\Models\\Skybox.obj", &shaderSkybox);
-    skybox->SetPosition({ 0.0f, 0.0f, 0.0f });
-    units.push_back(skybox);
-
     Unit* light = new Unit();
     light->Initialize("..\\Assets\\Models\\Teapot.obj", &shaderColor);
-    light->SetPosition(XMFLOAT3(0.5f, 0.5f, -2.0f));
-    light->SetScale(XMFLOAT3(0.01f, 0.01f, 0.01f));
+    light->SetPosition(XMFLOAT3(0.0f, 0.5f, -2.5f));
+    light->SetScale(XMFLOAT3(0.005f, 0.005f, 0.005f));
     units.push_back(light);
 
     Unit* unit = new Unit();
-    // unit->Initialize("..\\Assets\\Models\\TorusKnot.obj", &shaderPhong);
-    unit->Initialize("..\\Assets\\Models\\Teapot.obj", &shaderPhong);
-    unit->SetPosition({ 0.0f, 0.0f, 0.35f });
-    unit->SetScale({ 0.04f, 0.04f, 0.04f });
-    units.push_back(unit);
-
-    unit = new Unit();
-    unit->Initialize("..\\Assets\\Models\\Plane.obj", &shaderPhong);
-    unit->SetPosition({ 0.0f, 0.0f, 1.0f });
-    unit->SetRotation({ 0.0f, 135.0f, 0.0f });
-    unit->SetScale({ 0.3f, 0.3f, 0.3f });
-    units.push_back(unit);
-
-    unit = new Unit();
-    unit->Initialize("..\\Assets\\Models\\Window.obj", &shaderPhong);
-    unit->SetPosition({ 0.0f, 0.5f, -0.1f });
-    unit->SetRotation({ 0.0f, 135.0f, 0.0f });
+    unit->Initialize("..\\Assets\\Models\\Wall.obj", &shaderPhong);
+    unit->SetPosition({ 0.0f, 0.25f, -1.9f });
+    unit->SetRotation({ 0.0f, 134.8f, 0.0f });
     unit->SetScale({ 0.125f, 0.125f, 0.125f });
     units.push_back(unit);
 
@@ -104,7 +86,7 @@ void GameController::Run()
         m_renderer->GetBGColor()[1] = (float)m_toolsC->GetGreenData();
         m_renderer->GetBGColor()[2] = (float)m_toolsC->GetBlueData();
 
-        Unit* unit = static_cast<Unit*>(units[3]);
+        Unit* unit = static_cast<Unit*>(units[1]);
         auto pos = unit->GetPosition();
         auto rot = unit->GetRotation();
         auto scl = unit->GetScale();
@@ -126,7 +108,7 @@ void GameController::Run()
         shaderColor.ResetCurrentObjectIndex();
         shaderPhong.ResetCurrentObjectIndex();
         shaderSkybox.ResetCurrentObjectIndex();
-        Camera::Current()->Rotate();
+
         m_renderer->Render(units, Camera::Current()->GetViewProjection());
     }
 

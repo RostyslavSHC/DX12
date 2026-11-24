@@ -10,7 +10,7 @@ class IRenderable
 {
 public:
     // Constructors/Destructors
-    IRenderable() { m_shader = nullptr; m_texDiffuse = nullptr; m_texSpecular = nullptr; }
+    IRenderable() { m_shader = nullptr; m_texDiffuse = nullptr; m_texSpecular = nullptr; m_texNormal = nullptr; }
     virtual ~IRenderable() {}
 
     // Accessors
@@ -20,6 +20,10 @@ public:
     void SetTexDiffuse(Texture* _texture) { m_texDiffuse = _texture; }
     Texture* GetTexSpecular() { return m_texSpecular; }
     void SetTexSpecular(Texture* _texture) { m_texSpecular = _texture; }
+    Texture* GetTexNormal() { return m_texNormal; }
+    void SetTexNormal(Texture* _texture) { m_texNormal = _texture; }
+
+
 
     // Methods
     virtual void Render(XMMATRIX _viewProj) = 0;
@@ -29,4 +33,5 @@ private:
     Shader* m_shader;
     Texture* m_texDiffuse;
     Texture* m_texSpecular;
+    Texture* m_texNormal;
 };

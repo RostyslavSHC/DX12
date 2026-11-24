@@ -15,7 +15,7 @@ public:
         float SpecularStrength;
         uint32_t TexIndDiffuse;
         uint32_t TexIndSpecular;
-        float pad0;
+        uint32_t TexIndNormal;
         XMFLOAT4 SpecularColor;
     };
 
