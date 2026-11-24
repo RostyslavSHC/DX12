@@ -10,6 +10,8 @@ Mesh::Mesh()
 {
     m_vertexBuffer = nullptr;
     m_vertexBufferView = {};
+    m_instanceBuffer = nullptr;
+    m_instanceBufferView = {};
     m_indexBufferSize = 0;
     m_indexBuffer = nullptr;
     m_indexBufferView = {};
@@ -39,12 +41,18 @@ Mesh::~Mesh()
     }
 }
 
-void Mesh::Initialize(string _filename, Shader* _shader)
+
+void Mesh::Initialize(string _filename, Shader* _shader, vector<InstanceData>* _instances)
 {
     SetShader(_shader);
     CreateVertexBuffer(_filename);
+    if (_instances != nullptr)
+    {
+        CreateInstanceBuffer(*_instances);
+    }
     //CreateIndexBuffer();
 }
+
 
 // Slide 30 - Calculate Tangents and Bitangents
 void Mesh::CalculateTangents(vector<Vertex*>& _vertices, XMFLOAT3& _tangent, XMFLOAT3& _bitangent)
@@ -166,12 +174,11 @@ void Mesh::CreateVertexBuffer(string _fileName)
             meshData.push_back(v.tex.u);
             meshData.push_back(v.tex.v);
 
-            int index = j / 3;
 
+            int index = j / 3;
             meshData.push_back(tangents[index].x);
             meshData.push_back(tangents[index].y);
             meshData.push_back(tangents[index].z);
-
             meshData.push_back(bitangents[index].x);
             meshData.push_back(bitangents[index].y);
             meshData.push_back(bitangents[index].z);
@@ -241,6 +248,54 @@ void Mesh::CreateVertexBuffer(string _fileName)
     m_vertexBufferView.SizeInBytes = vertexBufferSize;
 }
 
+
+
+
+
+
+
+
+
+
+
+void Mesh::CreateInstanceBuffer(const vector<InstanceData>& _instances)
+{
+    UINT instanceBufferSize = static_cast<UINT>(_instances.size() * sizeof(InstanceData));
+    auto heapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+    auto bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(instanceBufferSize);
+    auto device = Renderer::GetInstance().GetDevice().Get();
+
+    M_ASSERT(SUCCEEDED(device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE, &bufferDesc,
+        D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
+        IID_PPV_ARGS(&m_instanceBuffer))),
+        "Failed to create Instance Buffer");
+
+    // Copy the instance data to the instance buffer.
+    UINT8* pInstanceDataBegin;
+    CD3DX12_RANGE readRange(0, 0);
+
+    M_ASSERT(SUCCEEDED(m_instanceBuffer->Map(0, &readRange, reinterpret_cast<void**>(&pInstanceDataBegin))),
+        "Failed to map instance buffer");
+
+    memcpy(pInstanceDataBegin, _instances.data(), instanceBufferSize);
+    m_instanceBuffer->Unmap(0, nullptr);
+
+    // Initialize the instance buffer view.
+    m_instanceBufferView.BufferLocation = m_instanceBuffer->GetGPUVirtualAddress();
+    m_instanceBufferView.StrideInBytes = sizeof(InstanceData);
+    m_instanceBufferView.SizeInBytes = instanceBufferSize;
+}
+
+
+
+
+
+
+
+
+
+
+
 void Mesh::CreateIndexBuffer()
 {
     unsigned short iList[] = {
@@ -279,23 +334,33 @@ void Mesh::CreateIndexBuffer()
     m_indexBufferView.Format = DXGI_FORMAT_R16_UINT;
 }
 
+
+
+
+
+
 void Mesh::Render(XMMATRIX _viewProj)
 {
-    // GetShader()->SetPipelineState();
-
     auto r = &Renderer::GetInstance();
     auto c = r->GetCommands()->GetCommandList().Get();
     auto cbData = reinterpret_cast<Shader::ConstantBuffer*>(GetShader()->ConstantBufferAddress());
-
-    // Shader::ConstantBuffer* cbData = &GetShader()->GetConstantData()[r->GetFrameIndex()];
     XMStoreFloat4x4(&cbData->WVP, XMMatrixTranspose(_viewProj));
-
     c->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    c->IASetVertexBuffers(0, 1, &m_vertexBufferView);
-    c->IASetIndexBuffer(&m_indexBufferView);
 
-    // c->DrawIndexedInstanced(m_indexBufferSize / sizeof(unsigned short), 1, 0, 0, 0);
-    c->DrawInstanced(
-        m_vertexBufferView.SizeInBytes / m_vertexBufferView.StrideInBytes,
-        1, 0, 0);
+    if (m_instanceBuffer != nullptr)
+    {
+        D3D12_VERTEX_BUFFER_VIEW views[2] = { m_vertexBufferView, m_instanceBufferView };
+        c->IASetVertexBuffers(0, 2, views);
+        UINT numVertices = m_vertexBufferView.SizeInBytes / m_vertexBufferView.StrideInBytes;
+        UINT numInstances = m_instanceBufferView.SizeInBytes / m_instanceBufferView.StrideInBytes;
+        c->DrawInstanced(numVertices, numInstances, 0, 0);
+    }
+    else
+    {
+        c->IASetVertexBuffers(0, 1, &m_vertexBufferView);
+        UINT numVertices = m_vertexBufferView.SizeInBytes / m_vertexBufferView.StrideInBytes;
+        c->DrawInstanced(numVertices, 1, 0, 0);
+    }
 }
+
+

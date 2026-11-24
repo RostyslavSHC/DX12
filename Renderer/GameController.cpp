@@ -80,11 +80,31 @@ void GameController::Run()
     light->SetScale(XMFLOAT3(0.005f, 0.005f, 0.005f));
     units.push_back(light);
 
+
+
     Unit* unit = new Unit();
-    unit->Initialize("..\\Assets\\Models\\Teapot.obj", &shaderPhong);
+    vector<InstanceData> instances;
+
+    for (int count = 0; count < 2000; count++)
+    {
+        InstanceData instanceData;
+        XMMATRIX worldMatrix = XMMatrixScaling(0.005f, 0.005f, 0.005f) *
+            XMMatrixTranslation(RndF(-0.5f, 0.5f), RndF(-0.5f, 0.5f), RndF(-0.5f, 0.5f));
+
+        XMStoreFloat4x4(&instanceData.world, XMMatrixTranspose(worldMatrix));
+
+        XMVECTOR det;
+        XMMATRIX invWorld = XMMatrixInverse(&det, worldMatrix);
+        XMStoreFloat4x4(&instanceData.invWorld, XMMatrixTranspose(invWorld));
+
+        instances.push_back(instanceData);
+    }
+
+    unit->Initialize("..\\Assets\\Models\\Teapot.obj", &shaderPhong, &instances);
     unit->SetPosition({ 0.0f, 0.0f, 0.0f });
-    unit->SetScale({ 0.04f, 0.04f, 0.04f });
+    unit->SetScale({ 1.0f, 1.0f, 1.0f });
     units.push_back(unit);
+
 
     //Main message loop
     MSG msg = {};

@@ -57,32 +57,33 @@ struct VSInput
     float2 uv : TEXCOORD0;
     float3 tangent : TANGENT0;
     float3 bitangent : BITANGENT0;
+    float4x4 instWorld : INSTANCE_WORLD;
+    float4x4 instWorldInv : INSTANCE_INV;
 };
 
 #define MAX_TEXTURES 8
 Texture2D g_Textures[MAX_TEXTURES] : register(t0);
 SamplerState g_sampler : register(s0);
 
-Texture2D g_diffuse : register(t0);
-Texture2D g_specular : register(t1);
-
 PSInput VSMain(VSInput _input)
 {
     PSInput result;
-
-    result.position = mul(float4(_input.position, 1.0f), WVP);
-    result.normal = mul(float4(_input.normal, 1.0f), InvWorld);
+    float4x4 world = mul(World, _input.instWorld);
+    float4x4 invWorld = mul(InvWorld, _input.instWorldInv);
+    float4 worldPos = mul(float4(_input.position, 1.0f), _input.instWorld);
+    result.position = mul(worldPos, WVP);
+    result.normal = mul(float4(_input.normal, 0.0f), invWorld);
     result.uv = _input.uv;
-    result.pixelWorld = mul(float4(_input.position, 1.0f), World).xyz;
+    result.pixelWorld = mul(float4(_input.position, 1.0f), world).xyz;
     result.viewDirection = normalize(CameraPosition.xyz - result.pixelWorld);
-    
-    float3 T = normalize(mul(World, float4(_input.tangent, 0.0))).xyz;
-    float3 B = normalize(mul(World, float4(_input.bitangent, 0.0))).xyz;
-    float3 N = normalize(mul(World, float4(_input.normal, 0.0))).xyz;
+    float3 T = normalize(mul(world, float4(_input.tangent, 0.0))).xyz;
+    float3 B = normalize(mul(world, float4(_input.bitangent, 0.0))).xyz;
+    float3 N = normalize(mul(world, float4(_input.normal, 0.0))).xyz;
     result.TBN = float3x3(T, B, N);
 
     return result;
 }
+
 
 
 
