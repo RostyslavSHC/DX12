@@ -59,7 +59,9 @@ float CalculateSpotlights(float3 _pixelWorld)
         // Calculate the spotlight intensity
         if (dist < radius)
         {
-            intensity += 0.25f;
+            // intensity += 0.10f;
+            // intensity += 0.05f;
+            intensity += 0.075f;
         }
     }
 
@@ -95,23 +97,37 @@ float4 PSMain(PSInput input) : SV_TARGET
     float redTint = saturate((10.0f - dist) / 10.0f);
     float greenTint = saturate((dist - 10.0f) / 20.0f);
 
-    // Apply the distance-based tint
-    color.r += redTint;
-    color.g += greenTint * 0.6f;
-
-    color = saturate(color);
-
-    // Render spotlights
+    // Reduce the ambient brightness
     if (RenderSpotlights > 0.5f)
     {
-        // Reduce the ambient brightness
-        color.rgb *= 0.65f;
+        color.rgb *= 0.5f;
+    }
 
-        // Calculate the combined spotlight intensity
+    // Apply the distance-based tint
+    // color.r += redTint;
+    // color.g += greenTint * 0.6f;
+    // color.r += redTint * 1.15f;
+    // color.r += redTint * 1.25f;
+    color.r += redTint * 1.10f;
+
+    // Reduce the green and blue components in the red area
+    // color.g *= (1.0f - redTint * 0.20f);
+    // color.b *= (1.0f - redTint * 0.20f);
+    
+    // Preserve bright areas of the original texture
+    color.g *= (1.0f - redTint * 0.10f * (1.0f - color.g));
+    color.b *= (1.0f - redTint * 0.10f * (1.0f - color.b));
+
+    // color.g += greenTint * 0.75f;
+    color.g += greenTint * 0.65f;
+
+    // Apply white spotlights
+    if (RenderSpotlights > 0.5f)
+    {
         float intensity = CalculateSpotlights(input.pixelWorld);
 
-        // Apply white spotlights
-        color.rgb = lerp(color.rgb, float3(1.0f, 1.0f, 1.0f), intensity);
+        // color.rgb += intensity;
+        color.rgb += g_texture.Sample(g_sampler, input.texcoords).rgb * intensity; // Apply white light based on the original texture color
     }
 
     return saturate(color);

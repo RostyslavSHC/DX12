@@ -4,7 +4,8 @@
 NPC::NPC()
 {
     m_tagged = false;
-    m_speed = 5.0f;
+    // m_speed = 5.0f;
+    m_speed = 6.0f;
     m_preferredDistance = 10.0f;
 }
 
@@ -37,7 +38,9 @@ void NPC::CheckTag(XMFLOAT3 _playerPosition)
     float distance = sqrtf(x * x + y * y);
 
     // Tag the NPC when the player catches it
-    const float tagDistance = 2.5f;
+    // const float tagDistance = 2.5f;
+    // const float tagDistance = 2.25f;
+    const float tagDistance = 2.0f;
 
     if (distance <= tagDistance)
     {

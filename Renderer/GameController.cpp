@@ -95,7 +95,10 @@ void GameController::SceneInitialize()
     m_player->Initialize("..\\Assets\\Models\\Cube.obj", m_shaderSolidColor);
     m_player->SetPosition({ 0.0f, 0.0f, 0.0f });
     // m_player->SetScale({ 2.0f, 2.0f, 2.0f });
-    m_player->SetScale({ 2.5f, 2.5f, 2.5f });
+    // m_player->SetScale({ 2.5f, 2.5f, 2.5f });
+    // m_player->SetScale({ 2.25f, 2.25f, 2.25f });
+    m_player->SetScale({ 2.0f, 2.0f, 2.0f });
+
 
     m_units.push_back(m_player);
 
@@ -167,7 +170,9 @@ void GameController::InitializeNPCs()
         npc->Initialize("..\\Assets\\Models\\Cube.obj", m_shaderDistanceTint);
 
         npc->SetPosition({ x, y, 0.0f });
-        npc->SetScale({ 2.5f, 2.5f, 2.5f });
+        // npc->SetScale({ 2.5f, 2.5f, 2.5f });
+        // npc->SetScale({ 2.25f, 2.25f, 2.25f });
+        npc->SetScale({ 2.0f, 2.0f, 2.0f });
 
         // Face away from the player
         npc->SetRotation({
@@ -213,7 +218,8 @@ void GameController::HandleInput(float _deltaTime)
 {
     auto pos = m_player->GetPosition();
 
-    float speed = 10.0f;
+    // float speed = 10.0f;
+    float speed = 12.0f;
     float movement = speed * _deltaTime;
 
     // Move the player using the arrow keys
@@ -285,9 +291,6 @@ void GameController::UpdateNPCs(float _deltaTime)
 
 void GameController::UpdateRenderSettings()
 {
-    // Get the background rendering setting
-    m_renderBackground = m_toolsC->GetRenderBackgroundData();
-
     // Get the rendering settings
     m_renderBackground = m_toolsC->GetRenderBackgroundData();
     m_renderSpotlights = m_toolsC->GetRenderSpotlightsData();

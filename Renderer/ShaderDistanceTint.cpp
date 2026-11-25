@@ -78,7 +78,12 @@ void ShaderDistanceTint::SetPipelineState(IRenderable* _renderable, PipelineStat
     }
 
     // Set the spotlight rendering data
-    cbData->RenderSpotlights = m_renderSpotlights ? 1.0f : 0.0f;
+    // cbData->RenderSpotlights = m_renderSpotlights ? 1.0f : 0.0f;
+
+    // Apply spotlights to the background only
+    cbData->RenderSpotlights = (m_renderSpotlights && taggable == nullptr) ? 1.0f : 0.0f;
+
+
 
     int spotlightCount = (int)m_spotlightPositions.size();
 
