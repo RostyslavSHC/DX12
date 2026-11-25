@@ -27,6 +27,7 @@ private:
 
 
     void SceneInitialize();
+    void InitializeBackground();
     void InitializeNPCs();
     bool ProcessMessages();
     void HandleInput(float _deltaTime);
@@ -46,6 +47,7 @@ private:
     ShaderSolidColor* m_shaderSolidColor;
     ShaderDistanceTint* m_shaderDistanceTint;
     Unit* m_player;
+    Unit* m_background;
     // vector<Unit*> m_npcs;
     vector<NPC*> m_npcs;
     float m_spawnTime;

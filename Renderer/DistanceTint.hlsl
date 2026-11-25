@@ -48,8 +48,11 @@ float4 PSMain(PSInput input) : SV_TARGET
     float greenTint = saturate((dist - 10.0f) / 20.0f);
 
     // Apply the distance-based tint
+    // color.r += redTint;
+    // color.g += greenTint;
+    
     color.r += redTint;
-    color.g += greenTint;
+    color.g += greenTint * 0.6f;
 
     return saturate(color);
 }

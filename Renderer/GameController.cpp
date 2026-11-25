@@ -20,6 +20,7 @@ GameController::GameController()
     m_player = nullptr;
     m_spawnTime = 0.0f;
     m_shaderDistanceTint = nullptr;
+    m_background = nullptr;
 }
 
 GameController::~GameController()
@@ -70,8 +71,9 @@ void GameController::SceneInitialize()
     // Initialize shaders
     m_shaderSolidColor = new ShaderSolidColor();
     m_shaderSolidColor->Initialize();
-    m_shaderSolidColor->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+    // m_shaderSolidColor->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
     // m_shaderSolidColor->SetColor({ 1.0f, 1.0f, 0.0f, 1.0f });
+    m_shaderSolidColor->SetColor({ 0.0f, 0.0f, 0.0f, 1.0f });
 
     m_shaderDistanceTint = new ShaderDistanceTint();
     m_shaderDistanceTint->Initialize();
@@ -82,6 +84,9 @@ void GameController::SceneInitialize()
         { 0.0f, 0.0f, -40.0f },
         { 0.0f, 0.0f, 0.0f },
         { 0.0f, 1.0f, 0.0f });
+
+    // Initialize the background
+    InitializeBackground();
 
     // Initialize the player
     m_player = new Unit();
@@ -94,6 +99,46 @@ void GameController::SceneInitialize()
 
     InitializeNPCs(); // Initialize NPCs
 }
+
+
+
+
+
+void GameController::InitializeBackground()
+{
+    // Calculate the visible background dimensions
+    float depth = 42.0f;
+
+    float height = 2.0f * depth * tanf(XMConvertToRadians(45.0f) / 2.0f);
+
+    float aspectRatio = (float)m_windowC->GetWindowWidth() / (float)m_windowC->GetWindowHeight();
+
+    float width = height * aspectRatio;
+
+    // Initialize the background
+    m_background = new Unit();
+    m_background->Initialize("..\\Assets\\Models\\Background.obj", m_shaderDistanceTint);
+
+    m_background->SetPosition({ 0.0f, 0.0f, 2.0f });
+    // m_background->SetScale({ width, height, 1.0f });
+    // float overscale = 1.2f;
+    // m_background->SetScale({ width * overscale, height * overscale, 1.0f });
+
+    // Scale the background to match the reference
+    // m_background->SetScale({ width * 1.6f, height * 1.45f, 1.0f });
+    m_background->SetScale({ width * 1.6f, height * 1.25f, 1.0f });
+
+    m_units.push_back(m_background);
+}
+
+
+
+
+
+
+
+
+
 
 
 
@@ -245,6 +290,7 @@ void GameController::SceneCleanup()
     m_units.clear();
     m_npcs.clear();
     m_player = nullptr;
+    m_background = nullptr;
 
 
     // Delete shaders
