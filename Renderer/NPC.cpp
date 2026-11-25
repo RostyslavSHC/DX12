@@ -49,8 +49,14 @@ void NPC::CheckTag(XMFLOAT3 _playerPosition)
 }
 
 
-void NPC::Update(XMFLOAT3 _playerPosition, float _deltaTime)
+void NPC::Update(XMFLOAT3 _playerPosition, float _deltaTime, bool _allowTagging)
 {
+    // Prevent tagging during the initial spreading phase
+    if (_allowTagging)
+    {
+        CheckTag(_playerPosition);
+    }
+
     // Stop moving when tagged
     if (m_tagged)
         return;

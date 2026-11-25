@@ -13,14 +13,16 @@ public:
 
     // Accessors
     virtual bool IsTagged() const override;
-    void SetTagged(bool _tagged);
 
     // Methods
-    void Update(XMFLOAT3 _playerPosition, float _deltaTime);
-    void CheckTag(XMFLOAT3 _playerPosition);
+    void Update(XMFLOAT3 _playerPosition, float _deltaTime, bool _allowTagging);
     virtual void Render(XMMATRIX _viewProj) override;
 
 private:
+    // Methods
+    void CheckTag(XMFLOAT3 _playerPosition);
+    void SetTagged(bool _tagged);
+
     // Members
     bool m_tagged;
     float m_speed;

@@ -270,15 +270,12 @@ void GameController::UpdateNPCs(float _deltaTime)
 {
     XMFLOAT3 playerPosition = m_player->GetPosition();
 
+    // Prevent tagging during the initial spreading phase
+    bool allowTagging = m_spawnTime <= 0.0f;
+
     for (auto npc : m_npcs)
     {
-        // Prevent tagging during the initial spreading phase
-        if (m_spawnTime <= 0.0f)
-        {
-            npc->CheckTag(playerPosition);
-        }
-
-        npc->Update(playerPosition, _deltaTime);
+        npc->Update(playerPosition, _deltaTime, allowTagging);
     }
 }
 
