@@ -166,12 +166,14 @@
     <ClCompile Include="GameController.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="NPC.cpp" />
     <ClCompile Include="OBJLoader.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderColor.cpp" />
     <ClCompile Include="ShaderPhong.cpp" />
     <ClCompile Include="ShaderSkybox.cpp" />
+    <ClCompile Include="ShaderSolidColor.cpp" />
     <ClCompile Include="Singleton.h" />
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -188,12 +190,14 @@
     <ClInclude Include="GameController.h" />
     <ClInclude Include="IRenderable.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="NPC.h" />
     <ClInclude Include="OBJLoader.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderColor.h" />
     <ClInclude Include="ShaderPhong.h" />
     <ClInclude Include="ShaderSkybox.h" />
+    <ClInclude Include="ShaderSolidColor.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="StandardIncludes.h" />
     <ClInclude Include="Texture.h" />
@@ -223,6 +227,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="ShaderSolidColor.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="Skybox.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>

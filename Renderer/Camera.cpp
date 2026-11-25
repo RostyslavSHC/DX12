@@ -52,3 +52,15 @@ void Camera::Rotate()
     XMMATRIX view = XMMatrixLookAtLH(XMLoadFloat3(&m_position), XMLoadFloat3(&m_lookAt), camUp);
     XMStoreFloat4x4(&m_view, view);
 }
+
+
+
+
+
+void Camera::SetView(XMFLOAT3 _position, XMFLOAT3 _lookAt, XMFLOAT3 _up)
+{
+    m_position = _position;
+    m_lookAt = _lookAt;
+    XMMATRIX view = XMMatrixLookAtLH(XMLoadFloat3(&m_position), XMLoadFloat3(&m_lookAt), XMLoadFloat3(&_up));
+    XMStoreFloat4x4(&m_view, view);
+}

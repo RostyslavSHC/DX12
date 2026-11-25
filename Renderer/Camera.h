@@ -31,6 +31,7 @@ public:
 
     // Methods
     void Rotate();
+    void SetView(XMFLOAT3 _position, XMFLOAT3 _lookAt, XMFLOAT3 _up);
 
 private:
     // Members
