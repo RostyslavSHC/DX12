@@ -134,6 +134,8 @@ void GameController::InitializeBackground()
     m_background->SetScale({ width * 1.6f, height * 1.25f, 1.0f });
 
     m_units.push_back(m_background);
+
+    m_shaderDistanceTint->SetBackground(m_background); // Set the background used for spotlight rendering
 }
 
 

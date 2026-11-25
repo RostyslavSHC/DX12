@@ -10,10 +10,14 @@ public:
 
     // Methods
     void SetColor(XMFLOAT4 _color);
-    virtual void SetPipelineState(IRenderable* _renderable,
-        PipelineStateDefs _def = EN_PSD_DEFAULT) override;
+    virtual void SetPipelineState(IRenderable* _renderable, PipelineStateDefs _def = EN_PSD_DEFAULT) override;
+
+protected:
+    // Methods
+    virtual void CreatePipelineState() override;
 
 private:
     // Members
     XMFLOAT4 m_color;
+    VTX_Pos m_vertexType;
 };

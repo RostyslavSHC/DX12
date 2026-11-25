@@ -30,6 +30,7 @@ public:
 
     void SetRenderSpotlights(bool _renderSpotlights);
     void SetSpotlightPositions(const vector<XMFLOAT3>& _positions);
+    void SetBackground(IRenderable* _background);
 
 
 protected:
@@ -45,6 +46,7 @@ private:
 
     bool m_renderSpotlights;
     vector<XMFLOAT3> m_spotlightPositions;
+    IRenderable* m_background;
 
 
 };

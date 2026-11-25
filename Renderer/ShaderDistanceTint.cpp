@@ -7,6 +7,7 @@ ShaderDistanceTint::ShaderDistanceTint()
     SetShaderFile(L"DistanceTint.hlsl");
     m_playerPosition = { 0.0f, 0.0f, 0.0f };
     m_renderSpotlights = false;
+    m_background = nullptr;
 }
 
 ShaderDistanceTint::~ShaderDistanceTint()
@@ -49,6 +50,11 @@ void ShaderDistanceTint::SetSpotlightPositions(const vector<XMFLOAT3>& _position
     m_spotlightPositions = _positions;
 }
 
+void ShaderDistanceTint::SetBackground(IRenderable* _background)
+{
+    m_background = _background;
+}
+
 
 
 
@@ -81,7 +87,7 @@ void ShaderDistanceTint::SetPipelineState(IRenderable* _renderable, PipelineStat
     // cbData->RenderSpotlights = m_renderSpotlights ? 1.0f : 0.0f;
 
     // Apply spotlights to the background only
-    cbData->RenderSpotlights = (m_renderSpotlights && taggable == nullptr) ? 1.0f : 0.0f;
+    cbData->RenderSpotlights = (m_renderSpotlights && _renderable == m_background) ? 1.0f : 0.0f;
 
 
 

@@ -11,11 +11,21 @@ void ShaderSolidColor::SetColor(XMFLOAT4 _color)
     m_color = _color;
 }
 
-void ShaderSolidColor::SetPipelineState(IRenderable* _renderable,
-    PipelineStateDefs _def)
+void ShaderSolidColor::SetPipelineState(IRenderable* _renderable, PipelineStateDefs _def)
 {
     Shader::SetPipelineState(_renderable, _def);
 
     auto cbData = reinterpret_cast<CB_Color*>(ConstantBufferAddress());
     cbData->Color = m_color;
+}
+
+
+void ShaderSolidColor::CreatePipelineState()
+{
+    SetVertexType(&m_vertexType);
+    SetInputElementDescs(m_vertexType.InputElementDescs);
+    SetInputElemDescSize(_countof(m_vertexType.InputElementDescs));
+    SetConstantBufferSize(sizeof(CB_Color));
+
+    Shader::CreatePipelineState();
 }
