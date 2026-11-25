@@ -18,7 +18,6 @@ public:
 
     // Methods
     void Initialize(HINSTANCE _hInstance, int _nShowCmd);
-    void UpdateScene(float _deltaTime);
     void Run();
 
 private:
@@ -26,10 +25,12 @@ private:
     float RndF(float _min, float _max);
     double GetTime();
 
+
     void SceneInitialize();
     void InitializeNPCs();
     bool ProcessMessages();
     void HandleInput(float _deltaTime);
+    void UpdateScene(float _deltaTime);
     void UpdateNPCs(float _deltaTime);
     void RenderScene(const wstring& _fpsS);
     void SceneCleanup();

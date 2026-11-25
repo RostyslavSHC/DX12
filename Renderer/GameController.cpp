@@ -222,10 +222,17 @@ void GameController::UpdateNPCs(float _deltaTime)
 void GameController::RenderScene(const wstring& _fpsS)
 {
     FontController::GetInstance().Write(_fpsS, L"Arial_20", D2D1_RECT_F(20, 80, 800, 120), D2D1::ColorF::Yellow);
+
+    // Update the player position used for distance tinting
+    m_shaderDistanceTint->SetPlayerPosition(m_player->GetPosition());
+
     m_shaderSolidColor->ResetCurrentObjectIndex();
     m_shaderDistanceTint->ResetCurrentObjectIndex();
+
     m_renderer->Render(m_units, Camera::Current()->GetViewProjection());
 }
+
+
 
 void GameController::SceneCleanup()
 {
