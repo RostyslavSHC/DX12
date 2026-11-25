@@ -17,6 +17,7 @@ public:
 
     // Methods
     void Initialize(HINSTANCE _hInstance, int _nShowCmd);
+    void UpdateScene(float _deltaTime);
     void Run();
 
 private:
@@ -44,4 +45,5 @@ private:
     Unit* m_player;
     // vector<Unit*> m_npcs;
     vector<NPC*> m_npcs;
+    float m_spawnTime;
 };

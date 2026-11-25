@@ -17,6 +17,7 @@ GameController::GameController()
 
     m_shaderSolidColor = nullptr;
     m_player = nullptr;
+    m_spawnTime = 0.0f;
 }
 
 GameController::~GameController()
@@ -93,26 +94,41 @@ void GameController::SceneInitialize()
 void GameController::InitializeNPCs()
 {
     const int npcCount = 8;
-    const float radius = 10.0f;
+    const float minRadius = 2.0f;
+    const float maxRadius = 4.0f;
 
     for (int i = 0; i < npcCount; i++)
     {
-        // Calculate the position around the player
-        float angle = XM_2PI * i / npcCount;
+        // Calculate a random position around the player
+        float angle = RndF(0.0f, 1.0f) * XM_2PI;
+
+        float radius = minRadius +
+            RndF(0.0f, 1.0f) * (maxRadius - minRadius);
 
         float x = cosf(angle) * radius;
         float y = sinf(angle) * radius;
 
         // Initialize the NPC
         NPC* npc = new NPC();
-        npc->Initialize("..\\Assets\\Models\\Cube.obj", m_shaderSolidColor);
+        npc->Initialize("..\\Assets\\Models\\Cube.obj",
+            m_shaderSolidColor);
 
         npc->SetPosition({ x, y, 0.0f });
         npc->SetScale({ 2.5f, 2.5f, 2.5f });
 
+        // Face away from the player
+        npc->SetRotation({
+            0.0f,
+            0.0f,
+            angle - XM_PIDIV2
+            });
+
         m_npcs.push_back(npc);
         m_units.push_back(npc);
     }
+
+    // Allow NPCs to spread out at the beginning
+    m_spawnTime = 2.0f;
 }
 
 
@@ -140,11 +156,9 @@ bool GameController::ProcessMessages()
     return true;
 }
 
-
 void GameController::HandleInput(float _deltaTime)
 {
     auto pos = m_player->GetPosition();
-    XMFLOAT3 previousPosition = pos;
 
     float speed = 10.0f;
     float movement = speed * _deltaTime;
@@ -156,13 +170,40 @@ void GameController::HandleInput(float _deltaTime)
     if (m_windowC->GetKeyStates()[VK_DOWN]) pos.y -= movement;
 
     m_player->SetPosition(XMFLOAT3(pos.x, pos.y, pos.z));
+}
 
-    // Update NPCs only when the player moves
-    if (pos.x != previousPosition.x || pos.y != previousPosition.y)
+
+void GameController::UpdateScene(float _deltaTime)
+{
+    XMFLOAT3 previousPosition = m_player->GetPosition();
+
+    HandleInput(_deltaTime);
+
+    XMFLOAT3 currentPosition = m_player->GetPosition();
+
+    // Check whether the player has moved
+    bool playerMoved =
+        currentPosition.x != previousPosition.x ||
+        currentPosition.y != previousPosition.y;
+
+    // Update NPCs during the initial spreading phase
+    if (m_spawnTime > 0.0f)
     {
+        m_spawnTime -= _deltaTime;
+        UpdateNPCs(_deltaTime);
+    }
+    else if (playerMoved)
+    {
+        // Update NPCs only when the player moves
         UpdateNPCs(_deltaTime);
     }
 }
+
+
+
+
+
+
 
 void GameController::UpdateNPCs(float _deltaTime)
 {
@@ -241,7 +282,7 @@ void GameController::Run()
             lastTime = currentTime;
         }
 
-        HandleInput(deltaTime);
+        UpdateScene(deltaTime);
         RenderScene(fpsS);
     }
 

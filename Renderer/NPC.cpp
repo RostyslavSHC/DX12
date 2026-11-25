@@ -1,4 +1,5 @@
 #include "NPC.h"
+#include "Shader.h"
 
 NPC::NPC()
 {
@@ -69,9 +70,45 @@ void NPC::Update(XMFLOAT3 _playerPosition, float _deltaTime)
     if (distanceDifference < 0.0f)
         movement = -movement;
 
+
+    float angle = atan2f( direction.y * movement, direction.x * movement); // Calculate the rotation based on the movement direction
+    SetRotation({ 0.0f, 0.0f, angle - XM_PIDIV2 }); // Rotate around the Z axis
+
+
     // Update the NPC position
     position.x += direction.x * movement;
     position.y += direction.y * movement;
 
     SetPosition(position);
+}
+
+
+
+
+
+
+
+
+void NPC::Render(XMMATRIX _viewProj)
+{
+    auto cbData = reinterpret_cast<Shader::ConstantBuffer*>(GetShader()->ConstantBufferAddress());
+
+    XMFLOAT3 scale = GetScale();
+    XMFLOAT3 rotation = GetRotation();
+    XMFLOAT3 position = GetPosition();
+
+    XMMATRIX world = XMMatrixScaling(scale.x, scale.y, scale.z);
+
+    world *= XMMatrixRotationZ(rotation.z);
+
+    world *= XMMatrixTranslation(position.x, position.y, position.z);
+
+    XMStoreFloat4x4(&cbData->World, XMMatrixTranspose(world));
+
+    XMVECTOR determinant; // Required for XMMatrixInverse
+    XMMATRIX inverseMatrix = XMMatrixInverse(&determinant, world);
+    XMMATRIX inverseTransposeWorld = XMMatrixTranspose(inverseMatrix);
+    XMStoreFloat4x4(&cbData->InvWorld, XMMatrixTranspose(inverseTransposeWorld));
+
+    Mesh::Render(world * _viewProj);
 }

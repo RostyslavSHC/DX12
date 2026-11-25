@@ -15,6 +15,7 @@ public:
 
     // Methods
     void Update(XMFLOAT3 _playerPosition, float _deltaTime);
+    virtual void Render(XMMATRIX _viewProj) override;
 
 private:
     // Members
