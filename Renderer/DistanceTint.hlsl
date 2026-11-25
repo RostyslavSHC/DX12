@@ -4,6 +4,7 @@ cbuffer SceneData : register(b0)
     float4x4 World;
     float4x4 InvWorld;
     float4 PlayerPosition;
+    float Tagged;
 };
 
 struct PSInput
@@ -38,6 +39,12 @@ PSInput VSMain(VSInput _input)
 
 float4 PSMain(PSInput input) : SV_TARGET
 {
+    // Render tagged NPCs in solid yellow
+    if (Tagged > 0.5f)
+    {
+        return float4(1.0f, 1.0f, 0.0f, 1.0f);
+    }
+
     float4 color = g_texture.Sample(g_sampler, input.texcoords);
 
     // Calculate the distance from the pixel to the player
@@ -48,9 +55,6 @@ float4 PSMain(PSInput input) : SV_TARGET
     float greenTint = saturate((dist - 10.0f) / 20.0f);
 
     // Apply the distance-based tint
-    // color.r += redTint;
-    // color.g += greenTint;
-    
     color.r += redTint;
     color.g += greenTint * 0.6f;
 

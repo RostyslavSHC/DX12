@@ -190,6 +190,7 @@
     <ClInclude Include="FontController.h" />
     <ClInclude Include="GameController.h" />
     <ClInclude Include="IRenderable.h" />
+    <ClInclude Include="ITaggable.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="NPC.h" />
     <ClInclude Include="OBJLoader.h" />

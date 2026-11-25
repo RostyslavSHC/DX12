@@ -240,8 +240,8 @@ void GameController::UpdateScene(float _deltaTime)
     // Update NPCs during the initial spreading phase
     if (m_spawnTime > 0.0f)
     {
-        m_spawnTime -= _deltaTime;
         UpdateNPCs(_deltaTime);
+        m_spawnTime -= _deltaTime;
     }
     else if (playerMoved)
     {
@@ -258,9 +258,17 @@ void GameController::UpdateScene(float _deltaTime)
 
 void GameController::UpdateNPCs(float _deltaTime)
 {
+    XMFLOAT3 playerPosition = m_player->GetPosition();
+
     for (auto npc : m_npcs)
     {
-        npc->Update(m_player->GetPosition(), _deltaTime);
+        // Prevent tagging during the initial spreading phase
+        if (m_spawnTime <= 0.0f)
+        {
+            npc->CheckTag(playerPosition);
+        }
+
+        npc->Update(playerPosition, _deltaTime);
     }
 }
 

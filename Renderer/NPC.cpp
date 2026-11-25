@@ -22,6 +22,30 @@ void NPC::SetTagged(bool _tagged)
     m_tagged = _tagged;
 }
 
+
+void NPC::CheckTag(XMFLOAT3 _playerPosition)
+{
+    if (m_tagged)
+        return;
+
+    // Calculate the distance between the NPC and the player
+    XMFLOAT3 position = GetPosition();
+
+    float x = _playerPosition.x - position.x;
+    float y = _playerPosition.y - position.y;
+
+    float distance = sqrtf(x * x + y * y);
+
+    // Tag the NPC when the player catches it
+    const float tagDistance = 2.5f;
+
+    if (distance <= tagDistance)
+    {
+        SetTagged(true);
+    }
+}
+
+
 void NPC::Update(XMFLOAT3 _playerPosition, float _deltaTime)
 {
     // Stop moving when tagged

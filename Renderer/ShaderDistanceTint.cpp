@@ -1,4 +1,6 @@
 #include "ShaderDistanceTint.h"
+#include "ITaggable.h"
+#include "IRenderable.h"
 
 ShaderDistanceTint::ShaderDistanceTint()
 {
@@ -42,4 +44,14 @@ void ShaderDistanceTint::SetPipelineState(IRenderable* _renderable, PipelineStat
     auto cbData = reinterpret_cast<CB_DistanceTint*>(ConstantBufferAddress());
 
     XMStoreFloat4(&cbData->PlayerPosition, FXMVECTOR{ m_playerPosition.x, m_playerPosition.y, m_playerPosition.z, 1.0f });
+
+    // Check whether the renderable has been tagged
+    ITaggable* taggable = dynamic_cast<ITaggable*>(_renderable);
+
+    cbData->Tagged = 0.0f;
+
+    if (taggable != nullptr && taggable->IsTagged())
+    {
+        cbData->Tagged = 1.0f;
+    }
 }

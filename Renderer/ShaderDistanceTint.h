@@ -14,6 +14,7 @@ public:
     struct alignas(256) CB_DistanceTint : ConstantBuffer
     {
         XMFLOAT4 PlayerPosition;
+        float Tagged;
     };
 
     // Methods
