@@ -15,6 +15,11 @@ public:
     {
         XMFLOAT4 PlayerPosition;
         float Tagged;
+        float RenderSpotlights;
+        float SpotlightCount;
+        float Padding;
+
+        XMFLOAT4 SpotlightPositions[9];
     };
 
     // Methods
@@ -22,6 +27,10 @@ public:
     void SetPlayerPosition(XMFLOAT3 _position);
 
     virtual void SetPipelineState(IRenderable* _renderable, PipelineStateDefs _def = EN_PSD_DEFAULT) override;
+
+    void SetRenderSpotlights(bool _renderSpotlights);
+    void SetSpotlightPositions(const vector<XMFLOAT3>& _positions);
+
 
 protected:
     // Methods
@@ -33,4 +42,9 @@ private:
     VTX_PosNormTex m_vertexType;
     Texture m_texture;
     XMFLOAT3 m_playerPosition;
+
+    bool m_renderSpotlights;
+    vector<XMFLOAT3> m_spotlightPositions;
+
+
 };

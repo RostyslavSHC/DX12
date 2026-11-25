@@ -8,6 +8,8 @@ ToolsController::ToolsController()
     m_getRedData = nullptr;
     m_getGreenData = nullptr;
     m_getBlueData = nullptr;
+    m_getRenderBackgroundData = nullptr;
+    m_getRenderSpotlightsData = nullptr;
 }
 
 // Load the tools library
@@ -31,4 +33,31 @@ void ToolsController::LoadToolsLibrary()
     // Get the address of the GetToolsBlueData function
     address = GetProcAddress(m_module, "GetToolsBlueData");
     m_getBlueData = reinterpret_cast<GetToolsBlueData>(address);
+
+
+
+
+
+    // Get the address of the GetToolsRenderBackgroundData function
+    address = GetProcAddress(m_module, "GetToolsRenderBackgroundData");
+    m_getRenderBackgroundData = reinterpret_cast<GetToolsRenderBackgroundData>(address);
+
+    M_ASSERT(m_getRenderBackgroundData != nullptr, "Failed to load GetToolsRenderBackgroundData");
+
+    // Get the address of the GetToolsRenderSpotlightsData function
+    address = GetProcAddress(m_module, "GetToolsRenderSpotlightsData");
+    m_getRenderSpotlightsData = reinterpret_cast<GetToolsRenderSpotlightsData>(address);
+
+    M_ASSERT(m_getRenderSpotlightsData != nullptr, "Failed to load GetToolsRenderSpotlightsData");
+}
+
+
+bool ToolsController::GetRenderBackgroundData() const
+{
+    return m_getRenderBackgroundData();
+}
+
+bool ToolsController::GetRenderSpotlightsData() const
+{
+    return m_getRenderSpotlightsData();
 }

@@ -32,3 +32,19 @@ bool __stdcall GetToolsBlueData()
     ToolsForm^ form = (ToolsForm^)Application::OpenForms[0];
     return form->checkBoxBlue->Checked;
 }
+
+
+
+extern "C" __declspec(dllexport)
+bool __stdcall GetToolsRenderBackgroundData()
+{
+    ToolsForm^ form = (ToolsForm^)Application::OpenForms[0];
+    return form->checkBoxRed->Checked;
+}
+
+extern "C" __declspec(dllexport)
+bool __stdcall GetToolsRenderSpotlightsData()
+{
+    ToolsForm^ form = (ToolsForm^)Application::OpenForms[0];
+    return form->checkBoxGreen->Checked;
+}

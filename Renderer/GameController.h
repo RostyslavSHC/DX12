@@ -35,6 +35,7 @@ private:
     void UpdateNPCs(float _deltaTime);
     void RenderScene(const wstring& _fpsS);
     void SceneCleanup();
+    void UpdateRenderSettings();
 
     // Members
     WindowController* m_windowC;
@@ -51,4 +52,7 @@ private:
     // vector<Unit*> m_npcs;
     vector<NPC*> m_npcs;
     float m_spawnTime;
+
+    bool m_renderBackground;
+    vector<IRenderable*> m_visibleUnits;
 };

@@ -21,6 +21,7 @@ GameController::GameController()
     m_spawnTime = 0.0f;
     m_shaderDistanceTint = nullptr;
     m_background = nullptr;
+    m_renderBackground = false;
 }
 
 GameController::~GameController()
@@ -272,9 +273,53 @@ void GameController::UpdateNPCs(float _deltaTime)
     }
 }
 
+
+
+
+
+
+
+
+
+
+void GameController::UpdateRenderSettings()
+{
+    // Get the background rendering setting
+    m_renderBackground = m_toolsC->GetRenderBackgroundData();
+
+    // Set the player color based on the background
+    if (m_renderBackground)
+    {
+        m_shaderSolidColor->SetColor({ 0.0f, 0.0f, 0.0f, 1.0f });
+    }
+    else
+    {
+        m_shaderSolidColor->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+    }
+
+    // Prepare the visible scene objects
+    m_visibleUnits.clear();
+
+    for (auto unit : m_units)
+    {
+        // Skip the background when disabled
+        if (unit == m_background && !m_renderBackground)
+            continue;
+
+        m_visibleUnits.push_back(unit);
+    }
+}
+
+
+
+
+
+
 void GameController::RenderScene(const wstring& _fpsS)
 {
     FontController::GetInstance().Write(_fpsS, L"Arial_20", D2D1_RECT_F(20, 80, 800, 120), D2D1::ColorF::Yellow);
+
+    UpdateRenderSettings();
 
     // Update the player position used for distance tinting
     m_shaderDistanceTint->SetPlayerPosition(m_player->GetPosition());
@@ -282,13 +327,15 @@ void GameController::RenderScene(const wstring& _fpsS)
     m_shaderSolidColor->ResetCurrentObjectIndex();
     m_shaderDistanceTint->ResetCurrentObjectIndex();
 
-    m_renderer->Render(m_units, Camera::Current()->GetViewProjection());
+    m_renderer->Render(m_visibleUnits, Camera::Current()->GetViewProjection());
 }
 
 
 
 void GameController::SceneCleanup()
 {
+    m_visibleUnits.clear();
+
     // Delete all scene objects
     for (auto u : m_units)
     {

@@ -61,9 +61,9 @@ namespace ToolsGUI {
 			this->checkBoxRed->AutoSize = true;
 			this->checkBoxRed->Location = System::Drawing::Point(28, 28);
 			this->checkBoxRed->Name = L"checkBoxRed";
-			this->checkBoxRed->Size = System::Drawing::Size(46, 17);
+			this->checkBoxRed->Size = System::Drawing::Size(122, 17);
 			this->checkBoxRed->TabIndex = 0;
-			this->checkBoxRed->Text = L"Red";
+			this->checkBoxRed->Text = L"Render Background";
 			this->checkBoxRed->UseVisualStyleBackColor = true;
 			// 
 			// checkBoxGreen
@@ -71,9 +71,9 @@ namespace ToolsGUI {
 			this->checkBoxGreen->AutoSize = true;
 			this->checkBoxGreen->Location = System::Drawing::Point(28, 51);
 			this->checkBoxGreen->Name = L"checkBoxGreen";
-			this->checkBoxGreen->Size = System::Drawing::Size(55, 17);
+			this->checkBoxGreen->Size = System::Drawing::Size(110, 17);
 			this->checkBoxGreen->TabIndex = 1;
-			this->checkBoxGreen->Text = L"Green";
+			this->checkBoxGreen->Text = L"Render Spotlights";
 			this->checkBoxGreen->UseVisualStyleBackColor = true;
 			// 
 			// checkBoxBlue
@@ -85,12 +85,13 @@ namespace ToolsGUI {
 			this->checkBoxBlue->TabIndex = 2;
 			this->checkBoxBlue->Text = L"Blue";
 			this->checkBoxBlue->UseVisualStyleBackColor = true;
+			this->checkBoxBlue->Visible = false;
 			// 
 			// ToolsForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(284, 261);
+			this->ClientSize = System::Drawing::Size(190, 98);
 			this->ControlBox = false;
 			this->Controls->Add(this->checkBoxBlue);
 			this->Controls->Add(this->checkBoxGreen);
