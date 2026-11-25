@@ -6,6 +6,7 @@ ShaderDistanceTint::ShaderDistanceTint()
 {
     SetShaderFile(L"DistanceTint.hlsl");
     m_playerPosition = { 0.0f, 0.0f, 0.0f };
+    m_renderSpotlights = false;
 }
 
 ShaderDistanceTint::~ShaderDistanceTint()
@@ -37,6 +38,27 @@ void ShaderDistanceTint::SetPlayerPosition(XMFLOAT3 _position)
     m_playerPosition = _position;
 }
 
+
+void ShaderDistanceTint::SetRenderSpotlights(bool _renderSpotlights)
+{
+    m_renderSpotlights = _renderSpotlights;
+}
+
+void ShaderDistanceTint::SetSpotlightPositions(const vector<XMFLOAT3>& _positions)
+{
+    m_spotlightPositions = _positions;
+}
+
+
+
+
+
+
+
+
+
+
+
 void ShaderDistanceTint::SetPipelineState(IRenderable* _renderable, PipelineStateDefs _def)
 {
     Shader::SetPipelineState(_renderable, _def);
@@ -53,5 +75,24 @@ void ShaderDistanceTint::SetPipelineState(IRenderable* _renderable, PipelineStat
     if (taggable != nullptr && taggable->IsTagged())
     {
         cbData->Tagged = 1.0f;
+    }
+
+    // Set the spotlight rendering data
+    cbData->RenderSpotlights = m_renderSpotlights ? 1.0f : 0.0f;
+
+    int spotlightCount = (int)m_spotlightPositions.size();
+
+    if (spotlightCount > 9)
+        spotlightCount = 9;
+
+    cbData->SpotlightCount = (float)spotlightCount;
+    cbData->Padding = 0.0f;
+
+    // Set the spotlight positions
+    for (int i = 0; i < spotlightCount; i++)
+    {
+        XMFLOAT3 position = m_spotlightPositions[i];
+
+        cbData->SpotlightPositions[i] = { position.x, position.y, position.z, 1.0f };
     }
 }

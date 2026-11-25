@@ -24,6 +24,7 @@ private:
     // Methods
     float RndF(float _min, float _max);
     double GetTime();
+    void UpdateSpotlights();
 
 
     void SceneInitialize();
@@ -54,5 +55,6 @@ private:
     float m_spawnTime;
 
     bool m_renderBackground;
+    bool m_renderSpotlights;
     vector<IRenderable*> m_visibleUnits;
 };

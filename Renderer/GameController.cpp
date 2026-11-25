@@ -22,6 +22,7 @@ GameController::GameController()
     m_shaderDistanceTint = nullptr;
     m_background = nullptr;
     m_renderBackground = false;
+    m_renderSpotlights = false;
 }
 
 GameController::~GameController()
@@ -287,6 +288,10 @@ void GameController::UpdateRenderSettings()
     // Get the background rendering setting
     m_renderBackground = m_toolsC->GetRenderBackgroundData();
 
+    // Get the rendering settings
+    m_renderBackground = m_toolsC->GetRenderBackgroundData();
+    m_renderSpotlights = m_toolsC->GetRenderSpotlightsData();
+
     // Set the player color based on the background
     if (m_renderBackground)
     {
@@ -313,6 +318,36 @@ void GameController::UpdateRenderSettings()
 
 
 
+void GameController::UpdateSpotlights()
+{
+    // Enable spotlights only when the background is rendered
+    bool renderSpotlights = m_renderBackground && m_renderSpotlights;
+    m_shaderDistanceTint->SetRenderSpotlights(renderSpotlights);
+    vector<XMFLOAT3> positions;
+
+    if (renderSpotlights)
+    {
+        // Add the player spotlight
+        positions.push_back(m_player->GetPosition());
+
+        // Add the NPC spotlights
+        for (auto npc : m_npcs)
+        {
+            positions.push_back(npc->GetPosition());
+        }
+    }
+
+    m_shaderDistanceTint->SetSpotlightPositions(positions);
+}
+
+
+
+
+
+
+
+
+
 
 
 void GameController::RenderScene(const wstring& _fpsS)
@@ -320,6 +355,7 @@ void GameController::RenderScene(const wstring& _fpsS)
     FontController::GetInstance().Write(_fpsS, L"Arial_20", D2D1_RECT_F(20, 80, 800, 120), D2D1::ColorF::Yellow);
 
     UpdateRenderSettings();
+    UpdateSpotlights();
 
     // Update the player position used for distance tinting
     m_shaderDistanceTint->SetPlayerPosition(m_player->GetPosition());
