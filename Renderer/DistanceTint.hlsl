@@ -88,7 +88,13 @@ float4 PSMain(PSInput input) : SV_TARGET
         return float4(1.0f, 1.0f, 0.0f, 1.0f);
     }
 
-    float4 color = g_texture.Sample(g_sampler, input.texcoords);
+    // float4 color = g_texture.Sample(g_sampler, input.texcoords);
+    // Sample and preserve the original texture color
+    float4 textureColor = g_texture.Sample(g_sampler, input.texcoords);
+    float4 color = textureColor;
+    
+    
+    
 
     // Calculate the distance from the pixel to the player
     float dist = distance(input.pixelWorld, PlayerPosition.xyz);
@@ -127,7 +133,7 @@ float4 PSMain(PSInput input) : SV_TARGET
         float intensity = CalculateSpotlights(input.pixelWorld);
 
         // color.rgb += intensity;
-        color.rgb += g_texture.Sample(g_sampler, input.texcoords).rgb * intensity; // Apply white light based on the original texture color
+        color.rgb += textureColor.rgb * intensity; // Apply white light based on the original texture color
     }
     
 
