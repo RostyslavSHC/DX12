@@ -129,6 +129,7 @@ float4 PSMain(PSInput input) : SV_TARGET
         // color.rgb += intensity;
         color.rgb += g_texture.Sample(g_sampler, input.texcoords).rgb * intensity; // Apply white light based on the original texture color
     }
+    
 
     return saturate(color);
 }
