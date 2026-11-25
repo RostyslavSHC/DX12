@@ -7,6 +7,7 @@
 #include "ShaderSkybox.h"
 #include "ShaderSolidColor.h"
 #include "NPC.h"
+#include "ShaderDistanceTint.h"
 
 GameController::GameController()
 {
@@ -18,6 +19,7 @@ GameController::GameController()
     m_shaderSolidColor = nullptr;
     m_player = nullptr;
     m_spawnTime = 0.0f;
+    m_shaderDistanceTint = nullptr;
 }
 
 GameController::~GameController()
@@ -71,6 +73,10 @@ void GameController::SceneInitialize()
     m_shaderSolidColor->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
     // m_shaderSolidColor->SetColor({ 1.0f, 1.0f, 0.0f, 1.0f });
 
+    m_shaderDistanceTint = new ShaderDistanceTint();
+    m_shaderDistanceTint->Initialize();
+    m_shaderDistanceTint->InitializeTexture("..\\Assets\\Textures\\Assignment2Wood.dds");
+
     // Configure the camera
     Camera::Current()->SetView(
         { 0.0f, 0.0f, -40.0f },
@@ -110,8 +116,8 @@ void GameController::InitializeNPCs()
 
         // Initialize the NPC
         NPC* npc = new NPC();
-        npc->Initialize("..\\Assets\\Models\\Cube.obj",
-            m_shaderSolidColor);
+        // npc->Initialize("..\\Assets\\Models\\Cube.obj", m_shaderSolidColor);
+        npc->Initialize("..\\Assets\\Models\\Cube.obj", m_shaderDistanceTint);
 
         npc->SetPosition({ x, y, 0.0f });
         npc->SetScale({ 2.5f, 2.5f, 2.5f });
@@ -217,6 +223,7 @@ void GameController::RenderScene(const wstring& _fpsS)
 {
     FontController::GetInstance().Write(_fpsS, L"Arial_20", D2D1_RECT_F(20, 80, 800, 120), D2D1::ColorF::Yellow);
     m_shaderSolidColor->ResetCurrentObjectIndex();
+    m_shaderDistanceTint->ResetCurrentObjectIndex();
     m_renderer->Render(m_units, Camera::Current()->GetViewProjection());
 }
 
@@ -236,6 +243,8 @@ void GameController::SceneCleanup()
     // Delete shaders
     delete m_shaderSolidColor;
     m_shaderSolidColor = nullptr;
+    delete m_shaderDistanceTint;
+    m_shaderDistanceTint = nullptr;
 
     // Delete the camera
     delete Camera::Current();

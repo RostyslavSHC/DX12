@@ -171,6 +171,7 @@
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderColor.cpp" />
+    <ClCompile Include="ShaderDistanceTint.cpp" />
     <ClCompile Include="ShaderPhong.cpp" />
     <ClCompile Include="ShaderSkybox.cpp" />
     <ClCompile Include="ShaderSolidColor.cpp" />
@@ -195,6 +196,7 @@
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderColor.h" />
+    <ClInclude Include="ShaderDistanceTint.h" />
     <ClInclude Include="ShaderPhong.h" />
     <ClInclude Include="ShaderSkybox.h" />
     <ClInclude Include="ShaderSolidColor.h" />
@@ -215,6 +217,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="DistanceTint.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="Phong.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

@@ -5,6 +5,7 @@
 class Renderer;
 class ToolsController;
 class ShaderSolidColor;
+class ShaderDistanceTint;
 class Unit;
 class NPC;
 
@@ -42,6 +43,7 @@ private:
     // Scene Members
     vector<IRenderable*> m_units;
     ShaderSolidColor* m_shaderSolidColor;
+    ShaderDistanceTint* m_shaderDistanceTint;
     Unit* m_player;
     // vector<Unit*> m_npcs;
     vector<NPC*> m_npcs;
