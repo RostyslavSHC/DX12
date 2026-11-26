@@ -83,6 +83,7 @@ void ShaderDistanceTint::SetPipelineState(IRenderable* _renderable, PipelineStat
         cbData->Tagged = 1.0f;
     }
 
+
     // Set the spotlight rendering data
     // cbData->RenderSpotlights = m_renderSpotlights ? 1.0f : 0.0f;
 
